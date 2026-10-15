@@ -68,6 +68,12 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (result.isSuccess && result.user != null) {
+      // Connect authenticated user to ProgressService for server sync
+      widget.progressService.setAuthUser(
+        userId: result.user!.id,
+        token: result.user!.token,
+      );
+
       // Sync user profile name with ProgressService
       if (result.user!.name.isNotEmpty) {
         widget.progressService.updateProfile(

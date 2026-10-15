@@ -73,7 +73,7 @@ class UserModel {
     return this.findById(id);
   }
 
-  static async updateProfile(id, { childName, age, avatarAsset }) {
+  static async updateProfile(id, { childName, age, avatarAsset, totalStars, stars }) {
     const updates = [];
     const values = [];
 
@@ -88,6 +88,19 @@ class UserModel {
     if (avatarAsset !== undefined) {
       updates.push('avatar_asset = ?');
       values.push(avatarAsset);
+    }
+    const starVal = totalStars !== undefined ? totalStars : stars;
+    if (starVal !== undefined && !isNaN(parseInt(starVal, 10))) {
+      const starsNum = parseInt(starVal, 10);
+      updates.push('total_stars = ?');
+      values.push(starsNum);
+      // Keep user_stars table synchronized
+      await pool.query(
+        `INSERT INTO user_stars (user_id, total_stars, current_streak, highest_streak)
+         VALUES (?, ?, 1, 1)
+         ON DUPLICATE KEY UPDATE total_stars = ?`,
+        [id, starsNum, starsNum]
+      );
     }
 
     if (updates.length === 0) return this.findById(id);

@@ -27,6 +27,13 @@ router.post(
   ProgressController.updateProgress
 );
 
+// Batch synchronize full progress and stars from mobile app
+router.post(
+  '/:userId/sync',
+  [param('userId').notEmpty().withMessage('userId is required'), validateRequest],
+  ProgressController.syncProgress
+);
+
 // Get user quiz attempt history
 router.get(
   '/:userId/quiz-results',

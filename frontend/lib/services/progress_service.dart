@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/avatar_model.dart';
 import '../models/user_profile_model.dart';
 import '../models/user_progress_model.dart';
+import 'api_config.dart';
 import 'audio_service.dart';
 import 'tamil_transliteration_service.dart';
 import 'writing_practice_repository.dart';
@@ -13,6 +15,9 @@ class ProgressService extends ChangeNotifier {
   UserProgressModel _progress = const UserProgressModel();
   bool _isInitialized = false;
   int _childAge = 5;
+
+  String? _userId;
+  String? _token;
 
   UserProgressModel get progress => _progress;
   bool get isInitialized => _isInitialized;
@@ -29,6 +34,81 @@ class ProgressService extends ChangeNotifier {
 
   ProgressService() {
     _loadProgress();
+  }
+
+  void setAuthUser({String? userId, String? token}) {
+    _userId = userId;
+    _token = token;
+    if (_userId != null && _userId!.isNotEmpty) {
+      syncWithServer();
+    }
+  }
+
+  Future<void> syncWithServer() async {
+    try {
+      String? targetUserId = _userId;
+      if (targetUserId == null || targetUserId.isEmpty) {
+        final prefs = await SharedPreferences.getInstance();
+        final userJsonStr = prefs.getString('agaram_auth_user');
+        if (userJsonStr != null && userJsonStr.isNotEmpty) {
+          final Map<String, dynamic> userMap = jsonDecode(userJsonStr);
+          targetUserId = userMap['id']?.toString();
+          _token ??= prefs.getString('agaram_auth_token');
+        }
+      }
+
+      if (targetUserId == null || targetUserId.isEmpty || targetUserId == 'child') {
+        return;
+      }
+
+      final uri = Uri.parse('${ApiConfig.baseUrl}/progress/$targetUserId/sync');
+      final body = jsonEncode({
+        'stars': _progress.stars,
+        'completedLetterIds': _progress.completedLetterIds,
+        'completedStories': _progress.completedStories,
+        'quizHighScore': _progress.quizHighScore,
+        'gamesPlayed': _progress.gamesPlayed,
+      });
+
+      final res = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          if (_token != null) 'Authorization': 'Bearer $_token',
+        },
+        body: body,
+      ).timeout(const Duration(seconds: 4));
+
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        if (data['success'] == true && data['data'] != null) {
+          final serverStars = data['data']['stars'] as int? ?? 0;
+          if (serverStars > _progress.stars) {
+            _progress = _progress.copyWith(stars: serverStars);
+            notifyListeners();
+            _saveProgress(triggerSync: false);
+          }
+        }
+      }
+
+      // Also ensure profile totalStars is in sync on server
+      try {
+        final profileUri = Uri.parse('${ApiConfig.baseUrl}/users/profile/$targetUserId');
+        await http.put(
+          profileUri,
+          headers: {
+            'Content-Type': 'application/json',
+            if (_token != null) 'Authorization': 'Bearer $_token',
+          },
+          body: jsonEncode({
+            'totalStars': _progress.stars,
+            'childName': _progress.childName,
+          }),
+        ).timeout(const Duration(seconds: 3));
+      } catch (_) {}
+    } catch (_) {
+      // Offline fallback: stars safely stay in SharedPreferences
+    }
   }
 
   Future<void> _loadProgress() async {
@@ -68,15 +148,19 @@ class ProgressService extends ChangeNotifier {
     } finally {
       _isInitialized = true;
       notifyListeners();
+      syncWithServer();
     }
   }
 
-  Future<void> _saveProgress() async {
+  Future<void> _saveProgress({bool triggerSync = true}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_storageKey, jsonEncode(_progress.toJson()));
     } catch (e) {
       debugPrint('Error saving user progress: $e');
+    }
+    if (triggerSync) {
+      syncWithServer();
     }
   }
 

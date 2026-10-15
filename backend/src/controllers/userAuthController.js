@@ -222,12 +222,14 @@ class UserAuthController {
   static async updateProfile(req, res, next) {
     try {
       const { id } = req.params;
-      const { childName, age, avatarAsset } = req.body;
+      const { childName, age, avatarAsset, totalStars, stars } = req.body;
 
       const user = await UserModel.updateProfile(id, {
         childName,
         age,
         avatarAsset,
+        totalStars,
+        stars,
       });
 
       if (!user) {

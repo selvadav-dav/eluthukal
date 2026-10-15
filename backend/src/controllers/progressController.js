@@ -50,6 +50,30 @@ class ProgressController {
   }
 
   /**
+   * Batch synchronize progress and stars from mobile app
+   */
+  static async syncProgress(req, res, next) {
+    try {
+      const { userId } = req.params;
+      const { stars, totalStars, completedLetterIds, completedStories, quizHighScore, gamesPlayed } = req.body;
+      const starCount = totalStars !== undefined ? totalStars : stars;
+
+      const progress = await ProgressModel.syncUserProgress({
+        userId,
+        stars: starCount,
+        completedLetterIds,
+        completedStories,
+        quizHighScore,
+        gamesPlayed,
+      });
+
+      return successResponse(res, 'Progress synchronized successfully', progress);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
    * Get user quiz history
    */
   static async getUserQuizResults(req, res, next) {

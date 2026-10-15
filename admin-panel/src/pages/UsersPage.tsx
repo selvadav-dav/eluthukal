@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { dashboardApi } from '../api/dashboard';
 import { ChildUser, QuizResultRecord } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { Modal } from '../components/common/Modal';
 import {
   Users,
   Award,
@@ -12,6 +13,9 @@ import {
   X,
   UserCheck,
   UserX,
+  Edit2,
+  Trash2,
+  Plus,
 } from 'lucide-react';
 
 export const UsersPage: React.FC = () => {
@@ -22,6 +26,11 @@ export const UsersPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+
+  // Student Edit / Add Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentStudent, setCurrentStudent] = useState<Partial<ChildUser> | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -45,6 +54,68 @@ export const UsersPage: React.FC = () => {
       // ignore
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOpenAdd = () => {
+    setCurrentStudent({
+      child_name: '',
+      email: '',
+      age: 5,
+      total_stars: 0,
+      is_active: true,
+      avatar_asset: 'assets/images/welcome.png',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (student: ChildUser) => {
+    setCurrentStudent({
+      ...student,
+      total_stars: student.total_stars ?? 0,
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm(t('users.deleteConfirm') || 'Are you sure you want to delete this student?')) return;
+    try {
+      await dashboardApi.deleteUser(id);
+      fetchData();
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to delete student');
+    }
+  };
+
+  const handleSaveStudent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentStudent || !currentStudent.child_name) {
+      alert(t('users.fieldChildName') || 'Child name is required');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      if (currentStudent.id) {
+        await dashboardApi.updateUser(currentStudent.id, {
+          child_name: currentStudent.child_name,
+          email: currentStudent.email || undefined,
+          age: currentStudent.age,
+          is_active: currentStudent.is_active,
+        });
+      } else {
+        await dashboardApi.createUser({
+          child_name: currentStudent.child_name,
+          email: currentStudent.email || undefined,
+          age: currentStudent.age,
+        });
+      }
+      setIsModalOpen(false);
+      fetchData();
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Save failed');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -74,6 +145,12 @@ export const UsersPage: React.FC = () => {
           <h2>{t('users.pageTitle')}</h2>
           <p>{t('users.pageSubtitle')}</p>
         </div>
+        {activeTab === 'users' && (
+          <button onClick={handleOpenAdd} className="btn btn-primary" style={{ gap: '6px' }}>
+            <Plus size={16} />
+            <span>{t('users.modalAddTitle')}</span>
+          </button>
+        )}
       </div>
 
       {/* Tabs */}
@@ -102,21 +179,10 @@ export const UsersPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Search & Filter Toolbar */}
-      <div
-        className="table-toolbar"
-        style={{
-          background: 'white',
-          borderRadius: 'var(--radius-lg)',
-          marginBottom: '16px',
-          display: 'flex',
-          gap: '12px',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-        }}
-      >
-        <div className="search-input" style={{ flex: 1, minWidth: '260px' }}>
-          <Search size={16} color="#94A3B8" />
+      {/* Filter / Search Bar */}
+      <div className="filter-bar">
+        <div className="search-box">
+          <Search size={16} />
           <input
             type="text"
             placeholder={t('users.searchPlaceholder')}
@@ -171,18 +237,19 @@ export const UsersPage: React.FC = () => {
                 <th>{t('users.quizzesTaken')}</th>
                 <th>{t('users.status')}</th>
                 <th>{t('users.joinedDate')}</th>
+                <th style={{ textAlign: 'right' }}>{t('users.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={8} style={{ textAlign: 'center', padding: '40px' }}>
+                  <td colSpan={9} style={{ textAlign: 'center', padding: '40px' }}>
                     <Loader2 className="spin" size={28} style={{ margin: '0 auto', color: 'var(--primary)' }} />
                   </td>
                 </tr>
               ) : filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                  <td colSpan={9} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                     {t('users.empty')}
                   </td>
                 </tr>
@@ -260,11 +327,12 @@ export const UsersPage: React.FC = () => {
                         </span>
                       </td>
 
-                      {/* Total Stars */}
+                      {/* Total Stars (Clickable to Edit) */}
+                      {/* Total Stars (Read-only from Mobile App) */}
                       <td>
-                        <span
+                        <div
                           style={{
-                            color: '#EAB308',
+                            color: '#CA8A04',
                             fontWeight: 800,
                             display: 'inline-flex',
                             alignItems: 'center',
@@ -276,8 +344,8 @@ export const UsersPage: React.FC = () => {
                             border: '1px solid #FEF08A',
                           }}
                         >
-                          <Star size={14} fill="#EAB308" /> {u.total_stars} ⭐
-                        </span>
+                          <Star size={14} fill="#EAB308" /> {u.total_stars ?? 0} ⭐
+                        </div>
                       </td>
 
                       {/* Quizzes Taken */}
@@ -313,6 +381,26 @@ export const UsersPage: React.FC = () => {
                       {/* Joined Date */}
                       <td style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
                         {new Date(u.created_at).toLocaleDateString(language === 'ta' ? 'ta-IN' : 'en-US')}
+                      </td>
+
+                      {/* Actions */}
+                      <td style={{ textAlign: 'right' }}>
+                        <div className="action-btn-group">
+                          <button
+                            onClick={() => handleOpenEdit(u)}
+                            className="btn btn-secondary btn-icon"
+                            title={t('common.edit')}
+                          >
+                            <Edit2 size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(u.id)}
+                            className="btn btn-danger btn-icon"
+                            title={t('common.delete')}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -380,6 +468,120 @@ export const UsersPage: React.FC = () => {
           </table>
         )}
       </div>
+
+      {/* Edit / Add Student Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={currentStudent?.id ? t('users.modalEditTitle') : t('users.modalAddTitle')}
+      >
+        <form onSubmit={handleSaveStudent}>
+          <div className="form-group">
+            <label className="form-label">{t('users.fieldChildName')}</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="e.g. குழந்தை"
+              value={currentStudent?.child_name || ''}
+              onChange={(e) => setCurrentStudent({ ...currentStudent, child_name: e.target.value })}
+              required
+            />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div className="form-group">
+              <label className="form-label">{t('users.fieldEmail')}</label>
+              <input
+                type="email"
+                className="form-control"
+                placeholder="student@example.com"
+                value={currentStudent?.email || ''}
+                onChange={(e) => setCurrentStudent({ ...currentStudent, email: e.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">{t('users.fieldAge')}</label>
+              <input
+                type="number"
+                min="2"
+                max="18"
+                className="form-control"
+                value={currentStudent?.age ?? 5}
+                onChange={(e) => setCurrentStudent({ ...currentStudent, age: parseInt(e.target.value, 10) || 5 })}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Real Stars Display (Read-Only from Student Mobile App) */}
+          {currentStudent?.id && (
+            <div
+              style={{
+                background: '#FFFBEB',
+                padding: '12px 14px',
+                borderRadius: '8px',
+                border: '1px solid #FDE68A',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <span
+                  style={{
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    color: '#92400E',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <Star size={15} fill="#EAB308" />
+                  {language === 'ta' ? 'மொபைல் செயலியில் பெற்ற நட்சத்திரங்கள்:' : 'Stars Earned in Mobile App:'}
+                </span>
+                <span style={{ fontSize: '11.5px', color: '#B45309' }}>
+                  {language === 'ta'
+                    ? 'மாணவர் செயலியில் விளையாடிப் பெற்றவை (நேரடி காட்சி)'
+                    : 'Synced directly from student mobile app activity'}
+                </span>
+              </div>
+              <div style={{ fontSize: '18px', fontWeight: 800, color: '#B45309' }}>
+                {currentStudent.total_stars ?? 0} ⭐
+              </div>
+            </div>
+          )}
+
+          <div className="form-group">
+            <label className="form-label">{t('users.status')}</label>
+            <select
+              className="form-control"
+              value={currentStudent?.is_active ? '1' : '0'}
+              onChange={(e) => setCurrentStudent({ ...currentStudent, is_active: e.target.value === '1' })}
+            >
+              <option value="1">{language === 'ta' ? 'செயலில் (Active)' : 'Active'}</option>
+              <option value="0">{language === 'ta' ? 'முடக்கப்பட்டது (Inactive)' : 'Inactive'}</option>
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '20px' }}>
+            <button type="button" onClick={() => setIsModalOpen(false)} className="btn btn-secondary">
+              {t('common.cancel')}
+            </button>
+            <button type="submit" disabled={isSubmitting} className="btn btn-primary">
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="spin" size={16} />
+                  <span>{t('common.saving')}</span>
+                </>
+              ) : (
+                <span>{t('common.save')}</span>
+              )}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

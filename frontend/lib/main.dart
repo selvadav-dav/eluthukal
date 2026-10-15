@@ -43,6 +43,10 @@ void main() async {
 
   // Sync profile name with progress service if logged in
   if (authService.isAuthenticated && authService.currentUser != null) {
+    progressService.setAuthUser(
+      userId: authService.currentUser!.id,
+      token: authService.token,
+    );
     if (authService.currentUser!.name.isNotEmpty) {
       progressService.updateProfile(
         name: authService.currentUser!.name,

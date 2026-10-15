@@ -46,7 +46,7 @@ class ProgressModel {
        ON DUPLICATE KEY UPDATE 
          completion_status = VALUES(completion_status),
          completion_percentage = VALUES(completion_percentage),
-         stars_earned = GREATEST(stars_earned, VALUES(stars_earned)),
+         stars_earned = GREATEST(user_progress.stars_earned, VALUES(stars_earned)),
          last_accessed_at = CURRENT_TIMESTAMP`,
       [userId, contentType, contentId, completionStatus, completionPercentage, starsEarned]
     );
@@ -63,22 +63,63 @@ class ProgressModel {
       `INSERT INTO user_stars (user_id, total_stars, current_streak, highest_streak, last_earned_at)
        VALUES (?, ?, 1, 1, CURRENT_TIMESTAMP)
        ON DUPLICATE KEY UPDATE 
-         total_stars = total_stars + VALUES(total_stars),
+         total_stars = user_stars.total_stars + VALUES(total_stars),
          last_earned_at = CURRENT_TIMESTAMP`,
       [userId, starsToAdd]
     );
 
-    // Sync total_stars with users table
+    // Sync total_stars with users table (compatible with both MySQL and PostgreSQL)
     await pool.query(
-      `UPDATE users u
-       JOIN user_stars s ON u.id = s.user_id
-       SET u.total_stars = s.total_stars
-       WHERE u.id = ?`,
-      [userId]
+      `UPDATE users SET total_stars = (SELECT COALESCE(total_stars, 0) FROM user_stars WHERE user_id = ?) WHERE id = ?`,
+      [userId, userId]
     );
 
     const [rows] = await pool.query('SELECT total_stars FROM user_stars WHERE user_id = ?', [userId]);
     return rows[0]?.total_stars || 0;
+  }
+
+  static async syncUserProgress({
+    userId,
+    stars,
+    completedLetterIds = [],
+    completedStories = 0,
+    quizHighScore = 0,
+    gamesPlayed = 0,
+  }) {
+    if (stars !== undefined && !isNaN(parseInt(stars, 10))) {
+      const starNum = parseInt(stars, 10);
+      await pool.query(
+        `INSERT INTO user_stars (user_id, total_stars, current_streak, highest_streak, last_earned_at)
+         VALUES (?, ?, 1, 1, CURRENT_TIMESTAMP)
+         ON DUPLICATE KEY UPDATE 
+           total_stars = GREATEST(user_stars.total_stars, VALUES(total_stars)),
+           last_earned_at = CURRENT_TIMESTAMP`,
+        [userId, starNum]
+      );
+
+      await pool.query(
+        `UPDATE users SET total_stars = (SELECT COALESCE(total_stars, 0) FROM user_stars WHERE user_id = ?) WHERE id = ?`,
+        [userId, userId]
+      );
+    }
+
+    if (Array.isArray(completedLetterIds)) {
+      for (const letterId of completedLetterIds) {
+        if (!letterId) continue;
+        await pool.query(
+          `INSERT INTO user_progress 
+            (user_id, content_type, content_id, completion_status, completion_percentage, stars_earned, last_accessed_at)
+           VALUES (?, 'letter', ?, 'completed', 100, 2, CURRENT_TIMESTAMP)
+           ON DUPLICATE KEY UPDATE 
+             completion_status = 'completed',
+             last_accessed_at = CURRENT_TIMESTAMP`,
+          [userId, letterId]
+        );
+      }
+    }
+
+    const ProgressService = require('../services/progressService');
+    return ProgressService.getFlutterFormattedProgress(userId);
   }
 
   static async recordQuizResult({
