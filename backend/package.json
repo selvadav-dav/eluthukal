@@ -9,6 +9,8 @@
     "db:init": "node src/scripts/initDb.js",
     "db:init:postgres": "node src/scripts/initPostgresDb.js",
     "db:seed-videos": "node src/scripts/seedCloudinaryVideos.js",
+    "db:seed-quizzes": "node src/scripts/seedAllQuizzes.js",
+    "sync:production-quizzes": "node src/scripts/syncProductionQuizzes.js",
     "generate": "node src/scripts/generateTamilAudio.js",
     "generate:test": "node src/scripts/generateTamilAudio.js --test"
   },

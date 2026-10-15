@@ -309,6 +309,7 @@ export const QuizzesPage: React.FC = () => {
                 <option value="mei">மெய் எழுத்துகள் (Mei)</option>
                 <option value="aytham">ஆய்த எழுத்து (Aytham)</option>
                 <option value="uyirmei">உயிர்மெய் (Uyirmei)</option>
+                <option value="reading">வாசிப்பு (Reading)</option>
                 <option value="general">பொது அறிவு (General)</option>
               </select>
             </div>
