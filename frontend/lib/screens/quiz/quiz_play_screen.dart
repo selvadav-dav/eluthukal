@@ -97,7 +97,12 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> with SingleTickerProvid
       _speakCurrentQuestion();
     } else {
       final starsEarned = (_score >= widget.questions.length ? 4 : (_score > 0 ? 2 : 1));
-      widget.progressService.recordQuizScore(_score, starsEarned);
+      widget.progressService.recordQuizScore(
+        _score,
+        starsEarned,
+        quizId: widget.category.id,
+        totalQuestions: widget.questions.length,
+      );
 
       Navigator.pushReplacement(
         context,

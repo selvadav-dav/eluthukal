@@ -92,14 +92,19 @@ class QuizController {
   // --- Child Quiz Submission ---
   static async submitQuiz(req, res, next) {
     try {
-      const { userId, answers } = req.body;
+      const { userId, answers, score, totalQuestions, correctAnswers, starsEarned } = req.body;
       const quizId = req.params.id;
 
       if (!userId) {
         return errorResponse(res, 'userId is required to submit quiz', null, 400);
       }
 
-      const result = await QuizService.submitQuiz(userId, quizId, answers || []);
+      const result = await QuizService.submitQuiz(userId, quizId, answers || [], {
+        score,
+        totalQuestions,
+        correctAnswers,
+        starsEarned,
+      });
       return successResponse(res, 'Quiz evaluated successfully', result);
     } catch (error) {
       next(error);

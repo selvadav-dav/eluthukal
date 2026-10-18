@@ -29,6 +29,14 @@ void main() async {
     ),
   );
 
+  // Set default app orientation to portrait for phones and tablets
+  unawaited(
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]),
+  );
+
   // Initialize Language Service
   await LanguageService.instance.init();
 

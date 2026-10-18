@@ -12,46 +12,57 @@ class QuizService {
    * @param {string} quizId
    * @param {Array<{ questionId: string, selectedOptionId: number }>} answers
    */
-  static async submitQuiz(userId, quizId, answers = []) {
+  static async submitQuiz(userId, quizId, answers = [], directData = {}) {
     const quiz = await QuizModel.getById(quizId, { includeAnswers: true });
     if (!quiz) {
       throw new Error(`Quiz not found: ${quizId}`);
     }
 
-    let correctCount = 0;
-    let totalScore = 0;
+    let correctCount = directData.correctAnswers !== undefined
+      ? parseInt(directData.correctAnswers, 10)
+      : 0;
+    let totalScore = directData.score !== undefined
+      ? parseInt(directData.score, 10)
+      : 0;
     const questionEvaluations = [];
 
-    // Map questions for quick lookup
-    const questionMap = new Map();
-    quiz.questions.forEach((q) => {
-      questionMap.set(q.id, q);
-    });
-
-    for (const ans of answers) {
-      const question = questionMap.get(ans.questionId);
-      if (!question) continue;
-
-      const correctOption = question.options.find((opt) => opt.isCorrect);
-      const isCorrect = correctOption && Number(correctOption.id) === Number(ans.selectedOptionId);
-
-      if (isCorrect) {
-        correctCount += 1;
-        totalScore += question.marks || 1;
-      }
-
-      questionEvaluations.push({
-        questionId: question.id,
-        selectedOptionId: ans.selectedOptionId,
-        correctOptionId: correctOption ? correctOption.id : null,
-        isCorrect,
-        explanation: question.explanation,
+    // If answers provided and no direct score supplied, evaluate answer list
+    if (Array.isArray(answers) && answers.length > 0 && directData.score === undefined) {
+      const questionMap = new Map();
+      (quiz.questions || []).forEach((q) => {
+        questionMap.set(q.id, q);
       });
+
+      for (const ans of answers) {
+        const question = questionMap.get(ans.questionId);
+        if (!question) continue;
+
+        const correctOption = question.options?.find((opt) => opt.isCorrect);
+        const isCorrect = correctOption && Number(correctOption.id) === Number(ans.selectedOptionId);
+
+        if (isCorrect) {
+          correctCount += 1;
+          totalScore += question.marks || 1;
+        }
+
+        questionEvaluations.push({
+          questionId: question.id,
+          selectedOptionId: ans.selectedOptionId,
+          correctOptionId: correctOption ? correctOption.id : null,
+          isCorrect,
+          explanation: question.explanation,
+        });
+      }
     }
 
-    const totalQuestions = quiz.questions.length;
-    const isPassed = correctCount >= quiz.pass_marks;
-    const starsEarned = isPassed ? (quiz.stars_reward || 5) : Math.max(1, Math.floor(correctCount / 2));
+    const totalQuestions = directData.totalQuestions !== undefined
+      ? parseInt(directData.totalQuestions, 10)
+      : (quiz.questions?.length || 4);
+
+    const isPassed = correctCount >= (quiz.pass_marks || 1);
+    const starsEarned = directData.starsEarned !== undefined
+      ? parseInt(directData.starsEarned, 10)
+      : (isPassed ? (quiz.stars_reward || 5) : Math.max(1, Math.floor(correctCount / 2)));
 
     // Save quiz result
     await ProgressModel.recordQuizResult({

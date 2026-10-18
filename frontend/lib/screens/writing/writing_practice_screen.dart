@@ -583,7 +583,7 @@ class _WritingPracticeScreenState extends State<WritingPracticeScreen> {
                   const Icon(Icons.edit_note_rounded, color: AppColors.primary, size: 24),
                   const SizedBox(width: 6),
                   Text(
-                    'எழுதிப் பழகு',
+                    LanguageService.instance.writingHeading,
                     style: AppTextStyles.screenTitle.copyWith(fontSize: 22),
                   ),
                 ],
@@ -651,10 +651,12 @@ class _WritingPracticeScreenState extends State<WritingPracticeScreen> {
 
   /// Category Switcher
   Widget _buildCategorySwitcher() {
-    final lang = LanguageService.instance.currentLanguageCode;
-    final categories = lang == 'te'
+    final langService = LanguageService.instance;
+    final categories = langService.isTelugu
         ? ['అచ్చులు (Achulu)']
-        : ['உயிர் (12)', 'மெய் (18)', 'ஆய்தம் (1)'];
+        : (langService.isEnglish
+            ? ['Vowels (12)', 'Consonants (18)', 'Aytham (1)']
+            : ['உயிர் (12)', 'மெய் (18)', 'ஆய்தம் (1)']);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
@@ -718,14 +720,14 @@ class _WritingPracticeScreenState extends State<WritingPracticeScreen> {
             ),
           ],
         ),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.edit_rounded, color: Colors.white, size: 16),
-            SizedBox(width: 8),
+            const Icon(Icons.edit_rounded, color: Colors.white, size: 16),
+            const SizedBox(width: 8),
             Text(
-              'கற்றுக்கொள்',
-              style: TextStyle(
+              LanguageService.instance.isEnglish ? 'Learn' : 'கற்றுக்கொள்',
+              style: const TextStyle(
                 fontFamily: 'Catamaran',
                 fontSize: 14,
                 fontWeight: FontWeight.w900,
@@ -740,6 +742,7 @@ class _WritingPracticeScreenState extends State<WritingPracticeScreen> {
 
 
   Widget _buildBottomControls() {
+    final isEn = LanguageService.instance.isEnglish;
     return Row(
       children: [
         // Clear / Reset Button: "மீண்டும் எழுது"
@@ -758,11 +761,11 @@ class _WritingPracticeScreenState extends State<WritingPracticeScreen> {
               elevation: 0,
             ),
             icon: const Icon(Icons.refresh_rounded, size: 18),
-            label: const FittedBox(
+            label: FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
-                'மீண்டும் எழுது',
-                style: TextStyle(
+                isEn ? 'Retry' : 'மீண்டும் எழுது',
+                style: const TextStyle(
                   fontFamily: 'Catamaran',
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -811,8 +814,8 @@ class _WritingPracticeScreenState extends State<WritingPracticeScreen> {
                 fit: BoxFit.scaleDown,
                 child: Text(
                   _activeMode == WritingCanvasMode.practice
-                      ? 'சரிபார் (Check)'
-                      : 'சரிபார் / முடித்தேன்',
+                      ? (isEn ? 'Check' : 'சரிபார் (Check)')
+                      : (isEn ? 'Check / Finish' : 'சரிபார் / முடித்தேன்'),
                   style: const TextStyle(
                     fontFamily: 'Catamaran',
                     fontSize: 15,

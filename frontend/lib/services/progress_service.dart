@@ -19,6 +19,8 @@ class ProgressService extends ChangeNotifier {
   String? _userId;
   String? _token;
 
+  String? get userId => _userId;
+
   UserProgressModel get progress => _progress;
   bool get isInitialized => _isInitialized;
 
@@ -195,7 +197,64 @@ class ProgressService extends ChangeNotifier {
     _saveProgress();
   }
 
-  void recordQuizScore(int score, int starsEarned) {
+  Future<String?> getEffectiveUserId() async {
+    if (_userId != null && _userId!.isNotEmpty && _userId != 'child') {
+      return _userId;
+    }
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userJsonStr = prefs.getString('agaram_auth_user');
+      if (userJsonStr != null && userJsonStr.isNotEmpty) {
+        final Map<String, dynamic> userMap = jsonDecode(userJsonStr);
+        _userId = userMap['id']?.toString();
+        _token ??= prefs.getString('agaram_auth_token');
+        return _userId;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  Future<void> submitQuizAttempt({
+    required String quizId,
+    required int score,
+    required int totalQuestions,
+    required int correctAnswers,
+    required int starsEarned,
+  }) async {
+    try {
+      final targetUserId = await getEffectiveUserId() ?? 'default_child';
+
+      final uri = Uri.parse('${ApiConfig.baseUrl}/quizzes/$quizId/submit');
+      final body = jsonEncode({
+        'userId': targetUserId,
+        'score': score,
+        'totalQuestions': totalQuestions,
+        'correctAnswers': correctAnswers,
+        'starsEarned': starsEarned,
+        'answers': [],
+      });
+
+      final res = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          if (_token != null) 'Authorization': 'Bearer $_token',
+        },
+        body: body,
+      ).timeout(const Duration(seconds: 6));
+
+      debugPrint('⭐ Quiz attempt submitted to server: status=${res.statusCode}');
+    } catch (e) {
+      debugPrint('⚠️ Error submitting quiz attempt: $e');
+    }
+  }
+
+  void recordQuizScore(
+    int score,
+    int starsEarned, {
+    String? quizId,
+    int? totalQuestions,
+  }) {
     final newHigh = score > _progress.quizHighScore ? score : _progress.quizHighScore;
     _progress = _progress.copyWith(
       quizHighScore: newHigh,
@@ -203,6 +262,16 @@ class ProgressService extends ChangeNotifier {
     );
     notifyListeners();
     _saveProgress();
+
+    if (quizId != null && quizId.isNotEmpty) {
+      submitQuizAttempt(
+        quizId: quizId,
+        score: score,
+        totalQuestions: totalQuestions ?? (score > 0 ? score : 4),
+        correctAnswers: score,
+        starsEarned: starsEarned,
+      );
+    }
   }
 
   void recordGameCompleted(int starsEarned) {

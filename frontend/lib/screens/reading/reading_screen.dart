@@ -3,6 +3,7 @@ import '../../data/story_data.dart';
 import '../../models/story_model.dart';
 import '../../services/audio_service.dart';
 import '../../services/data_service.dart';
+import '../../services/language_service.dart';
 import '../../services/progress_service.dart';
 import '../../services/tamil_tts_service.dart';
 import '../../theme/app_colors.dart';
@@ -62,12 +63,15 @@ class _ReadingScreenState extends State<ReadingScreen> {
     } else {
       // Story completed!
       widget.progressService.completeStory();
+      final isEn = LanguageService.instance.isEnglish;
       CelebrationDialog.show(
         context,
-        title: 'கதை முடிந்தது!',
-        message: '${_story.moral}\n\nமிக அருமையாகக் கதையை வாசித்து முடித்தாய்!',
+        title: isEn ? 'Story Completed!' : 'கதை முடிந்தது!',
+        message: isEn
+            ? '${_story.moral}\n\nYou completed reading the story wonderfully!'
+            : '${_story.moral}\n\nமிக அருமையாகக் கதையை வாசித்து முடித்தாய்!',
         starsEarned: 5,
-        buttonText: 'முகப்புக்குச் செல்',
+        buttonText: isEn ? 'Go to Home' : 'முகப்புக்குச் செல்',
         onContinue: () {
           Navigator.of(context).pop();
         },
@@ -86,7 +90,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
   }
 
   void _playNarrator() {
-    _audioService.speakText(_page.text);
+    final speechText = _page.text.replaceAll(r'\n', ' ').replaceAll('\n', ' ');
+    _audioService.speakText(speechText);
   }
 
   void _showInteractiveWordDialog(StoryInteractiveWord word) {
@@ -303,7 +308,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
   }
 
   Widget _buildStorySentence() {
-    final lines = _page.text.split('\n');
+    final cleanText = _page.text.replaceAll(r'\n', '\n');
+    final lines = cleanText.split('\n');
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: lines.map((line) {
@@ -437,10 +443,11 @@ class _ReadingScreenState extends State<ReadingScreen> {
   @override
   Widget build(BuildContext context) {
     final isLastPage = _currentPage == _story.pages.length - 1;
+    final isEn = LanguageService.instance.isEnglish;
 
     return Scaffold(
       appBar: KidAppBar(
-        title: _story.title,
+        title: isEn ? '${_story.title} (Story)' : _story.title,
         starCount: widget.progressService.stars,
       ),
       body: KidScaffoldBackground(
@@ -479,7 +486,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                               ],
                             ),
                             child: Text(
-                              'முயலும் ஆமையும் கதையை வாசிப்போம்!',
+                              isEn ? "Let's read the story together!" : 'முயலும் ஆமையும் கதையை வாசிப்போம்!',
                               style: AppTextStyles.cardTitle.copyWith(
                                 fontSize: 13.5,
                                 fontWeight: FontWeight.w800,
@@ -566,7 +573,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
                             // Audio narration button
                             CustomAudioButton(
-                              label: 'வாசிப்பைக் கேட்போம்',
+                              label: isEn ? 'Listen to Story' : 'வாசிப்பைக் கேட்போம்',
                               color: AppColors.storyColor,
                               onTap: _playNarrator,
                             ),
@@ -598,7 +605,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                     children: [
                                       const Icon(Icons.arrow_back_ios_new_rounded, size: 15),
                                       const SizedBox(width: 6),
-                                      Text('முந்தையது', style: AppTextStyles.bodyTextBold.copyWith(fontSize: 14)),
+                                      Text(
+                                        isEn ? 'Previous' : 'முந்தையது',
+                                        style: AppTextStyles.bodyTextBold.copyWith(fontSize: 14),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -610,7 +620,9 @@ class _ReadingScreenState extends State<ReadingScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 6.0),
                           child: Text(
-                            'பக்கம் ${_currentPage + 1} / ${_story.pages.length}',
+                            isEn
+                                ? 'Page ${_currentPage + 1} / ${_story.pages.length}'
+                                : 'பக்கம் ${_currentPage + 1} / ${_story.pages.length}',
                             style: AppTextStyles.bodyTextBold.copyWith(
                               color: AppColors.textMuted,
                               fontSize: 14,
@@ -641,7 +653,9 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
-                                      isLastPage ? 'முடித்தேன்' : 'அடுத்தது',
+                                      isLastPage
+                                          ? (isEn ? 'Finish' : 'முடித்தேன்')
+                                          : (isEn ? 'Next' : 'அடுத்தது'),
                                       style: AppTextStyles.bodyTextBold.copyWith(color: Colors.white, fontSize: 14),
                                     ),
                                     if (!isLastPage) ...[

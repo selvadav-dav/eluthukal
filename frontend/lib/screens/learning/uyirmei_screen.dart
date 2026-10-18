@@ -41,6 +41,7 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
 
   bool _isAutoPlaying = false;
   int _activeFormulaStep = 0; // 0: none, 1: Mei, 2: Plus, 3: Uyir, 4: Result
+  int _sequenceCounter = 0;
 
   @override
   void initState() {
@@ -120,16 +121,8 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
     setState(() {
       _selectedMei = mei;
     });
-
-    // 1. Play Mei sound only
-    await TamilAudioService.instance.playLetterSound(
-      context,
-      letter: mei,
-      showIndicator: true,
-    );
-
-    // 2. Flip transition to show result + start writing animation
-    await _animateFlipAndPlayResult();
+    _recordProgress();
+    await _playFullSequence();
   }
 
   /// When child taps a Uyir letter on the right
@@ -138,38 +131,8 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
     setState(() {
       _selectedUyir = uyir;
     });
-
-    // 1. Play Uyir sound only
-    await TamilAudioService.instance.playLetterSound(
-      context,
-      letter: uyir,
-      showIndicator: true,
-    );
-
-    // 2. Flip transition to show result + start writing animation
-    await _animateFlipAndPlayResult();
-  }
-
-  /// Smoothly animates the card flip and pronounces the formed Uyirmei letter only
-  Future<void> _animateFlipAndPlayResult() async {
     _recordProgress();
-
-    // Reset to front (equation) momentarily, then smoothly flip to back (result)
-    await _flipController.reverse();
-    await Future.delayed(const Duration(milliseconds: 180));
-    if (!mounted) return;
-
-    // Start handwriting animation as card flips open
-    _writingController.forward(from: 0.0);
-    await _flipController.forward();
-
-    if (!mounted) return;
-    // Play combined letter sound only (no example words)
-    await TamilAudioService.instance.playLetterSound(
-      context,
-      letter: _currentUyirmei,
-      showIndicator: true,
-    );
+    await _playFullSequence();
   }
 
   /// Plays sequential letter sound breakdown:
@@ -178,7 +141,9 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
   /// Audio 3: அ (Uyir)
   /// -> Smooth flip to result card -> Audio 4: க (Uyirmei) with handwriting animation & star reward
   Future<void> _playFullSequence() async {
-    if (_isAutoPlaying) return;
+    final int currentSeq = ++_sequenceCounter;
+    await TamilAudioService.instance.stopAll();
+
     setState(() {
       _isAutoPlaying = true;
       _activeFormulaStep = 0;
@@ -188,53 +153,53 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
       // Step 1: Smoothly flip to equation side if currently showing result
       if (_flipController.value > 0.0) {
         await _flipController.reverse();
-        await Future.delayed(const Duration(milliseconds: 200));
+        await Future.delayed(const Duration(milliseconds: 180));
       }
+      if (!mounted || currentSeq != _sequenceCounter) return;
 
       // Audio 1: Play Mei sound (e.g. க்)
-      if (!mounted) return;
       setState(() => _activeFormulaStep = 1);
       await TamilAudioService.instance.playLetterSound(
         context,
         letter: _selectedMei,
         showIndicator: true,
       );
-      await Future.delayed(const Duration(milliseconds: 800));
+      await Future.delayed(const Duration(milliseconds: 750));
+      if (!mounted || currentSeq != _sequenceCounter) return;
 
       // Audio 2: Play Plus sound ('+' / 'கூட்டல்')
-      if (!mounted) return;
       setState(() => _activeFormulaStep = 2);
       await TamilAudioService.instance.playPlusSound(context);
-      await Future.delayed(const Duration(milliseconds: 800));
+      await Future.delayed(const Duration(milliseconds: 750));
+      if (!mounted || currentSeq != _sequenceCounter) return;
 
       // Audio 3: Play Uyir sound (e.g. அ)
-      if (!mounted) return;
       setState(() => _activeFormulaStep = 3);
       await TamilAudioService.instance.playLetterSound(
         context,
         letter: _selectedUyir,
         showIndicator: true,
       );
-      await Future.delayed(const Duration(milliseconds: 800));
+      await Future.delayed(const Duration(milliseconds: 750));
+      if (!mounted || currentSeq != _sequenceCounter) return;
 
       // Step 2: Smoothly flip to result side and animate handwriting
-      if (!mounted) return;
       setState(() => _activeFormulaStep = 4);
       _writingController.forward(from: 0.0);
       await _flipController.forward();
       await Future.delayed(const Duration(milliseconds: 250));
+      if (!mounted || currentSeq != _sequenceCounter) return;
 
       // Audio 4: Play result letter sound (e.g. க)
-      if (!mounted) return;
       await TamilAudioService.instance.playLetterSound(
         context,
         letter: _currentUyirmei,
         showIndicator: true,
       );
-      if (!mounted) return;
+      if (!mounted || currentSeq != _sequenceCounter) return;
       await TamilAudioService.instance.playStarReward(context);
     } finally {
-      if (mounted) {
+      if (mounted && currentSeq == _sequenceCounter) {
         setState(() {
           _isAutoPlaying = false;
           _activeFormulaStep = 0;
@@ -243,25 +208,10 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
     }
   }
 
-  /// Toggles flip manually when tapping the center card
+  /// Toggles flip / replays full sequence when tapping the center card
   void _toggleFlipCard() {
     HapticFeedback.selectionClick();
-    if (_flipController.isCompleted) {
-      _flipController.reverse();
-      TamilAudioService.instance.playLetterSound(
-        context,
-        letter: _selectedMei,
-        showIndicator: true,
-      );
-    } else {
-      _writingController.forward(from: 0.0);
-      _flipController.forward();
-      TamilAudioService.instance.playLetterSound(
-        context,
-        letter: _currentUyirmei,
-        showIndicator: true,
-      );
-    }
+    _playFullSequence();
   }
 
   void _goToNextVowel() {
@@ -1050,34 +1000,39 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
             ),
           ),
 
-          // Flip prompt button
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: const Color(0xFF7C3AED),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF7C3AED).withValues(alpha: 0.35),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
+          // Flip / Play full sequence button
+          BouncyButton(
+            onPressed: _playFullSequence,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF8338EC), Color(0xFF3A86FF)],
                 ),
-              ],
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.touch_app_rounded, color: Colors.white, size: 15),
-                SizedBox(width: 5),
-                Text(
-                  'தட்டவும் / திரும்பு',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF8338EC).withValues(alpha: 0.35),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
                   ),
-                ),
-              ],
+                ],
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 18),
+                  SizedBox(width: 6),
+                  Text(
+                    'முழு ஒலி கேட்க ▶',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -1125,31 +1080,51 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            // Top Badge: Equation info
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 4,
-                  ),
-                ],
-              ),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  '$_selectedMei + $_selectedUyir = $_currentUyirmei',
-                  maxLines: 1,
-                  softWrap: false,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w900,
+            // Top Badge: Equation info (tappable for full pronunciation)
+            GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                _playFullSequence();
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
                     color: _isUorOoSeries
-                        ? const Color(0xFFD81159)
-                        : const Color(0xFF2E7D32),
+                        ? const Color(0xFFFF4D8D).withValues(alpha: 0.3)
+                        : const Color(0xFF66BB6A).withValues(alpha: 0.3),
+                    width: 1.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.volume_up_rounded, size: 14, color: Color(0xFF8338EC)),
+                      const SizedBox(width: 5),
+                      Text(
+                        '$_selectedMei + $_selectedUyir = $_currentUyirmei',
+                        maxLines: 1,
+                        softWrap: false,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w900,
+                          color: _isUorOoSeries
+                              ? const Color(0xFFD81159)
+                              : const Color(0xFF2E7D32),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -1158,49 +1133,104 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
             // Animated Handwriting Display of Uyirmei Letter
             _buildAnimatedWritingLetterArea(),
 
-            // Letter Sound Trigger Button (Clean audio button only)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-              decoration: BoxDecoration(
-                gradient: _isUorOoSeries
-                    ? const LinearGradient(
-                        colors: [Color(0xFFFF007F), Color(0xFFFF7A00)],
-                      )
-                    : const LinearGradient(colors: AppColors.greenGradient),
-                borderRadius: BorderRadius.circular(18),
-                boxShadow: [
-                  BoxShadow(
-                    color: (_isUorOoSeries
-                            ? const Color(0xFFFF007F)
-                            : AppColors.mintGreen)
-                        .withValues(alpha: 0.35),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.volume_up_rounded, color: Colors.white, size: 17),
-                    const SizedBox(width: 5),
-                    Text(
-                      _currentUyirmei,
-                      maxLines: 1,
-                      softWrap: false,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            // Prominent Centered Play Button in Card
+            _buildCardCenterPlayButton(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Prominent Play Button centered in the card
+  Widget _buildCardCenterPlayButton() {
+    final isSpecial = _isUorOoSeries;
+    return BouncyButton(
+      onPressed: _playFullSequence,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+        decoration: BoxDecoration(
+          gradient: _isAutoPlaying
+              ? const LinearGradient(
+                  colors: [Color(0xFF6B7280), Color(0xFF4B5563)],
+                )
+              : (isSpecial
+                  ? const LinearGradient(
+                      colors: [Color(0xFFFF007F), Color(0xFFFF7A00)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : const LinearGradient(
+                      colors: [Color(0xFF8338EC), Color(0xFF3A86FF)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.white, width: 2.2),
+          boxShadow: [
+            BoxShadow(
+              color: (_isAutoPlaying
+                      ? Colors.grey
+                      : (isSpecial ? const Color(0xFFFF007F) : const Color(0xFF8338EC)))
+                  .withValues(alpha: 0.45),
+              blurRadius: 14,
+              offset: const Offset(0, 4),
             ),
           ],
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (_isAutoPlaying) ...[
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.4,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'ஒலி கேட்கிறது...',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ] else ...[
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.play_arrow_rounded,
+                    color: isSpecial
+                        ? const Color(0xFFFF007F)
+                        : const Color(0xFF8338EC),
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 9),
+                const Text(
+                  'முழு ஒலி கேட்க ▶',
+                  style: TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );
@@ -1210,7 +1240,11 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
   /// Live pencil tracing + stroke reveal + tailored dual-color for 'உ' / 'ஊ' curl
   Widget _buildAnimatedWritingLetterArea() {
     return GestureDetector(
-      onTap: _replayWritingAnimation,
+      onTap: () {
+        HapticFeedback.mediumImpact();
+        _replayWritingAnimation();
+        _playFullSequence();
+      },
       child: AnimatedBuilder(
         animation: _writingAnimation,
         builder: (context, child) {
@@ -1360,7 +1394,7 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
   /// Bottom Interactive Action Bar (Responsive - No render overflow on any screen)
   Widget _buildBottomActionBar() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(8, 4, 8, 6),
+      padding: const EdgeInsets.fromLTRB(10, 4, 10, 6),
       child: Row(
         children: [
           // Previous Uyir Button
@@ -1369,7 +1403,7 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
             child: BouncyButton(
               onPressed: _goToPrevVowel,
               child: Container(
-                height: 42,
+                height: 44,
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -1390,12 +1424,12 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.arrow_back_ios_rounded, size: 13, color: AppColors.textDark),
-                      SizedBox(width: 2),
+                      SizedBox(width: 3),
                       Text(
                         'முந்தையது',
                         maxLines: 1,
                         softWrap: false,
-                        style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -1404,24 +1438,16 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
             ),
           ),
 
-          const SizedBox(width: 6),
+          const SizedBox(width: 8),
 
-          // Big Sound Replay Button
+          // Big Sound Replay Button (plays full form audio sequence)
           Expanded(
             flex: 4,
             child: BouncyButton(
-              onPressed: () {
-                HapticFeedback.mediumImpact();
-                _replayWritingAnimation();
-                TamilAudioService.instance.playLetterSound(
-                  context,
-                  letter: _currentUyirmei,
-                  showIndicator: true,
-                );
-              },
+              onPressed: _playFullSequence,
               child: Container(
-                height: 42,
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                height: 44,
+                padding: const EdgeInsets.symmetric(horizontal: 6),
                 decoration: BoxDecoration(
                   gradient: _isUorOoSeries
                       ? const LinearGradient(
@@ -1441,19 +1467,19 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
                   ],
                 ),
                 alignment: Alignment.center,
-                child: const FittedBox(
+                child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.volume_up_rounded, color: Colors.white, size: 17),
-                      SizedBox(width: 4),
+                      const Icon(Icons.volume_up_rounded, color: Colors.white, size: 18),
+                      const SizedBox(width: 5),
                       Text(
-                        'ஒலி கேட்க',
+                        _isAutoPlaying ? 'ஒலி கேட்கிறது...' : 'ஒலி கேட்க',
                         maxLines: 1,
                         softWrap: false,
-                        style: TextStyle(
-                          fontSize: 12,
+                        style: const TextStyle(
+                          fontSize: 13,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
                         ),
@@ -1465,43 +1491,7 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
             ),
           ),
 
-          const SizedBox(width: 6),
-
-          // Sequence Breakdown & Animated Writing Button (க் + அ = க)
-          BouncyButton(
-            onPressed: _isAutoPlaying ? null : _playFullSequence,
-            child: Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF8338EC), Color(0xFF3A86FF)],
-                ),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF8338EC).withValues(alpha: 0.35),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: _isAutoPlaying
-                  ? const Center(
-                      child: SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      ),
-                    )
-                  : const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 22),
-            ),
-          ),
-
-          const SizedBox(width: 6),
+          const SizedBox(width: 8),
 
           // Next Uyir Button
           Expanded(
@@ -1509,7 +1499,7 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
             child: BouncyButton(
               onPressed: _goToNextVowel,
               child: Container(
-                height: 42,
+                height: 44,
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -1533,9 +1523,9 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
                         'அடுத்தது',
                         maxLines: 1,
                         softWrap: false,
-                        style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(width: 2),
+                      SizedBox(width: 3),
                       Icon(Icons.arrow_forward_ios_rounded, size: 13, color: AppColors.textDark),
                     ],
                   ),

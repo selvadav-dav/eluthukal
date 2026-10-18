@@ -151,8 +151,9 @@ class ApiDataRepository implements IDataRepository {
       return _cachedUyir!;
     }
     final lang = LanguageService.instance.currentLanguageCode;
+    final queryLang = (lang == 'en') ? 'ta' : lang;
     try {
-      final uri = Uri.parse('${ApiConfig.baseUrl}/letters?type=uyir&lang=$lang&all=true');
+      final uri = Uri.parse('${ApiConfig.baseUrl}/letters?type=uyir&lang=$queryLang&all=true');
       final res = await http.get(uri).timeout(const Duration(seconds: 4));
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
@@ -180,8 +181,9 @@ class ApiDataRepository implements IDataRepository {
       return _cachedMei!;
     }
     final lang = LanguageService.instance.currentLanguageCode;
+    final queryLang = (lang == 'en') ? 'ta' : lang;
     try {
-      final uri = Uri.parse('${ApiConfig.baseUrl}/letters?type=mei&lang=$lang&all=true');
+      final uri = Uri.parse('${ApiConfig.baseUrl}/letters?type=mei&lang=$queryLang&all=true');
       final res = await http.get(uri).timeout(const Duration(seconds: 4));
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);

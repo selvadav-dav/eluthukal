@@ -48,7 +48,7 @@ class StoryModel {
         return {
           id: p.id,
           pageNumber: p.page_number,
-          text: p.text,
+          text: p.text ? p.text.replace(/\\n/g, '\n') : '',
           emojiIllustration: p.emoji_illustration,
           characterName: p.character_name,
           narratorAudio: p.narrator_audio,

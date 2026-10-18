@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/video_model.dart';
 import '../../services/data_service.dart';
+import '../../services/language_service.dart';
 import '../../services/progress_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -45,7 +46,7 @@ class _VideosScreenState extends State<VideosScreen> {
       final list = await DataService.instance.getVideoLessons();
       if (mounted) {
         setState(() {
-          _videos = list.where((v) => v.title.trim() != 'ஃ' && v.category != 'ஆய்த எழுத்து').toList();
+          _videos = list;
           _isLoading = false;
         });
       }
@@ -74,6 +75,14 @@ class _VideosScreenState extends State<VideosScreen> {
     return kMeiLetters.any((l) => v.title.trim() == l || v.title.trim().startsWith('$l '));
   }
 
+  bool _isAythamVideo(VideoItem v) {
+    final cat = v.category.trim();
+    if (cat == 'ஆய்த எழுத்து' || cat == 'ஆய்தம்' || cat.toLowerCase() == 'aytham' || cat.toLowerCase() == 'ayutham') {
+      return true;
+    }
+    return v.title.trim() == 'ஃ' || v.title.trim().startsWith('ஃ ') || v.title.contains('ஆய்த');
+  }
+
   List<VideoItem> get _uyirVideos {
     final list = _videos.where(_isUyirVideo).toList();
     list.sort((a, b) {
@@ -96,17 +105,23 @@ class _VideosScreenState extends State<VideosScreen> {
     return list;
   }
 
+  List<VideoItem> get _aythamVideos {
+    return _videos.where(_isAythamVideo).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final uyirList = _uyirVideos;
     final meiList = _meiVideos;
+    final aythamList = _aythamVideos;
+    final isEn = LanguageService.instance.isEnglish;
 
     return ListenableBuilder(
-      listenable: widget.progressService,
+      listenable: Listenable.merge([widget.progressService, LanguageService.instance]),
       builder: (context, _) {
         return Scaffold(
           appBar: KidAppBar(
-            title: 'காணொளிகள்',
+            title: LanguageService.instance.videosHeading,
             starCount: widget.progressService.stars,
             showBack: false,
           ),
@@ -127,7 +142,7 @@ class _VideosScreenState extends State<VideosScreen> {
                         const SizedBox(height: 16),
 
                         // Filter Pills
-                        _buildFilterChips(uyirList.length, meiList.length),
+                        _buildFilterChips(uyirList.length, meiList.length, aythamList.length),
                         const SizedBox(height: 18),
 
                         if (_isLoading)
@@ -142,14 +157,14 @@ class _VideosScreenState extends State<VideosScreen> {
                           if (_selectedFilter == 'all' || _selectedFilter == 'uyir') ...[
                             _buildSectionHeader(
                               icon: Icons.auto_awesome_rounded,
-                              title: 'உயிர் எழுத்துகள் காணொளிகள்',
+                              title: isEn ? 'Vowels Videos (Uyir)' : 'உயிர் எழுத்துகள் காணொளிகள்',
                               countText: '${uyirList.length}/12',
-                              subtitle: 'அ முதல் ஔ வரையிலான எழுத்துப் பாடங்கள்',
+                              subtitle: isEn ? 'Letters lessons from அ to ஔ' : 'அ முதல் ஔ வரையிலான எழுத்துப் பாடங்கள்',
                               badgeColor: AppColors.uyirColor,
                             ),
                             const SizedBox(height: 10),
                             if (uyirList.isEmpty)
-                              _buildEmptyCategoryCard('உயிர் எழுத்துகள் காணொளிகள் எதுவும் இல்லை')
+                              _buildEmptyCategoryCard(isEn ? 'No vowel videos yet' : 'உயிர் எழுத்துகள் காணொளிகள் எதுவும் இல்லை')
                             else
                               ...uyirList.map((v) => _buildVideoCard(v, isUyir: true)),
                             const SizedBox(height: 24),
@@ -159,9 +174,9 @@ class _VideosScreenState extends State<VideosScreen> {
                           if (_selectedFilter == 'all' || _selectedFilter == 'mei') ...[
                             _buildSectionHeader(
                               icon: Icons.edit_note_rounded,
-                              title: 'மெய் எழுத்துகள் காணொளிகள்',
+                              title: isEn ? 'Consonants Videos (Mei)' : 'மெய் எழுத்துகள் காணொளிகள்',
                               countText: '${meiList.length}/18',
-                              subtitle: 'க் முதல் ன் வரையிலான எழுத்துப் பாடங்கள்',
+                              subtitle: isEn ? 'Letters lessons from க் to ன்' : 'க் முதல் ன் வரையிலான எழுத்துப் பாடங்கள்',
                               badgeColor: AppColors.meiColor,
                             ),
                             const SizedBox(height: 10),
@@ -169,6 +184,23 @@ class _VideosScreenState extends State<VideosScreen> {
                               _buildMeiPlaceholderCard()
                             else
                               ...meiList.map((v) => _buildVideoCard(v, isMei: true)),
+                            const SizedBox(height: 24),
+                          ],
+
+                          // Section 3: Aytham Letter (ஃ)
+                          if (_selectedFilter == 'all' || _selectedFilter == 'aytham') ...[
+                            _buildSectionHeader(
+                              icon: Icons.stars_rounded,
+                              title: isEn ? 'Aytham Letter Video (ஃ)' : 'ஆய்த எழுத்து காணொளி',
+                              countText: '${aythamList.length}/1',
+                              subtitle: isEn ? 'Three-dotted unique Tamil letter (ஃ)' : 'முப்புள்ளி கொண்ட தனித்தமிழ் எழுத்து (ஃ)',
+                              badgeColor: const Color(0xFF8338EC),
+                            ),
+                            const SizedBox(height: 10),
+                            if (aythamList.isEmpty)
+                              _buildAythamPlaceholderCard()
+                            else
+                              ...aythamList.map((v) => _buildVideoCard(v, isAytham: true)),
                             const SizedBox(height: 20),
                           ],
                         ],
@@ -185,6 +217,7 @@ class _VideosScreenState extends State<VideosScreen> {
   }
 
   Widget _buildHeroBanner() {
+    final isEn = LanguageService.instance.isEnglish;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
@@ -216,9 +249,9 @@ class _VideosScreenState extends State<VideosScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text(
-                    '🎬 காணொளி திரையரங்கம்',
-                    style: TextStyle(
+                  child: Text(
+                    isEn ? '🎬 Video Cinema' : '🎬 காணொளி திரையரங்கம்',
+                    style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: AppColors.secondaryDark,
@@ -227,7 +260,7 @@ class _VideosScreenState extends State<VideosScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'பார்த்து கற்றுக்கொள்வோம்!',
+                  isEn ? 'Watch & Learn Together!' : 'பார்த்து கற்றுக்கொள்வோம்!',
                   style: AppTextStyles.cardTitle.copyWith(
                     fontSize: 18,
                     color: const Color(0xFF004D40),
@@ -235,9 +268,11 @@ class _VideosScreenState extends State<VideosScreen> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  'உயிர் மற்றும் மெய் எழுத்துகள் காணொளிகள்',
-                  style: TextStyle(
+                Text(
+                  isEn
+                      ? 'Vowels, Consonants & Aytham videos'
+                      : 'உயிர், மெய் மற்றும் ஆய்த எழுத்துகள் காணொளிகள்',
+                  style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF00695C),
@@ -257,11 +292,13 @@ class _VideosScreenState extends State<VideosScreen> {
     );
   }
 
-  Widget _buildFilterChips(int uyirCount, int meiCount) {
+  Widget _buildFilterChips(int uyirCount, int meiCount, int aythamCount) {
+    final isEn = LanguageService.instance.isEnglish;
     final filters = [
-      {'id': 'all', 'label': 'அனைத்தும்', 'count': _videos.length},
-      {'id': 'uyir', 'label': 'உயிர் எழுத்துகள்', 'count': uyirCount},
-      {'id': 'mei', 'label': 'மெய் எழுத்துகள்', 'count': meiCount},
+      {'id': 'all', 'label': isEn ? 'All' : 'அனைத்தும்', 'count': _videos.length},
+      {'id': 'uyir', 'label': isEn ? 'Vowels' : 'உயிர் எழுத்துகள்', 'count': uyirCount},
+      {'id': 'mei', 'label': isEn ? 'Consonants' : 'மெய் எழுத்துகள்', 'count': meiCount},
+      {'id': 'aytham', 'label': isEn ? 'Aytham (ஃ)' : 'ஆய்த எழுத்து', 'count': aythamCount},
     ];
 
     return SingleChildScrollView(
@@ -275,7 +312,9 @@ class _VideosScreenState extends State<VideosScreen> {
               ? AppColors.uyirColor
               : id == 'mei'
                   ? AppColors.meiColor
-                  : AppColors.primary;
+                  : id == 'aytham'
+                      ? const Color(0xFF8338EC)
+                      : AppColors.primary;
 
           return Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -428,15 +467,18 @@ class _VideosScreenState extends State<VideosScreen> {
     );
   }
 
-  Widget _buildVideoCard(VideoItem video, {bool isUyir = false, bool isMei = false}) {
+  Widget _buildVideoCard(VideoItem video, {bool isUyir = false, bool isMei = false, bool isAytham = false}) {
     final themeColor = isUyir
         ? AppColors.uyirColor
         : isMei
             ? AppColors.meiColor
-            : AppColors.primary;
+            : isAytham
+                ? const Color(0xFF8338EC)
+                : AppColors.primary;
 
     final isLetterTitle = (isUyir && kUyirLetters.contains(video.title.trim())) ||
-        (isMei && kMeiLetters.contains(video.title.trim()));
+        (isMei && kMeiLetters.contains(video.title.trim())) ||
+        (isAytham && video.title.trim() == 'ஃ');
 
     final displayTitle = isLetterTitle ? '${video.title} - எழுத்து காணொளி' : video.title;
 
@@ -480,7 +522,9 @@ class _VideosScreenState extends State<VideosScreen> {
                         ? AppColors.pinkGradient
                         : isMei
                             ? AppColors.blueGradient
-                            : [const Color(0xFF2B2D42), const Color(0xFF4A4E69)],
+                            : isAytham
+                                ? const [Color(0xFF8338EC), Color(0xFFB5179E)]
+                                : [const Color(0xFF2B2D42), const Color(0xFF4A4E69)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -496,7 +540,7 @@ class _VideosScreenState extends State<VideosScreen> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    if (isUyir || isMei)
+                    if (isUyir || isMei || isAytham)
                       Text(
                         video.title.trim().split(' ').first,
                         style: const TextStyle(
@@ -684,6 +728,96 @@ class _VideosScreenState extends State<VideosScreen> {
                 ),
               );
             }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAythamPlaceholderCard() {
+    final isEn = LanguageService.instance.isEnglish;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: const Color(0xFF8338EC).withValues(alpha: 0.25), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3E8FF),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.stars_rounded, color: Color(0xFF8338EC), size: 20),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isEn ? 'Aytham Letter Video (ஃ)' : 'ஆய்த எழுத்து காணொளி (ஃ)',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textDark,
+                      ),
+                    ),
+                    Text(
+                      isEn
+                          ? 'Upload via Admin Panel'
+                          : 'நிர்வாகப் பலகையிலிருந்து பதிவேற்றலாம் (Admin Panel Upload)',
+                      style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFAF5FF),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE9D5FF)),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'ஃ',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF8338EC),
+                  ),
+                ),
+                SizedBox(width: 8),
+                Text(
+                  'முப்புள்ளி ஆய்த எழுத்து',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF6B21A8),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

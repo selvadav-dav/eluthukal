@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/car_racing_game_model.dart';
 import '../../models/letter_basket_game_model.dart';
 import '../../models/letter_fishing_game_model.dart';
+import '../../services/language_service.dart';
 import '../../services/progress_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -23,11 +24,12 @@ class GamesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: progressService,
+      listenable: Listenable.merge([progressService, LanguageService.instance]),
       builder: (context, _) {
+        final isEn = LanguageService.instance.isEnglish;
         return Scaffold(
           appBar: KidAppBar(
-            title: 'விளையாடிக் கற்போம்',
+            title: LanguageService.instance.gamesHeading,
             starCount: progressService.stars,
             showBack: false,
           ),
@@ -75,14 +77,14 @@ class GamesScreen extends StatelessWidget {
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(12),
                                       ),
-                                      child: const Row(
+                                      child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Icon(Icons.sports_esports_rounded, size: 14, color: AppColors.candyPurple),
-                                          SizedBox(width: 4),
+                                          const Icon(Icons.sports_esports_rounded, size: 14, color: AppColors.candyPurple),
+                                          const SizedBox(width: 4),
                                           Text(
-                                            'விளையாட்டு அரங்கம்',
-                                            style: TextStyle(
+                                            isEn ? 'Games Arena' : 'விளையாட்டு அரங்கம்',
+                                            style: const TextStyle(
                                               fontSize: 12,
                                               fontWeight: FontWeight.bold,
                                               color: AppColors.candyPurple,
@@ -97,7 +99,7 @@ class GamesScreen extends StatelessWidget {
                                     fit: BoxFit.scaleDown,
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                      'விளையாடி தமிழை கற்போம்!',
+                                      isEn ? 'Learn Tamil through games!' : 'விளையாடி தமிழை கற்போம்!',
                                       style: AppTextStyles.cardTitle.copyWith(
                                         fontSize: 18,
                                         color: const Color(0xFF4A148C),
@@ -107,7 +109,9 @@ class GamesScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    'விளையாடியவை: ${progressService.progress.gamesPlayed}',
+                                    isEn
+                                        ? 'Games Played: ${progressService.progress.gamesPlayed}'
+                                        : 'விளையாடியவை: ${progressService.progress.gamesPlayed}',
                                     style: const TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,

@@ -108,6 +108,7 @@ export const VideosPage: React.FC = () => {
 
   const uyirCount = videos.filter((v) => v.category === 'உயிர் எழுத்துகள்' || UYIR_LETTERS.includes(v.title)).length;
   const meiCount = videos.filter((v) => v.category === 'மெய் எழுத்துகள்' || MEI_LETTERS.includes(v.title)).length;
+  const aythamCount = videos.filter((v) => v.category === 'ஆய்த எழுத்து' || v.title === 'ஃ').length;
   const songsCount = videos.filter((v) => v.category === 'பாடல்').length;
   const storiesCount = videos.filter((v) => v.category === 'கதை').length;
   const lessonsCount = videos.filter((v) => v.category === 'பாடம்').length;
@@ -116,6 +117,7 @@ export const VideosPage: React.FC = () => {
     if (selectedFilter === 'all') return true;
     if (selectedFilter === 'uyir') return vid.category === 'உயிர் எழுத்துகள்' || UYIR_LETTERS.includes(vid.title);
     if (selectedFilter === 'mei') return vid.category === 'மெய் எழுத்துகள்' || MEI_LETTERS.includes(vid.title);
+    if (selectedFilter === 'aytham') return vid.category === 'ஆய்த எழுத்து' || vid.title === 'ஃ';
     if (selectedFilter === 'song') return vid.category === 'பாடல்';
     if (selectedFilter === 'story') return vid.category === 'கதை';
     if (selectedFilter === 'lesson') return vid.category === 'பாடம்';
@@ -127,9 +129,17 @@ export const VideosPage: React.FC = () => {
       <div className="page-header">
         <div className="page-title-group">
           <h2>{t('videos.pageTitle')}</h2>
-          <p>தமிழ் உயிர் எழுத்துகள் (12), மெய் எழுத்துகள் (18) மற்றும் கல்வி காணொளிகள் மேலாண்மை</p>
+          <p>தமிழ் உயிர் எழுத்துகள் (12), மெய் எழுத்துகள் (18), ஆய்த எழுத்து (1) மற்றும் கல்வி காணொளிகள் மேலாண்மை</p>
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => handleOpenAdd('ஆய்த எழுத்து')}
+            className="btn btn-secondary"
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', borderColor: '#8B5CF6', color: '#6D28D9', background: '#F5F3FF' }}
+          >
+            <Plus size={16} />
+            <span>+ ஆய்த எழுத்து காணொளி</span>
+          </button>
           <button
             onClick={() => handleOpenAdd('மெய் எழுத்துகள்')}
             className="btn btn-secondary"
@@ -170,6 +180,13 @@ export const VideosPage: React.FC = () => {
           style={selectedFilter === 'mei' ? { background: '#EFF6FF', borderColor: '#3B82F6', color: '#1D4ED8' } : {}}
         >
           ✍️ மெய் எழுத்துகள் ({meiCount}/18)
+        </button>
+        <button
+          className={`tab-btn ${selectedFilter === 'aytham' ? 'active' : ''}`}
+          onClick={() => setSelectedFilter('aytham')}
+          style={selectedFilter === 'aytham' ? { background: '#FAF5FF', borderColor: '#A855F7', color: '#7E22CE' } : {}}
+        >
+          ⭐ ஆய்த எழுத்து ({aythamCount}/1)
         </button>
         {songsCount > 0 && (
           <button
@@ -401,6 +418,7 @@ export const VideosPage: React.FC = () => {
               >
                 <option value="உயிர் எழுத்துகள்">🅰️ உயிர் எழுத்துகள் (Uyir Letters - அ, ஆ...)</option>
                 <option value="மெய் எழுத்துகள்">✍️ மெய் எழுத்துகள் (Mei Letters - க், ங்...)</option>
+                <option value="ஆய்த எழுத்து">⭐ ஆய்த எழுத்து (Aytham Letter - ஃ)</option>
                 <option value="பாடல்">🎵 பாடல் (Song / Rhyme)</option>
                 <option value="கதை">📖 கதை (Story / Tale)</option>
                 <option value="பாடம்">🎓 பாடம் (Lesson / Educational)</option>
@@ -472,6 +490,32 @@ export const VideosPage: React.FC = () => {
                     {letter}
                   </button>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {currentVideo?.category === 'ஆய்த எழுத்து' && (
+            <div className="form-group" style={{ background: '#FAF5FF', padding: '12px', borderRadius: '12px', border: '1px solid #E9D5FF' }}>
+              <label className="form-label" style={{ color: '#7E22CE', fontWeight: 700, fontSize: '12px', marginBottom: '8px', display: 'block' }}>
+                ⚡ விரைவு ஆய்த எழுத்து தேர்வு (Click to auto-fill Aytham Letter):
+              </label>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => handleQuickLetterPick('ஃ', 0)}
+                  className="btn btn-sm"
+                  style={{
+                    background: currentVideo?.title === 'ஃ' ? '#7E22CE' : 'white',
+                    color: currentVideo?.title === 'ஃ' ? 'white' : '#7E22CE',
+                    borderColor: '#C084FC',
+                    fontWeight: 700,
+                    minWidth: '40px',
+                    padding: '4px 12px',
+                    fontSize: '16px',
+                  }}
+                >
+                  ஃ
+                </button>
               </div>
             </div>
           )}

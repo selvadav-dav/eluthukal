@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../data/quiz_data.dart';
 import '../../models/quiz_model.dart';
 import '../../services/audio_service.dart';
+import '../../services/language_service.dart';
 import '../../services/progress_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -19,11 +20,12 @@ class QuizScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: progressService,
+      listenable: Listenable.merge([progressService, LanguageService.instance]),
       builder: (context, _) {
+        final isEn = LanguageService.instance.isEnglish;
         return Scaffold(
           appBar: KidAppBar(
-            title: 'வினாடி வினா',
+            title: LanguageService.instance.quizHeading,
             starCount: progressService.stars,
             showBack: false,
           ),
@@ -68,9 +70,9 @@ class QuizScreen extends StatelessWidget {
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
                                     ),
-                                    child: const Text(
-                                      'அறிவு அரங்கம்',
-                                      style: TextStyle(
+                                    child: Text(
+                                      isEn ? 'Quiz Arena' : 'அறிவு அரங்கம்',
+                                      style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
                                         color: AppColors.meiColor,
@@ -79,7 +81,7 @@ class QuizScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'நாம் கற்றதை சோதிப்போம்!',
+                                    isEn ? 'Test what we learned!' : 'நாம் கற்றதை சோதிப்போம்!',
                                     style: AppTextStyles.cardTitle.copyWith(
                                       fontSize: 18,
                                       color: const Color(0xFF1A237E),
@@ -91,7 +93,9 @@ class QuizScreen extends StatelessWidget {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        'உயர் மதிப்பெண்: ${progressService.quizHighScore}',
+                                        isEn
+                                            ? 'High Score: ${progressService.quizHighScore}'
+                                            : 'உயர் மதிப்பெண்: ${progressService.quizHighScore}',
                                         style: const TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w700,

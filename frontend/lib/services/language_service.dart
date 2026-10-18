@@ -58,8 +58,8 @@ class LanguageService extends ChangeNotifier {
       flagEmoji: '🇬🇧',
       brandTitle: 'AGARAM',
       greeting: 'Hello',
-      vowelsTitle: 'Vowels (A, E, I, O, U)',
-      consonantsTitle: 'Consonants',
+      vowelsTitle: 'Vowels (Uyir)',
+      consonantsTitle: 'Consonants (Mei)',
     ),
   };
 
@@ -71,6 +71,10 @@ class LanguageService extends ChangeNotifier {
   bool get hasSelectedLanguage => _hasSelectedLanguage;
   bool get isInitialized => _isInitialized;
 
+  bool get isEnglish => _currentLanguageCode == 'en';
+  bool get isTamil => _currentLanguageCode == 'ta';
+  bool get isTelugu => _currentLanguageCode == 'te';
+
   LanguageInfo get currentLanguage =>
       supportedLanguages[_currentLanguageCode] ?? supportedLanguages['ta']!;
 
@@ -78,6 +82,23 @@ class LanguageService extends ChangeNotifier {
   String get greeting => currentLanguage.greeting;
   String get vowelsTitle => currentLanguage.vowelsTitle;
   String get consonantsTitle => currentLanguage.consonantsTitle;
+
+  // Localized Headings for Main Sections
+  String get lessonsHeading => isEnglish ? 'Lessons' : (isTelugu ? 'పాఠాలు' : 'கற்றுக்கொள்வோம்');
+  String get gamesHeading => isEnglish ? 'Play & Learn' : (isTelugu ? 'ఆటలు' : 'விளையாடிக் கற்போம்');
+  String get videosHeading => isEnglish ? 'Videos' : (isTelugu ? 'వీడియోలు' : 'காணொளிகள்');
+  String get quizHeading => isEnglish ? 'Quiz' : (isTelugu ? 'క్విజ్' : 'வினாடி வினா');
+  String get writingHeading => isEnglish ? 'Writing Practice' : (isTelugu ? 'రాయడం నేర్చుకోండి' : 'எழுதிப் பழகு');
+  String get storiesHeading => isEnglish ? 'Stories' : (isTelugu ? 'కథలు' : 'வாசிப்பு');
+
+  String get learningWorldsTitle => isEnglish ? 'Learning Worlds' : (isTelugu ? 'నేర్చుకునే ప్రపంచాలు' : 'கற்றல் உலகங்கள்');
+  String get todayProgressTitle => isEnglish ? "Today's Progress" : (isTelugu ? 'ఈ రోజు పురోగతి' : 'இன்றைய முன்னேற்றம்');
+  String get completedLessonsLabel => isEnglish ? 'Completed' : (isTelugu ? 'పూర్తయినవి' : 'கற்ற பாடங்கள்');
+  String get starsLabel => isEnglish ? 'Stars' : (isTelugu ? 'నక్షత్రాలు' : 'நட்சத்திரங்கள்');
+  String get quizScoreLabel => isEnglish ? 'Quiz Points' : (isTelugu ? 'క్విజ్ పాయింట్లు' : 'வினாடி வினா');
+
+  String get aythamHeading => isEnglish ? 'Aytham Letter (ஃ)' : 'ஆய்த எழுத்து';
+  String get uyirmeiHeading => isEnglish ? 'Combined Letters (Uyirmei)' : 'உயிர்மெய் எழுத்துகள்';
 
   Future<void> init() async {
     if (_isInitialized) return;

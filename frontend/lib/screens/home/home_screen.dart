@@ -25,8 +25,11 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: progressService,
+      listenable: Listenable.merge([progressService, LanguageService.instance]),
       builder: (context, _) {
+        final langService = LanguageService.instance;
+        final isEn = langService.isEnglish;
+        final isTe = langService.isTelugu;
         final childName = progressService.childName;
         final stars = progressService.stars;
         final completedLetters = progressService.completedLettersCount;
@@ -54,9 +57,7 @@ class HomeScreen extends StatelessWidget {
 
                         // Destinations Title
                         Text(
-                          LanguageService.instance.currentLanguageCode == 'te'
-                              ? 'నేర్చుకునే ప్రపంచాలు'
-                              : (LanguageService.instance.currentLanguageCode == 'en' ? 'Learning Worlds' : 'கற்றல் உலகங்கள்'),
+                          langService.learningWorldsTitle,
                           style: AppTextStyles.cardTitle.copyWith(
                             fontSize: 19,
                             fontWeight: FontWeight.w900,
@@ -65,17 +66,15 @@ class HomeScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
 
-                        // Destination 1: கற்றுக்கொள்வோம் (Features learn.png)
+                        // Destination 1: Lessons / கற்றுக்கொள்வோம் (Features learn.png)
                         _buildDestinationCard(
-                          title: LanguageService.instance.currentLanguageCode == 'te'
-                              ? 'అక్షరాలు నేర్చుకుందాం'
-                              : (LanguageService.instance.currentLanguageCode == 'en' ? 'Learn Letters' : 'கற்றுக்கொள்வோம்'),
-                          subtitle: LanguageService.instance.currentLanguageCode == 'te'
-                              ? 'సరదాగా అక్షరాలను నేర్చుకుందాం!'
-                              : (LanguageService.instance.currentLanguageCode == 'en' ? 'Learn letters with joy!' : 'தமிழை மகிழ்ச்சியாக கற்போம்!'),
-                          tag: LanguageService.instance.currentLanguageCode == 'te'
-                              ? '16 అచ్చులు • 36 హల్లులు'
-                              : (LanguageService.instance.currentLanguageCode == 'en' ? 'Vowels & Consonants' : '12 உயிர் • 18 மெய் • 216 உயிர்மெய்'),
+                          title: langService.lessonsHeading,
+                          subtitle: isEn
+                              ? 'Learn Tamil with joy!'
+                              : (isTe ? 'సరదాగా అక్షరాలను నేర్చుకుందాం!' : 'தமிழை மகிழ்ச்சியாக கற்போம்!'),
+                          tag: isEn
+                              ? '12 Vowels • 18 Consonants • 216 Combined'
+                              : (isTe ? '16 అచ్చులు • 36 హల్లులు' : '12 உயிர் • 18 மெய் • 216 உயிர்மெய்'),
                           imageAsset: 'assets/images/learn.png',
                           gradient: const [Color(0xFFFF9F1C), Color(0xFFFF6B6B)],
                           borderColor: const Color(0xFFFF9F1C),
@@ -83,11 +82,15 @@ class HomeScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 14),
 
-                        // Destination 2: விளையாடிக் கற்போம் (Features game.png)
+                        // Destination 2: Games / விளையாடிக் கற்போம் (Features game.png)
                         _buildDestinationCard(
-                          title: 'விளையாடிக் கற்போம்',
-                          subtitle: 'விளையாடி தமிழை கற்போம்!',
-                          tag: 'சொல் கார் பந்தயம் • எழுத்துக் கூடை',
+                          title: langService.gamesHeading,
+                          subtitle: isEn
+                              ? 'Learn Tamil through fun games!'
+                              : (isTe ? 'ఆటల ద్వారా నేర్చుకుందాం!' : 'விளையாடி தமிழை கற்போம்!'),
+                          tag: isEn
+                              ? 'Word Car Race • Letter Basket'
+                              : (isTe ? 'పదాల కార్ రేసింగ్ • అక్షరాల బుట్ట' : 'சொல் கார் பந்தயம் • எழுத்துக் கூடை'),
                           imageAsset: 'assets/images/game.png',
                           gradient: const [Color(0xFF8338EC), Color(0xFF3A86FF)],
                           borderColor: const Color(0xFF8338EC),
@@ -95,11 +98,15 @@ class HomeScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 14),
 
-                        // Destination 3: காணொளிகள் (Features video.png)
+                        // Destination 3: Videos / காணொளிகள் (Features video.png)
                         _buildDestinationCard(
-                          title: 'காணொளிகள்',
-                          subtitle: 'பார்த்து கற்றுக்கொள்வோம்!',
-                          tag: 'உயிர் • மெய் • ஆய்த எழுத்துகள்',
+                          title: langService.videosHeading,
+                          subtitle: isEn
+                              ? 'Watch and learn!'
+                              : (isTe ? 'చూసి నేర్చుకుందాం!' : 'பார்த்து கற்றுக்கொள்வோம்!'),
+                          tag: isEn
+                              ? 'Vowels • Consonants • Aytham'
+                              : (isTe ? 'అచ్చులు • హల్లులు' : 'உயிர் • மெய் • ஆய்த எழுத்துகள்'),
                           imageAsset: 'assets/images/video.png',
                           gradient: const [Color(0xFF2EC4B6), Color(0xFF0F9F90)],
                           borderColor: const Color(0xFF2EC4B6),
@@ -107,11 +114,15 @@ class HomeScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 14),
 
-                        // Destination 4: வினாடி வினா (Features quiz.png)
+                        // Destination 4: Quiz / வினாடி வினா (Features quiz.png)
                         _buildDestinationCard(
-                          title: 'வினாடி வினா',
-                          subtitle: 'நாம் கற்றதை சோதிப்போம்!',
-                          tag: '5 வினாடி வினா பிரிவுகள் • பதக்கங்கள்',
+                          title: langService.quizHeading,
+                          subtitle: isEn
+                              ? 'Test what we learned!'
+                              : (isTe ? 'నేర్చుకున్నది పరీక్షిద్దాం!' : 'நாம் கற்றதை சோதிப்போம்!'),
+                          tag: isEn
+                              ? '5 Quiz Categories • Badges'
+                              : (isTe ? '5 క్విజ్ విభాగాలు • బ్యాడ్జీలు' : '5 வினாடி வினா பிரிவுகள் • பதக்கங்கள்'),
                           imageAsset: 'assets/images/quiz.png',
                           gradient: const [Color(0xFF4361EE), Color(0xFF4CC9F0)],
                           borderColor: const Color(0xFF4361EE),
@@ -119,11 +130,15 @@ class HomeScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 14),
 
-                        // Destination 5: எழுதிப் பழகு (Features writing.png)
+                        // Destination 5: Writing Practice / எழுதிப் பழகு (Features writing.png)
                         _buildDestinationCard(
-                          title: 'எழுதிப் பழகு',
-                          subtitle: 'விரலால் எழுதிப் பழகுவோம்!',
-                          tag: 'உயிர் • மெய் • உயிர்மெய் எழுத்துகள்',
+                          title: langService.writingHeading,
+                          subtitle: isEn
+                              ? 'Practice writing with your finger!'
+                              : (isTe ? 'వేలితో రాసి సాధన చేద్దాం!' : 'விரலால் எழுதிப் பழகுவோம்!'),
+                          tag: isEn
+                              ? 'Vowels • Consonants • Combined'
+                              : (isTe ? 'అచ్చులు • హల్లులు' : 'உயிர் • மெய் • உயிர்மெய் எழுத்துகள்'),
                           imageAsset: 'assets/images/writing.png',
                           gradient: const [Color(0xFFFF006E), Color(0xFFFF70A6)],
                           borderColor: const Color(0xFFFF006E),
@@ -530,6 +545,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildProgressSection(int lettersCount, int stars, int quizScore) {
+    final langService = LanguageService.instance;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
@@ -553,7 +569,7 @@ class HomeScreen extends StatelessWidget {
               const Icon(Icons.insights_rounded, color: AppColors.primary, size: 22),
               const SizedBox(width: 8),
               Text(
-                'இன்றைய முன்னேற்றம்',
+                langService.todayProgressTitle,
                 style: AppTextStyles.cardTitle.copyWith(
                   fontSize: 17,
                   fontWeight: FontWeight.w800,
@@ -567,7 +583,7 @@ class HomeScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildProgressStat(
-                  'கற்ற பாடங்கள்',
+                  langService.completedLessonsLabel,
                   '$lettersCount',
                   Icons.auto_stories_rounded,
                   AppColors.secondary,
@@ -575,7 +591,7 @@ class HomeScreen extends StatelessWidget {
               ),
               Expanded(
                 child: _buildProgressStat(
-                  'நட்சத்திரங்கள்',
+                  langService.starsLabel,
                   '$stars',
                   Icons.star_rounded,
                   AppColors.starGold,
@@ -583,7 +599,7 @@ class HomeScreen extends StatelessWidget {
               ),
               Expanded(
                 child: _buildProgressStat(
-                  'வினாடி வினா',
+                  langService.quizScoreLabel,
                   '$quizScore',
                   Icons.emoji_events_rounded,
                   AppColors.candyPurple,

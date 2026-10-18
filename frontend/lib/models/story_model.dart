@@ -91,7 +91,7 @@ class StoryPageModel {
 
     return StoryPageModel(
       pageNumber: json['pageNumber'] as int? ?? json['page_number'] as int? ?? 1,
-      text: json['text'] as String? ?? '',
+      text: (json['text'] as String? ?? '').replaceAll(r'\n', '\n'),
       emojiIllustration: json['emojiIllustration'] as String? ??
           json['emoji_illustration'] as String? ??
           '📖',
