@@ -29,7 +29,6 @@ class HomeScreen extends StatelessWidget {
       builder: (context, _) {
         final langService = LanguageService.instance;
         final isEn = langService.isEnglish;
-        final isTe = langService.isTelugu;
         final childName = progressService.childName;
         final stars = progressService.stars;
         final completedLetters = progressService.completedLettersCount;
@@ -66,80 +65,80 @@ class HomeScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
 
-                        // Destination 1: Lessons / கற்றுக்கொள்வோம் (Features learn.png)
+                        // Destination 1: Lessons / கற்றுக்கொள்வோம் (Features reading.gif)
                         _buildDestinationCard(
                           title: langService.lessonsHeading,
                           subtitle: isEn
                               ? 'Learn Tamil with joy!'
-                              : (isTe ? 'సరదాగా అక్షరాలను నేర్చుకుందాం!' : 'தமிழை மகிழ்ச்சியாக கற்போம்!'),
+                              : 'தமிழை மகிழ்ச்சியாக கற்போம்!',
                           tag: isEn
-                              ? '12 Vowels • 18 Consonants • 216 Combined'
-                              : (isTe ? '16 అచ్చులు • 36 హల్లులు' : '12 உயிர் • 18 மெய் • 216 உயிர்மெய்'),
-                          imageAsset: 'assets/images/learn.png',
+                              ? '12 Vowels • 18 Consonants • 216 Combinations'
+                              : '12 உயிர் • 18 மெய் • 216 உயிர்மெய்',
+                          imageAsset: 'assets/images/reading.gif',
                           gradient: const [Color(0xFFFF9F1C), Color(0xFFFF6B6B)],
                           borderColor: const Color(0xFFFF9F1C),
                           onTap: () => onTabSelect(1),
                         ),
                         const SizedBox(height: 14),
 
-                        // Destination 2: Games / விளையாடிக் கற்போம் (Features game.png)
+                        // Destination 2: Games / விளையாடிக் கற்போம் (Features play.gif)
                         _buildDestinationCard(
                           title: langService.gamesHeading,
                           subtitle: isEn
                               ? 'Learn Tamil through fun games!'
-                              : (isTe ? 'ఆటల ద్వారా నేర్చుకుందాం!' : 'விளையாடி தமிழை கற்போம்!'),
+                              : 'விளையாடி தமிழை கற்போம்!',
                           tag: isEn
                               ? 'Word Car Race • Letter Basket'
-                              : (isTe ? 'పదాల కార్ రేసింగ్ • అక్షరాల బుట్ట' : 'சொல் கார் பந்தயம் • எழுத்துக் கூடை'),
-                          imageAsset: 'assets/images/game.png',
+                              : 'சொல் கார் பந்தயம் • எழுத்துக் கூடை',
+                          imageAsset: 'assets/images/play.gif',
                           gradient: const [Color(0xFF8338EC), Color(0xFF3A86FF)],
                           borderColor: const Color(0xFF8338EC),
                           onTap: () => onTabSelect(2),
                         ),
                         const SizedBox(height: 14),
 
-                        // Destination 3: Videos / காணொளிகள் (Features video.png)
+                        // Destination 3: Videos / காணொளிகள் (Features video.gif)
                         _buildDestinationCard(
                           title: langService.videosHeading,
                           subtitle: isEn
                               ? 'Watch and learn!'
-                              : (isTe ? 'చూసి నేర్చుకుందాం!' : 'பார்த்து கற்றுக்கொள்வோம்!'),
+                              : 'பார்த்து கற்றுக்கொள்வோம்!',
                           tag: isEn
                               ? 'Vowels • Consonants • Aytham'
-                              : (isTe ? 'అచ్చులు • హల్లులు' : 'உயிர் • மெய் • ஆய்த எழுத்துகள்'),
-                          imageAsset: 'assets/images/video.png',
+                              : 'உயிர் • மெய் • ஆய்த எழுத்துகள்',
+                          imageAsset: 'assets/images/video.gif',
                           gradient: const [Color(0xFF2EC4B6), Color(0xFF0F9F90)],
                           borderColor: const Color(0xFF2EC4B6),
                           onTap: () => onTabSelect(3),
                         ),
                         const SizedBox(height: 14),
 
-                        // Destination 4: Quiz / வினாடி வினா (Features quiz.png)
+                        // Destination 4: Quiz / வினாடி வினா (Features quiz.gif)
                         _buildDestinationCard(
                           title: langService.quizHeading,
                           subtitle: isEn
                               ? 'Test what we learned!'
-                              : (isTe ? 'నేర్చుకున్నది పరీక్షిద్దాం!' : 'நாம் கற்றதை சோதிப்போம்!'),
+                              : 'நாம் கற்றதை சோதிப்போம்!',
                           tag: isEn
                               ? '5 Quiz Categories • Badges'
-                              : (isTe ? '5 క్విజ్ విభాగాలు • బ్యాడ్జీలు' : '5 வினாடி வினா பிரிவுகள் • பதக்கங்கள்'),
-                          imageAsset: 'assets/images/quiz.png',
+                              : '5 வினாடி வினா பிரிவுகள் • பதக்கங்கள்',
+                          imageAsset: 'assets/images/quiz.gif',
                           gradient: const [Color(0xFF4361EE), Color(0xFF4CC9F0)],
                           borderColor: const Color(0xFF4361EE),
                           onTap: () => onTabSelect(4),
                         ),
                         const SizedBox(height: 14),
 
-                        // Destination 5: Writing Practice / எழுதிப் பழகு (Features writing.png)
+                        // Destination 5: Writing Practice / எழுதிப் பழகு (Features writing.gif)
                         _buildDestinationCard(
                           title: langService.writingHeading,
                           subtitle: isEn
                               ? 'Practice writing with your finger!'
-                              : (isTe ? 'వేలితో రాసి సాధన చేద్దాం!' : 'விரலால் எழுதிப் பழகுவோம்!'),
+                              : 'விரலால் எழுதிப் பழகுவோம்!',
                           tag: isEn
                               ? 'Vowels • Consonants • Combined'
-                              : (isTe ? 'అచ్చులు • హల్లులు' : 'உயிர் • மெய் • உயிர்மெய் எழுத்துகள்'),
-                          imageAsset: 'assets/images/writing.png',
+                              : 'உயிர் • மெய் • உயிர்மெய் எழுத்துகள்',
+                          imageAsset: 'assets/images/writing.gif',
                           gradient: const [Color(0xFFFF006E), Color(0xFFFF70A6)],
                           borderColor: const Color(0xFFFF006E),
                           onTap: () {
@@ -475,6 +474,7 @@ class HomeScreen extends StatelessWidget {
                         child: Image.asset(
                           imageAsset,
                           fit: BoxFit.contain,
+                          gaplessPlayback: true,
                           errorBuilder: (context, error, stackTrace) => const Icon(
                             Icons.star_rounded,
                             size: 36,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../models/avatar_model.dart';
 import '../../models/user_profile_model.dart';
 import '../../services/progress_service.dart';
@@ -47,7 +48,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final nameController = TextEditingController(text: _profile.name);
     int selectedAge = _profile.age;
     String selectedAvatar = _profile.avatarAsset;
-    String liveTamilPreview = TamilTransliterationService.toTamil(_profile.name);
+    String liveTamilPreview = TamilTransliterationService.toTamil(
+      _profile.name,
+    );
 
     showModalBottomSheet(
       context: context,
@@ -105,58 +108,81 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    SizedBox(
-                      height: 100,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: AppAvatar.list.length,
-                        separatorBuilder: (ctx, idx) => const SizedBox(width: 14),
-                        itemBuilder: (context, index) {
-                          final avatar = AppAvatar.list[index];
-                          final isSelected = selectedAvatar == avatar.assetPath;
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          for (
+                            int index = 0;
+                            index < AppAvatar.list.length;
+                            index++
+                          ) ...[
+                            if (index > 0) const SizedBox(width: 32),
+                            Builder(
+                              builder: (context) {
+                                final avatar = AppAvatar.list[index];
+                                final isSelected =
+                                    selectedAvatar == avatar.assetPath;
 
-                          return GestureDetector(
-                            onTap: () => setModalState(() => selectedAvatar = avatar.assetPath),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: isSelected ? const Color(0xFFFF9F1C) : Colors.transparent,
-                                      width: 3.5,
-                                    ),
-                                    boxShadow: isSelected
-                                        ? [
-                                            BoxShadow(
-                                              color: const Color(0xFFFF9F1C).withValues(alpha: 0.3),
-                                              blurRadius: 8,
-                                              offset: const Offset(0, 3),
-                                            ),
-                                          ]
-                                        : null,
+                                return GestureDetector(
+                                  onTap: () => setModalState(
+                                    () => selectedAvatar = avatar.assetPath,
                                   ),
-                                  child: CircleAvatar(
-                                    radius: 30,
-                                    backgroundColor: const Color(0xFFFFF3CD),
-                                    backgroundImage: AssetImage(avatar.assetPath),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: isSelected
+                                                ? const Color(0xFFFF9F1C)
+                                                : Colors.transparent,
+                                            width: 3.5,
+                                          ),
+                                          boxShadow: isSelected
+                                              ? [
+                                                  BoxShadow(
+                                                    color: const Color(
+                                                      0xFFFF9F1C,
+                                                    ).withValues(alpha: 0.3),
+                                                    blurRadius: 8,
+                                                    offset: const Offset(0, 3),
+                                                  ),
+                                                ]
+                                              : null,
+                                        ),
+                                        child: CircleAvatar(
+                                          radius: 34,
+                                          backgroundColor: const Color(
+                                            0xFFFFF3CD,
+                                          ),
+                                          backgroundImage: AssetImage(
+                                            avatar.assetPath,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        avatar.label,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: isSelected
+                                              ? FontWeight.w800
+                                              : FontWeight.w600,
+                                          color: isSelected
+                                              ? const Color(0xFFFF9F1C)
+                                              : const Color(0xFF64748B),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  avatar.label,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                                    color: isSelected ? const Color(0xFFFF9F1C) : const Color(0xFF64748B),
-                                  ),
-                                ),
-                              ],
+                                );
+                              },
                             ),
-                          );
-                        },
+                          ],
+                        ],
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -173,10 +199,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: nameController,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                       onChanged: (val) {
                         setModalState(() {
-                          liveTamilPreview = TamilTransliterationService.toTamil(val);
+                          liveTamilPreview =
+                              TamilTransliterationService.toTamil(val);
                         });
                       },
                       decoration: InputDecoration(
@@ -185,27 +215,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         fillColor: const Color(0xFFF8FAFC),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFE2E8F0),
+                          ),
                         ),
-                        prefixIcon: const Icon(Icons.person_rounded, color: Color(0xFFFF9F1C)),
+                        prefixIcon: const Icon(
+                          Icons.person_rounded,
+                          color: Color(0xFFFF9F1C),
+                        ),
                       ),
                     ),
                     if (liveTamilPreview.isNotEmpty) ...[
                       const SizedBox(height: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFFFF4E5),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFFF9F1C).withValues(alpha: 0.3)),
+                          border: Border.all(
+                            color: const Color(0xFFFF9F1C)
+                                .withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text('தமிழ் வடிவம்: ', style: TextStyle(fontSize: 12, color: Color(0xFF78350F))),
+                            const Text(
+                              'தமிழ் வடிவம்: ',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF78350F),
+                              ),
+                            ),
                             Text(
                               liveTamilPreview,
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(0xFFB45309)),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFFB45309),
+                              ),
                             ),
                           ],
                         ),
@@ -235,14 +286,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
-                                color: isSelected ? Colors.white : Colors.black87,
+                                color: isSelected
+                                    ? Colors.white
+                                    : Colors.black87,
                               ),
                             ),
                             selected: isSelected,
                             selectedColor: const Color(0xFFFF9F1C),
                             backgroundColor: const Color(0xFFF1F5F9),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                            onSelected: (_) => setModalState(() => selectedAge = age),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            onSelected: (_) =>
+                                setModalState(() => selectedAge = age),
                           );
                         }).toList(),
                       ),
@@ -257,14 +313,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF06D6A0),
                           foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                           elevation: 3,
                         ),
                         onPressed: () async {
                           final rawName = nameController.text.trim();
-                          final convertedName = TamilTransliterationService.toTamil(
-                            rawName.isNotEmpty ? rawName : 'குட்டி',
-                          );
+                          final convertedName =
+                              TamilTransliterationService.toTamil(
+                                rawName.isNotEmpty ? rawName : 'குட்டி',
+                              );
 
                           final updated = _profile.copyWith(
                             name: convertedName,
@@ -314,10 +373,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: const Text(
           'என் சுயவிவரம்',
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 22,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 22),
         ),
         backgroundColor: const Color(0xFFFF6B6B),
         foregroundColor: Colors.white,
@@ -342,7 +398,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       borderRadius: BorderRadius.circular(32),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFFF9F1C).withValues(alpha: 0.35),
+                          color: const Color(0xFFFF9F1C)
+                              .withValues(alpha: 0.35),
                           blurRadius: 16,
                           offset: const Offset(0, 8),
                         ),
@@ -386,7 +443,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                         // Child Age
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.25),
                             borderRadius: BorderRadius.circular(16),
@@ -416,7 +476,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: const Color(0xFFFF9F1C),
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -451,7 +514,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           icon: Icons.stars_rounded,
                           iconColor: const Color(0xFFFFD166),
                           title: 'மொத்த நட்சத்திரங்கள்',
-                          value: '${widget.progressService?.stars ?? _profile.totalStars}',
+                          value:
+                              '${widget.progressService?.stars ?? _profile.totalStars}',
                           bgColor: const Color(0xFFFFFBEB),
                         ),
                       ),
@@ -461,7 +525,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           icon: Icons.menu_book_rounded,
                           iconColor: const Color(0xFF3A86FF),
                           title: 'கற்ற எழுத்துகள்',
-                          value: '${widget.progressService?.completedLettersCount ?? 24}',
+                          value:
+                              '${widget.progressService?.completedLettersCount ?? 24}',
                           bgColor: const Color(0xFFEFF6FF),
                         ),
                       ),
@@ -522,7 +587,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ).then((_) => _loadProfileData());
                         },
                         child: const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 18,
+                          ),
                           child: Row(
                             children: [
                               CircleAvatar(
@@ -587,7 +655,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: iconColor.withValues(alpha: 0.25), width: 1.5),
+        border: Border.all(
+          color: iconColor.withValues(alpha: 0.25),
+          width: 1.5,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

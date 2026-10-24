@@ -212,9 +212,11 @@ class _WritingHistoryScreenState extends State<WritingHistoryScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Image.asset(
-                                'assets/images/writing.png',
+                                'assets/images/writing.gif',
                                 width: 140,
                                 height: 140,
+                                fit: BoxFit.contain,
+                                gaplessPlayback: true,
                                 errorBuilder: (context, error, stackTrace) => const Icon(
                                   Icons.edit_note_rounded,
                                   size: 100,

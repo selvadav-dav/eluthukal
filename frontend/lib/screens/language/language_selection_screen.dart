@@ -124,7 +124,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'మీ భాషను ఎంచుకోండి • Choose your language',
+                    'Choose your language',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 13,
@@ -263,9 +263,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            _selectedCode == 'te'
-                              ? 'ప్రారంభించండి (Continue) 🚀'
-                              : (_selectedCode == 'en' ? 'Continue 🚀' : 'தொடரவும் (Continue) 🚀'),
+                            _selectedCode == 'en' ? 'Continue 🚀' : 'தொடரவும் (Continue) 🚀',
                             style: const TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w900,

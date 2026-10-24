@@ -6,12 +6,11 @@ import '../../theme/app_text_styles.dart';
 import '../../widgets/bouncy_button.dart';
 import '../../widgets/kid_app_bar.dart';
 import '../../widgets/kid_scaffold_background.dart';
-import '../../widgets/mascot_widget.dart';
 import 'aytham_screen.dart';
 import 'mei_screen.dart';
 import '../reading/reading_screen.dart';
 import 'uyir_screen.dart';
-import 'uyirmei_screen.dart';
+import 'uyirmei_selection_screen.dart';
 
 class LearningScreen extends StatelessWidget {
   final ProgressService progressService;
@@ -31,7 +30,7 @@ class LearningScreen extends StatelessWidget {
         target = AythamScreen(progressService: progressService);
         break;
       case '/uyirmei':
-        target = UyirmeiScreen(progressService: progressService);
+        target = UyirmeiSelectionScreen(progressService: progressService);
         break;
       case '/reading':
         target = ReadingScreen(progressService: progressService);
@@ -51,7 +50,6 @@ class LearningScreen extends StatelessWidget {
         final completedCount = progressService.completedLettersCount;
         final langService = LanguageService.instance;
         final isEn = langService.isEnglish;
-        final isTe = langService.isTelugu;
 
         return Scaffold(
           appBar: KidAppBar(
@@ -68,7 +66,7 @@ class LearningScreen extends StatelessWidget {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(18, 12, 18, 100),
                     children: [
-                      // Top Hero Mascot Card (learn.png - child reading book)
+                      // Top Hero Mascot Card (reading.gif)
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(18),
@@ -106,7 +104,7 @@ class LearningScreen extends StatelessWidget {
                                         const Icon(Icons.school_rounded, color: Color(0xFF2E7D32), size: 14),
                                         const SizedBox(width: 4),
                                         Text(
-                                          isTe ? 'పాఠశాల' : (isEn ? 'School' : 'பாடசாலை'),
+                                          isEn ? 'School' : 'பாடசாலை',
                                           style: const TextStyle(
                                             fontSize: 12,
                                             fontWeight: FontWeight.bold,
@@ -118,9 +116,7 @@ class LearningScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    isTe
-                                        ? 'తెలుగు సులభంగా చదువుదాం!'
-                                        : (isEn ? 'Learn Tamil easily together!' : 'தமிழை எளிதாகப் படிப்போம்!'),
+                                    isEn ? 'Learn Tamil easily together!' : 'தமிழை எளிதாகப் படிப்போம்!',
                                     style: AppTextStyles.cardTitle.copyWith(
                                       fontSize: 18,
                                       color: const Color(0xFF1B5E20),
@@ -129,9 +125,7 @@ class LearningScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    isTe
-                                        ? 'పూర్తయిన పాఠాలు: $completedCount'
-                                        : (isEn ? 'Completed lessons: $completedCount' : 'கற்ற பாடங்கள்: $completedCount'),
+                                    isEn ? 'Completed lessons: $completedCount' : 'கற்ற பாடங்கள்: $completedCount',
                                     style: const TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
@@ -141,45 +135,37 @@ class LearningScreen extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            const MascotWidget(
-                              pose: MascotPose.learn,
-                              size: MascotSize.small,
-                              customHeight: 110,
-                              showGlow: false,
+                            Image.asset(
+                              'assets/images/reading.gif',
+                              height: 125,
+                              fit: BoxFit.contain,
+                              gaplessPlayback: true,
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(height: 20),
 
-                      // 1. Vowels Category (உயிர் எழுத்துகள் / அచ్చులు)
+                      // 1. Vowels Category (உயிர் எழுத்துகள்)
                       _buildCategoryCard(
                         context,
                         title: langService.vowelsTitle,
-                        subtitle: isTe
-                            ? 'అ నుండి అః వరకు మధురంగా నేర్చుకుందాం'
-                            : (isEn ? 'Learn vowels from அ to ஔ' : 'அ முதல் ஔ வரை இனிமையாக கற்போம்'),
-                        badge: isTe
-                            ? '16 అచ్చులు'
-                            : (isEn ? '12 Vowels' : '12 எழுத்துகள்'),
-                        letterBadge: isTe ? 'అ' : 'அ',
+                        subtitle: isEn ? 'Learn vowels from அ to ஔ' : 'அ முதல் ஔ வரை இனிமையாக கற்போம்',
+                        badge: isEn ? '12 Vowels' : '12 எழுத்துகள்',
+                        letterBadge: 'அ',
                         progressFraction: (completedCount / 12).clamp(0.0, 1.0),
                         gradient: AppColors.pinkGradient,
                         onTap: () => _navigateToCategory(context, '/uyir'),
                       ),
                       const SizedBox(height: 16),
 
-                      // 2. Consonants Category (மெய் எழுத்துகள் / హల్లులు)
+                      // 2. Consonants Category (மெய் எழுத்துகள்)
                       _buildCategoryCard(
                         context,
                         title: langService.consonantsTitle,
-                        subtitle: isTe
-                            ? 'క నుండి హ వరకు హల్లులు'
-                            : (isEn ? 'Learn dotted consonants from க் to ன்' : 'க் முதல் ன் வரை புள்ளியிட்ட எழுத்துகள்'),
-                        badge: isTe
-                            ? '36 హల్లులు'
-                            : (isEn ? '18 Consonants' : '18 எழுத்துகள்'),
-                        letterBadge: isTe ? 'క' : 'க்',
+                        subtitle: isEn ? 'Learn dotted consonants from க் to ன்' : 'க் முதல் ன் வரை புள்ளியிட்ட எழுத்துகள்',
+                        badge: isEn ? '18 Consonants' : '18 எழுத்துகள்',
+                        letterBadge: 'க்',
                         progressFraction: (completedCount / 30).clamp(0.0, 1.0),
                         gradient: AppColors.blueGradient,
                         onTap: () => _navigateToCategory(context, '/mei'),
@@ -187,44 +173,40 @@ class LearningScreen extends StatelessWidget {
                       const SizedBox(height: 16),
 
                       // 3. Tamil-specific categories (ஆய்த எழுத்து & உயிர்மெய்)
-                      if (!isTe) ...[
-                        _buildCategoryCard(
-                          context,
-                          title: langService.aythamHeading,
-                          subtitle: isEn
-                              ? 'Unique three-dotted Tamil letter (ஃ)'
-                              : 'முப்புள்ளி கொண்ட தனித்தமிழ் எழுத்து (ஃ)',
-                          badge: isEn ? 'Aytham – 1' : 'ஆய்தம் – 1',
-                          letterBadge: 'ஃ',
-                          progressFraction: progressService.isLetterCompleted('aytham_1') ? 1.0 : 0.0,
-                          gradient: AppColors.purpleGradient,
-                          onTap: () => _navigateToCategory(context, '/aytham'),
-                        ),
-                        const SizedBox(height: 16),
+                      _buildCategoryCard(
+                        context,
+                        title: langService.aythamHeading,
+                        subtitle: isEn
+                            ? 'Unique three-dotted Tamil letter (ஃ)'
+                            : 'முப்புள்ளி கொண்ட தனித்தமிழ் எழுத்து (ஃ)',
+                        badge: isEn ? 'Aytham – 1' : 'ஆய்தம் – 1',
+                        letterBadge: 'ஃ',
+                        progressFraction: progressService.isLetterCompleted('aytham_1') ? 1.0 : 0.0,
+                        gradient: AppColors.purpleGradient,
+                        onTap: () => _navigateToCategory(context, '/aytham'),
+                      ),
+                      const SizedBox(height: 16),
 
-                        _buildCategoryCard(
-                          context,
-                          title: langService.uyirmeiHeading,
-                          subtitle: isEn
-                              ? '216 melodious letters in 18 rows'
-                              : '18 வரிசைகளில் 216 இனிய எழுத்துகள்',
-                          badge: isEn ? '216 Letters' : '216 எழுத்துகள்',
-                          letterBadge: 'க',
-                          progressFraction: 0.35,
-                          gradient: AppColors.greenGradient,
-                          onTap: () => _navigateToCategory(context, '/uyirmei'),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
+                      _buildCategoryCard(
+                        context,
+                        title: langService.uyirmeiHeading,
+                        subtitle: isEn
+                            ? '216 melodious letters in 18 rows'
+                            : '18 வரிசைகளில் 216 இனிய எழுத்துகள்',
+                        badge: isEn ? '216 Letters' : '216 எழுத்துகள்',
+                        letterBadge: 'க',
+                        progressFraction: 0.35,
+                        gradient: AppColors.greenGradient,
+                        onTap: () => _navigateToCategory(context, '/uyirmei'),
+                      ),
+                      const SizedBox(height: 16),
 
                       // 4. Stories / Reading
                       _buildCategoryCard(
                         context,
                         title: langService.storiesHeading,
-                        subtitle: isTe
-                            ? 'కుందేలు మరియు తాబేలు కథ'
-                            : (isEn ? 'The Hare and the Tortoise - Illustrated Story' : 'முயலும் ஆமையும் - படக்கதை'),
-                        badge: isTe ? 'చిన్న కథలు' : (isEn ? 'Short Stories' : 'சிறு கதைகள்'),
+                        subtitle: isEn ? 'The Hare and the Tortoise - Illustrated Story' : 'முயலும் ஆமையும் - படக்கதை',
+                        badge: isEn ? 'Short Stories' : 'சிறு கதைகள்',
                         icon: Icons.auto_stories_rounded,
                         progressFraction: progressService.completedStoriesCount > 0 ? 1.0 : 0.0,
                         gradient: AppColors.orangeGradient,
@@ -311,11 +293,12 @@ class LearningScreen extends StatelessWidget {
                       Text(
                         title,
                         style: AppTextStyles.cardTitle.copyWith(
-                          fontSize: 17,
+                          fontSize: title.length > 22 ? 15.5 : 17,
                           fontWeight: FontWeight.w900,
                           color: AppColors.textDark,
+                          height: 1.2,
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 3),

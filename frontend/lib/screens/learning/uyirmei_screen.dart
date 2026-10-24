@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../data/uyirmei_data.dart';
+import '../../services/language_service.dart';
 import '../../services/progress_service.dart';
 import '../../services/tamil_audio_service.dart';
 import '../../theme/app_colors.dart';
@@ -229,55 +230,63 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: KidAppBar(
-        title: 'உயிர்மெய் எழுத்துகள்',
-        starCount: widget.progressService.stars,
-      ),
-      body: KidScaffoldBackground(
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Top Formula Bar
-              _buildTopFormulaBanner(),
-
-              // Main 3-Column Interactive Layout
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // LEFT COLUMN: Mei Letters (18)
-                      _buildMeiColumn(),
-
-                      const SizedBox(width: 8),
-
-                      // CENTER COLUMN: The Magic Flip Card & Animated Writing Area
-                      Expanded(
-                        child: _buildCenterInteractiveArea(),
-                      ),
-
-                      const SizedBox(width: 8),
-
-                      // RIGHT COLUMN: Uyir Letters (12)
-                      _buildUyirColumn(),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Bottom Navigation & Actions Bar (Responsive - No Overflow)
-              _buildBottomActionBar(),
-            ],
+    return ListenableBuilder(
+      listenable: Listenable.merge([widget.progressService, LanguageService.instance]),
+      builder: (context, _) {
+        final isEn = LanguageService.instance.isEnglish;
+        return Scaffold(
+          appBar: KidAppBar(
+            title: isEn ? 'Learning Method 1' : 'கற்றல் முறை 1',
+            starCount: widget.progressService.stars,
+            showBack: true,
           ),
-        ),
-      ),
+          body: KidScaffoldBackground(
+            child: SafeArea(
+              child: Column(
+                children: [
+                  // Top Formula Bar
+                  _buildTopFormulaBanner(),
+
+                  // Main 3-Column Interactive Layout
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // LEFT COLUMN: Mei Letters (18)
+                          _buildMeiColumn(),
+
+                          const SizedBox(width: 8),
+
+                          // CENTER COLUMN: The Magic Flip Card & Animated Writing Area
+                          Expanded(
+                            child: _buildCenterInteractiveArea(),
+                          ),
+
+                          const SizedBox(width: 8),
+
+                          // RIGHT COLUMN: Uyir Letters (12)
+                          _buildUyirColumn(),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Bottom Navigation & Actions Bar (Responsive - No Overflow)
+                  _buildBottomActionBar(),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
   /// Top formula banner showing: மெய் + உயிர் = உயிர்மெய்
   Widget _buildTopFormulaBanner() {
+    final isEn = LanguageService.instance.isEnglish;
     return Container(
       margin: const EdgeInsets.fromLTRB(12, 6, 12, 4),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
@@ -309,9 +318,9 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
                   color: AppColors.meiColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Text(
-                  'மெய்',
-                  style: TextStyle(
+                child: Text(
+                  isEn ? 'Mei' : 'மெய்',
+                  style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w900,
                     color: AppColors.meiColor,
@@ -352,9 +361,9 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
                   color: AppColors.uyirColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Text(
-                  'உயிர்',
-                  style: TextStyle(
+                child: Text(
+                  isEn ? 'Uyir' : 'உயிர்',
+                  style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w900,
                     color: AppColors.uyirColor,
@@ -372,9 +381,9 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
                 gradient: const LinearGradient(colors: AppColors.greenGradient),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Text(
-                'உயிர்மெய்',
-                style: TextStyle(
+              child: Text(
+                isEn ? 'Combination' : 'உயிர்மெய்',
+                style: const TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
@@ -414,13 +423,13 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
                 color: AppColors.meiColor.withValues(alpha: 0.12),
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
               ),
-              child: const Column(
+              child: Column(
                 children: [
-                  Icon(Icons.stars_rounded, size: 14, color: AppColors.meiColor),
-                  SizedBox(height: 1),
+                  const Icon(Icons.stars_rounded, size: 14, color: AppColors.meiColor),
+                  const SizedBox(height: 1),
                   Text(
-                    'மெய் (18)',
-                    style: TextStyle(
+                    LanguageService.instance.isEnglish ? 'Mei (18)' : 'மெய் (18)',
+                    style: const TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w900,
                       color: AppColors.meiColor,
@@ -525,13 +534,13 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
                 color: AppColors.uyirColor.withValues(alpha: 0.12),
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
               ),
-              child: const Column(
+              child: Column(
                 children: [
-                  Icon(Icons.stars_rounded, size: 14, color: AppColors.uyirColor),
-                  SizedBox(height: 1),
+                  const Icon(Icons.stars_rounded, size: 14, color: AppColors.uyirColor),
+                  const SizedBox(height: 1),
                   Text(
-                    'உயிர் (12)',
-                    style: TextStyle(
+                    LanguageService.instance.isEnglish ? 'Uyir (12)' : 'உயிர் (12)',
+                    style: const TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w900,
                       color: AppColors.uyirColor,
@@ -1018,14 +1027,14 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
                   ),
                 ],
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 18),
-                  SizedBox(width: 6),
+                  const Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 18),
+                  const SizedBox(width: 6),
                   Text(
-                    'முழு ஒலி கேட்க ▶',
-                    style: TextStyle(
+                    LanguageService.instance.isEnglish ? 'Play Full Sound ▶' : 'முழு ஒலி கேட்க ▶',
+                    style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w900,
                       color: Colors.white,
@@ -1393,6 +1402,7 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
 
   /// Bottom Interactive Action Bar (Responsive - No render overflow on any screen)
   Widget _buildBottomActionBar() {
+    final isEn = LanguageService.instance.isEnglish;
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 4, 10, 6),
       child: Row(
@@ -1418,18 +1428,18 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
                   ],
                 ),
                 alignment: Alignment.center,
-                child: const FittedBox(
+                child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.arrow_back_ios_rounded, size: 13, color: AppColors.textDark),
-                      SizedBox(width: 3),
+                      const Icon(Icons.arrow_back_ios_rounded, size: 13, color: AppColors.textDark),
+                      const SizedBox(width: 3),
                       Text(
-                        'முந்தையது',
+                        isEn ? 'Previous' : 'முந்தையது',
                         maxLines: 1,
                         softWrap: false,
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -1475,7 +1485,9 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
                       const Icon(Icons.volume_up_rounded, color: Colors.white, size: 18),
                       const SizedBox(width: 5),
                       Text(
-                        _isAutoPlaying ? 'ஒலி கேட்கிறது...' : 'ஒலி கேட்க',
+                        _isAutoPlaying
+                            ? (isEn ? 'Playing...' : 'ஒலி கேட்கிறது...')
+                            : (isEn ? 'Play Sound' : 'ஒலி கேட்க'),
                         maxLines: 1,
                         softWrap: false,
                         style: const TextStyle(
@@ -1514,19 +1526,19 @@ class _UyirmeiScreenState extends State<UyirmeiScreen>
                   ],
                 ),
                 alignment: Alignment.center,
-                child: const FittedBox(
+                child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'அடுத்தது',
+                        isEn ? 'Next' : 'அடுத்தது',
                         maxLines: 1,
                         softWrap: false,
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(width: 3),
-                      Icon(Icons.arrow_forward_ios_rounded, size: 13, color: AppColors.textDark),
+                      const SizedBox(width: 3),
+                      const Icon(Icons.arrow_forward_ios_rounded, size: 13, color: AppColors.textDark),
                     ],
                   ),
                 ),

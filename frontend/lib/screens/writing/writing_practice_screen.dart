@@ -43,10 +43,6 @@ class _WritingPracticeScreenState extends State<WritingPracticeScreen> {
 
 
   List<WritingLetterGuide> get _currentList {
-    final lang = LanguageService.instance.currentLanguageCode;
-    if (lang == 'te') {
-      return WritingData.teluguAchuluGuides;
-    }
     if (_selectedCategoryIndex == 1) return WritingData.meiGuides;
     if (_selectedCategoryIndex == 2) return WritingData.ayuthamGuides;
     return WritingData.uyirGuides;
@@ -652,11 +648,9 @@ class _WritingPracticeScreenState extends State<WritingPracticeScreen> {
   /// Category Switcher
   Widget _buildCategorySwitcher() {
     final langService = LanguageService.instance;
-    final categories = langService.isTelugu
-        ? ['అచ్చులు (Achulu)']
-        : (langService.isEnglish
-            ? ['Vowels (12)', 'Consonants (18)', 'Aytham (1)']
-            : ['உயிர் (12)', 'மெய் (18)', 'ஆய்தம் (1)']);
+    final categories = langService.isEnglish
+        ? ['Vowels (12)', 'Consonants (18)', 'Aytham (1)']
+        : ['உயிர் (12)', 'மெய் (18)', 'ஆய்தம் (1)'];
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),

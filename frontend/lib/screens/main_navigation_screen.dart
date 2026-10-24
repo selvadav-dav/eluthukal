@@ -59,15 +59,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       _lastBackPressTime = now;
       final lang = LanguageService.instance.currentLanguageCode;
       final isTamil = lang == 'ta';
-      final isTelugu = lang == 'te';
 
-      final message = isTelugu
-          ? 'యాప్ నుండి నిష్క్రమించడానికి మళ్లీ వెనుకకు నొక్కండి'
-          : (isTamil
-              ? 'செயலியை விட்டு வெளியேற மீண்டும் அழுத்தவும்'
-              : 'Press back again to exit Agaram');
+      final message = isTamil
+          ? 'செயலியை விட்டு வெளியேற மீண்டும் அழுத்தவும்'
+          : 'Press back again to exit Agaram';
 
-      final exitLabel = isTelugu ? 'నిష్క్రమించు' : (isTamil ? 'வெளியேறு' : 'Exit');
+      final exitLabel = isTamil ? 'வெளியேறு' : 'Exit';
 
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -139,11 +136,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   Widget _buildCustomNavBar() {
     final lang = LanguageService.instance.currentLanguageCode;
-    final labels = lang == 'te'
-        ? ['హోమ్', 'నేర్చుకో', 'ఆటలు', 'వీడియోలు', 'క్విజ్']
-        : (lang == 'en'
-            ? ['Home', 'Learn', 'Games', 'Videos', 'Quiz']
-            : ['முகப்பு', 'கற்றல்', 'விளையாட்டு', 'காணொளி', 'வினாடி வினா']);
+    final labels = lang == 'en'
+        ? ['Home', 'Learn', 'Games', 'Videos', 'Quiz']
+        : ['முகப்பு', 'கற்றல்', 'விளையாட்டு', 'காணொளி', 'வினாடி வினா'];
 
     final items = [
       _NavItem(icon: Icons.home_rounded, label: labels[0], color: AppColors.primary),

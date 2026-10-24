@@ -19,19 +19,19 @@ extension MascotPoseAsset on MascotPose {
   String get assetPath {
     switch (this) {
       case MascotPose.welcome:
-        return 'assets/images/welcome.png';
+        return 'assets/images/vanakam.gif';
       case MascotPose.learn:
-        return 'assets/images/learn.png';
+        return 'assets/images/reading.gif';
       case MascotPose.game:
-        return 'assets/images/game.png';
+        return 'assets/images/play.gif';
       case MascotPose.quiz:
-        return 'assets/images/quiz.png';
+        return 'assets/images/quiz.gif';
       case MascotPose.story:
         return 'assets/images/story.png';
       case MascotPose.video:
-        return 'assets/images/video.png';
+        return 'assets/images/video.gif';
       case MascotPose.writing:
-        return 'assets/images/writing.png';
+        return 'assets/images/writing.gif';
     }
   }
 }
@@ -113,6 +113,19 @@ class _MascotWidgetState extends State<MascotWidget> with SingleTickerProviderSt
 
   Widget _buildMascotImage(double height) {
     final rawPath = widget.pose.assetPath;
+
+    // Local animated GIFs (reading.gif, play.gif, quiz.gif, video.gif, writing.gif)
+    if (rawPath.endsWith('.gif')) {
+      return Image.asset(
+        rawPath,
+        height: height,
+        fit: BoxFit.contain,
+        gaplessPlayback: true,
+        filterQuality: FilterQuality.medium,
+        errorBuilder: (context, error, stackTrace) => _buildFallbackIcon(height),
+      );
+    }
+
     final resolvedUrl = ApiConfig.resolveMediaUrl(rawPath);
 
     if (resolvedUrl != null && (resolvedUrl.startsWith('http://') || resolvedUrl.startsWith('https://'))) {
@@ -126,6 +139,7 @@ class _MascotWidgetState extends State<MascotWidget> with SingleTickerProviderSt
             rawPath,
             height: height,
             fit: BoxFit.contain,
+            gaplessPlayback: true,
             errorBuilder: (ctx, err, stack) => _buildFallbackIcon(height),
           );
         },
@@ -136,6 +150,7 @@ class _MascotWidgetState extends State<MascotWidget> with SingleTickerProviderSt
       rawPath,
       height: height,
       fit: BoxFit.contain,
+      gaplessPlayback: true,
       filterQuality: FilterQuality.medium,
       errorBuilder: (context, error, stackTrace) => _buildFallbackIcon(height),
     );

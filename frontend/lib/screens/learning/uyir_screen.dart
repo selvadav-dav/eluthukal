@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../data/uyir_data.dart';
 import '../../models/letter_model.dart';
 import '../../services/data_service.dart';
+import '../../services/language_service.dart';
 import '../../services/progress_service.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/kid_app_bar.dart';
@@ -44,11 +45,12 @@ class _UyirScreenState extends State<UyirScreen> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: widget.progressService,
+      listenable: Listenable.merge([widget.progressService, LanguageService.instance]),
       builder: (context, _) {
+        final isEn = LanguageService.instance.isEnglish;
         return Scaffold(
           appBar: KidAppBar(
-            title: 'உயிர் எழுத்துகள் (12)',
+            title: isEn ? 'Vowels (12)' : 'உயிர் எழுத்துகள் (12)',
             starCount: widget.progressService.stars,
           ),
           body: KidScaffoldBackground(

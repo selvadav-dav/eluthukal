@@ -119,6 +119,9 @@ class TamilAudioService {
 
     // 1 Aytham Letter
     map['ஃ'] = 'assets/audio/tamil/aytham/aytham_01_ak.mp3';
+    map['ak'] = 'assets/audio/tamil/aytham/aytham_01_ak.mp3';
+    map['Ak'] = 'assets/audio/tamil/aytham/aytham_01_ak.mp3';
+    map['அக்கு'] = 'assets/audio/tamil/aytham/aytham_01_ak.mp3';
 
     // Operator and special symbols (+ / கூட்டல்)
     map['+'] = 'assets/audio/tamil/plus.mp3';
@@ -159,6 +162,7 @@ class TamilAudioService {
     for (int m = 0; m < meiEntries.length; m++) {
       final combinations = meiEntries[m].value;
       final baseKey = (m < meiKeys.length) ? meiKeys[m] : 'm$m';
+      final meiChar = meiEntries[m].key;
 
       for (int v = 0; v < combinations.length; v++) {
         count++;
@@ -167,6 +171,14 @@ class TamilAudioService {
         final suffix = (v < vowelKeys.length) ? vowelKeys[v] : 'v$v';
         final slug = 'uyirmei_${indexStr}_${baseKey}_$suffix';
         map[letter] = 'assets/audio/tamil/uyirmei/$slug.mp3';
+
+        // Map composite/spaced combinations (e.g. 'ள் ஒள' and 'ள் ஔ' -> 'ளௌ' audio)
+        if (v == 11) {
+          map['$meiChar ஔ'] = 'assets/audio/tamil/uyirmei/$slug.mp3';
+          map['$meiChar ஒள'] = 'assets/audio/tamil/uyirmei/$slug.mp3';
+          map['$meiCharஔ'] = 'assets/audio/tamil/uyirmei/$slug.mp3';
+          map['$meiCharஒள'] = 'assets/audio/tamil/uyirmei/$slug.mp3';
+        }
       }
     }
 
@@ -868,7 +880,16 @@ if (\$taVoice) {
         'assets/sounds/uyir/அ.mp3',
       ];
     }
-    return const [];
+    if (t == 'ஃ' || t.toLowerCase() == 'ak' || t == 'அக்கு') {
+      return const [
+        'assets/audio/tamil/aytham/aytham_01_ak.mp3',
+        'assets/sounds/aytham_ஃ.mp3',
+      ];
+    }
+    return [
+      'assets/sounds/mei/$t.mp3',
+      'assets/sounds/uyirmei/$t.mp3',
+    ];
   }
 
   /// Plays pronunciation for the '+' (கூட்டல்) operator symbol

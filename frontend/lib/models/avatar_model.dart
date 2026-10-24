@@ -13,33 +13,13 @@ class AppAvatar {
   static const List<AppAvatar> list = [
     AppAvatar(
       index: 0,
-      label: 'குட்டி தம்பி',
+      label: 'குட்டித் தம்பி',
       assetPath: 'assets/images/welcome.png',
     ),
     AppAvatar(
       index: 1,
-      label: 'குட்டி தங்கை',
+      label: 'குட்டித் தங்கை',
       assetPath: 'assets/images/mascot_girl.png',
-    ),
-    AppAvatar(
-      index: 2,
-      label: 'எழுதும் தம்பி',
-      assetPath: 'assets/images/writing.png',
-    ),
-    AppAvatar(
-      index: 3,
-      label: 'கதை தம்பி',
-      assetPath: 'assets/images/story.png',
-    ),
-    AppAvatar(
-      index: 4,
-      label: 'சுட்டி முயல்',
-      assetPath: 'assets/images/story_rabbit.jpg',
-    ),
-    AppAvatar(
-      index: 5,
-      label: 'அன்பான ஆமை',
-      assetPath: 'assets/images/story_tortoise.jpg',
     ),
   ];
 
