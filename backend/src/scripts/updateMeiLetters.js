@@ -16,6 +16,7 @@ async function run() {
     meaning: 'புளிப்பான எலுமிச்சை',
     phonetic: 'Ich',
     icon_emoji: '🍋',
+    image_path: 'assets/images/lemon.jpg',
     explanation: 'மெய் எழுத்து "ச்". (எலுமிச்சை)',
   });
 
@@ -24,6 +25,7 @@ async function run() {
     meaning: 'கோவில் தேர்',
     phonetic: 'Ir',
     icon_emoji: '🛕',
+    image_path: 'assets/images/ther.jpg',
     explanation: 'மெய் எழுத்து "ர்". (தேர்)',
   });
 
@@ -32,7 +34,7 @@ async function run() {
     meaning: 'மாலைச் செவ்வானம்',
     phonetic: 'Iv',
     icon_emoji: '🌅',
-    image_path: 'https://res.cloudinary.com/dy8bu8suk/image/upload/v1791177499/agaram_media/images/backend_pic__tura_de_ap___s__n__toas___1789718909825_30607.jpg',
+    image_path: 'assets/images/sevvaanam.jpg',
     explanation: 'மெய் எழுத்து "வ்". (செவ்வானம்)',
   });
 

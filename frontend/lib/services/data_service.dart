@@ -111,7 +111,8 @@ class ApiDataRepository implements IDataRepository {
   LetterModel _enrichWithLocalAssets(LetterModel letter) {
     if (letter.imagePath == null ||
         letter.imagePath!.isEmpty ||
-        letter.imagePath == 'assets/images/welcome.png') {
+        letter.imagePath == 'assets/images/welcome.png' ||
+        letter.imagePath!.contains('pic__tura_de_ap___s__n__toas')) {
       final List<LetterModel> sourceList = letter.type == LetterType.uyir
           ? (LanguageService.instance.currentLanguageCode == 'te' ? teluguAchuluList : uyirLettersList)
           : (letter.type == LetterType.mei ? (LanguageService.instance.currentLanguageCode == 'te' ? teluguHalluluList : meiLettersList) : []);
