@@ -6,7 +6,7 @@ import { FileUpload } from '../components/common/FileUpload';
 import { useLanguage } from '../context/LanguageContext';
 import { Plus, Edit2, Trash2, Play, Eye, Loader2, Sparkles, Video as VideoIcon } from 'lucide-react';
 
-import { resolveMediaUrl } from '../api/client';
+import { resolveMediaUrl, resolveVideoProxyUrl } from '../api/client';
 
 
 const UYIR_LETTERS = ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ', 'எ', 'ஏ', 'ஐ', 'ஒ', 'ஓ', 'ஔ'];
@@ -611,8 +611,17 @@ export const VideosPage: React.FC = () => {
               <video
                 controls
                 autoPlay
-                src={resolveMediaUrl(previewingVideo.video_url)}
+                controlsList="nodownload"
+                onContextMenu={(e) => e.preventDefault()}
+                src={previewingVideo.stream_url || resolveVideoProxyUrl(previewingVideo.video_url, previewingVideo.id)}
                 style={{ width: '100%', maxHeight: '360px', display: 'block' }}
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  const fallback = resolveMediaUrl(previewingVideo.video_url);
+                  if (fallback && target.src !== fallback) {
+                    target.src = fallback;
+                  }
+                }}
               >
                 உங்கள் உலாவி காணொளியை ஆதரிக்கவில்லை (Your browser does not support HTML5 video).
               </video>

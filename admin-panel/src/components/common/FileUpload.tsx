@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { UploadCloud, CheckCircle2, AlertCircle, Loader2, Video, Volume2, Image as ImageIcon, Trash2, RefreshCw, PlayCircle } from 'lucide-react';
 import { uploadApi } from '../../api/upload';
 import { useLanguage } from '../../context/LanguageContext';
-import { resolveMediaUrl } from '../../api/client';
+import { resolveMediaUrl, resolveVideoProxyUrl } from '../../api/client';
 
 interface FileUploadProps {
   type: 'image' | 'audio' | 'video';
@@ -139,7 +139,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     video: 'video/mp4,video/webm,video/quicktime,video/mov,.mp4,.webm,.mov',
   };
 
-  const getMediaUrl = resolveMediaUrl;
+  const getMediaUrl = (path: string) => {
+    return type === 'video' ? resolveVideoProxyUrl(path) : resolveMediaUrl(path);
+  };
 
   const previewSrc = localPreview || (uploadedPath ? getMediaUrl(uploadedPath) : null);
 
@@ -244,9 +246,18 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               <div style={{ width: '100%', borderRadius: '8px', overflow: 'hidden', border: '1px solid #CBD5E1', background: '#0F172A', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
                 <video
                   controls
+                  controlsList="nodownload"
+                  onContextMenu={(e) => e.preventDefault()}
                   src={previewSrc}
                   style={{ width: '100%', maxHeight: '200px', display: 'block', margin: '0 auto' }}
                   preload="metadata"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    const direct = uploadedPath ? resolveMediaUrl(uploadedPath) : '';
+                    if (direct && target.src !== direct) {
+                      target.src = direct;
+                    }
+                  }}
                 >
                   உங்கள் உலாவி காணொளியை ஆதரிக்கவில்லை (Your browser does not support HTML5 video).
                 </video>

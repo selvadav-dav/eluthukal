@@ -13,6 +13,28 @@ export const resolveMediaUrl = (path?: string | null) => {
   return `${MEDIA_BASE_URL}/${clean}`;
 };
 
+/**
+ * Resolves video URLs to stream via the backend subdomain proxy
+ * completely hiding the Cloudinary URL from browser elements/DevTools.
+ */
+export const resolveVideoProxyUrl = (urlOrPath?: string | null, videoId?: string | number) => {
+  if (!urlOrPath && !videoId) return '';
+  if (videoId) {
+    return `${API_BASE_URL}/videos/${videoId}/stream`;
+  }
+  if (urlOrPath) {
+    if (urlOrPath.startsWith('http://') || urlOrPath.startsWith('https://')) {
+      if (urlOrPath.includes('cloudinary.com')) {
+        return `${API_BASE_URL}/videos/stream/proxy?url=${encodeURIComponent(urlOrPath)}`;
+      }
+      return urlOrPath;
+    }
+    const clean = urlOrPath.startsWith('/') ? urlOrPath.slice(1) : urlOrPath;
+    return `${MEDIA_BASE_URL}/${clean}`;
+  }
+  return '';
+};
+
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {

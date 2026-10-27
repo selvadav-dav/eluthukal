@@ -9,6 +9,12 @@ const { validateRequest } = require('../middleware/validateMiddleware');
 
 const router = express.Router();
 
+// Public: Stream proxy by URL query
+router.get('/stream/proxy', VideoController.streamByUrl);
+
+// Public: Stream video by ID (Cloudinary proxy)
+router.get('/:id/stream', VideoController.streamById);
+
 // Public: List videos (optional query: ?category=பாடல்)
 router.get('/', VideoController.getAll);
 

@@ -26,7 +26,7 @@ class VideoItem {
       category: json['category']?.toString() ?? 'பாடல்',
       duration: json['duration']?.toString() ?? '03:00',
       thumbnailEmoji: json['thumbnail_emoji']?.toString() ?? json['thumbnailEmoji']?.toString() ?? '🎬',
-      videoUrl: json['video_url']?.toString() ?? json['videoUrl']?.toString() ?? '',
+      videoUrl: json['stream_url']?.toString() ?? json['video_url']?.toString() ?? json['videoUrl']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
       displayOrder: int.tryParse(json['display_order']?.toString() ?? json['displayOrder']?.toString() ?? '0') ?? 0,
     );

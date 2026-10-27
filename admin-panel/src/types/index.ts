@@ -136,6 +136,7 @@ export interface VideoItem {
   thumbnail_emoji: string;
   thumbnail_image?: string | null;
   video_url: string;
+  stream_url?: string;
   local_video_path?: string | null;
   display_order: number;
   is_published: boolean | number;
