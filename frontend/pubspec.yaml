@@ -70,6 +70,7 @@ flutter:
   # Assets section
   assets:
     - assets/images/
+    - assets/images/games/
     - assets/Gif/
     - assets/sounds/
     - assets/sounds/uyir/
