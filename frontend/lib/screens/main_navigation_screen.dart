@@ -13,17 +13,29 @@ import '../services/language_service.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   final ProgressService progressService;
+  final int initialIndex;
 
-  const MainNavigationScreen({super.key, required this.progressService});
+  const MainNavigationScreen({
+    super.key,
+    required this.progressService,
+    this.initialIndex = 2,
+  });
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _selectedIndex = 0;
-  final List<int> _tabHistory = [0];
+  int _selectedIndex = 2;
+  List<int> _tabHistory = [2];
   DateTime? _lastBackPressTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+    _tabHistory = [widget.initialIndex];
+  }
 
   void _onTabSelected(int index) {
     if (_selectedIndex != index) {
@@ -41,19 +53,19 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       return;
     }
 
-    // 2. If on any tab other than Home, navigate back towards Home page
-    if (_selectedIndex != 0) {
+    // 2. If on any tab other than default initial tab, navigate back towards default initial tab
+    if (_selectedIndex != widget.initialIndex) {
       setState(() {
         while (_tabHistory.isNotEmpty && _tabHistory.last == _selectedIndex) {
           _tabHistory.removeLast();
         }
-        _selectedIndex = _tabHistory.isNotEmpty ? _tabHistory.last : 0;
+        _selectedIndex = _tabHistory.isNotEmpty ? _tabHistory.last : widget.initialIndex;
       });
       return;
     }
 
-    // 3. User is on the Home page (index == 0):
-    // Only exit when clicking back button from the Home page.
+    // 3. User is on the default initial page:
+    // Only exit when clicking back button from the default page.
     final now = DateTime.now();
     if (_lastBackPressTime == null || now.difference(_lastBackPressTime!) > const Duration(seconds: 2)) {
       _lastBackPressTime = now;
@@ -150,8 +162,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
     return SafeArea(
       child: Container(
-        height: 70,
-        margin: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+        height: 76,
+        margin: const EdgeInsets.fromLTRB(10, 0, 10, 8),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(28),
@@ -189,22 +201,22 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 250),
                         padding: EdgeInsets.symmetric(
-                          horizontal: isSelected ? 10 : 6,
+                          horizontal: isSelected ? 12 : 6,
                           vertical: isSelected ? 4 : 2,
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? item.color.withValues(alpha: 0.18)
                               : Colors.transparent,
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         child: Icon(
                           item.icon,
-                          color: isSelected ? item.color : AppColors.textMuted.withValues(alpha: 0.7),
-                          size: isSelected ? 24 : 20,
+                          color: isSelected ? item.color : const Color(0xFF475569),
+                          size: isSelected ? 26 : 22,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 3),
                       FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Padding(
@@ -212,9 +224,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                           child: Text(
                             item.label,
                             style: TextStyle(
-                              fontSize: isSelected ? 10.5 : 9.5,
-                              fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                              color: isSelected ? item.color : AppColors.textMuted,
+                              fontSize: isSelected ? 11.5 : 10.5,
+                              fontWeight: isSelected ? FontWeight.w900 : FontWeight.w800,
+                              color: isSelected ? item.color : const Color(0xFF334155),
+                              letterSpacing: -0.2,
                             ),
                             maxLines: 1,
                             textAlign: TextAlign.center,

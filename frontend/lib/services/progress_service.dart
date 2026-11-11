@@ -274,6 +274,10 @@ class ProgressService extends ChangeNotifier {
     }
   }
 
+  void incrementGamesPlayed() {
+    recordGameCompleted(0);
+  }
+
   void recordGameCompleted(int starsEarned) {
     _progress = _progress.copyWith(
       gamesPlayed: _progress.gamesPlayed + 1,

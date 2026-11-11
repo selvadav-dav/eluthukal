@@ -106,7 +106,10 @@ class _AgaramAppState extends State<AgaramApp> {
             },
           );
         } else if (auth.isAuthenticated) {
-          homeWidget = MainNavigationScreen(progressService: widget.progressService);
+          homeWidget = MainNavigationScreen(
+            progressService: widget.progressService,
+            initialIndex: 2,
+          );
         } else {
           homeWidget = LoginScreen(
             authService: auth,

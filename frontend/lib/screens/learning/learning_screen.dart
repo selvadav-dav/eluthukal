@@ -3,6 +3,7 @@ import '../../services/language_service.dart';
 import '../../services/progress_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
+import '../../widgets/app_media_image.dart';
 import '../../widgets/bouncy_button.dart';
 import '../../widgets/kid_app_bar.dart';
 import '../../widgets/kid_scaffold_background.dart';
@@ -135,11 +136,10 @@ class LearningScreen extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            Image.asset(
-                              'assets/images/reading.gif',
+                            AppMediaImage(
+                              path: 'assets/images/reading.gif',
                               height: 125,
                               fit: BoxFit.contain,
-                              gaplessPlayback: true,
                             ),
                           ],
                         ),

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../../models/avatar_model.dart';
 import '../../models/user_profile_model.dart';
+import '../../services/auth_service.dart';
+import '../../services/language_service.dart';
 import '../../services/progress_service.dart';
 import '../../services/tamil_transliteration_service.dart';
 import '../../services/writing_practice_repository.dart';
+import '../auth/login_screen.dart';
 import '../writing/writing_history_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -18,10 +21,64 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final WritingPracticeRepository _repo = LocalWritingPracticeRepository();
+  final AuthService _authService = AuthService();
   UserProfile _profile = UserProfile.defaultProfile();
   int _practicedLetters = 0;
   int _totalPractices = 0;
   bool _isLoading = true;
+
+  void _showLogoutDialog() {
+    final isEn = LanguageService.instance.isEnglish;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        title: Text(
+          isEn ? 'Logout of account?' : 'கணக்கிலிருந்து வெளியேறவா?',
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
+        content: Text(
+          isEn
+              ? 'You will need to log in again after logging out.'
+              : 'வெளியேறிய பின் மீண்டும் உள்நுழைய வேண்டும்.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(isEn ? 'Cancel' : 'வேண்டாம்'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFF4D4D),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await _authService.logout();
+              if (context.mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (_) => LoginScreen(
+                      authService: _authService,
+                      progressService:
+                          widget.progressService ?? ProgressService(),
+                    ),
+                  ),
+                  (route) => false,
+                );
+              }
+            },
+            child: Text(isEn ? 'Logout' : 'வெளியேறு'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -637,6 +694,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 24),
+
+                  // Logout Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFFFF4D4D),
+                        backgroundColor: const Color(0xFFFFF0F3),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          side: const BorderSide(
+                            color: Color(0xFFFFC5C5),
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                      onPressed: _showLogoutDialog,
+                      icon: const Icon(Icons.logout_rounded, size: 20),
+                      label: Text(
+                        LanguageService.instance.isEnglish
+                            ? 'Logout'
+                            : 'கணக்கிலிருந்து வெளியேறு (Logout)',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

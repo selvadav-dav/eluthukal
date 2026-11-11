@@ -307,4 +307,16 @@ const List<VideoItem> tamilVideoLessonsList = [
     videoUrl: 'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791179910/agaram_media/videos/asrp5x7m9ynstmklzx40.mp4',
     displayOrder: 18,
   ),
+
+  // ==================== 1 AYTHAM VIDEO ====================
+  VideoItem(
+    id: 'vid_1794304563578',
+    title: 'ஆயுத எழுத்துப் பாடல்',
+    description: 'முப்புள்ளி கொண்ட தனித்தமிழ் ஆய்த எழுத்து ஃ சிறப்புப் பாடல்',
+    category: 'ஆய்த எழுத்து',
+    duration: '00:12',
+    thumbnailEmoji: '🎬ஃ',
+    videoUrl: 'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794304503/agaram_media/videos/kw0jpwrizojzqaqjght8.mp4',
+    displayOrder: 31,
+  ),
 ];

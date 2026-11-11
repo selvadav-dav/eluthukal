@@ -11,17 +11,19 @@ const outDartPath = path.join(__dirname, '../../../frontend/lib/services/cloudin
 const map = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
 
 let dartContent = `// Generated Cloudinary Media Helper for AGARAM Educational Platform
-// Contains CDN URLs for all frontend assets and backend images.
+// Contains CDN URLs for all frontend assets, games, GIFs, and backend images.
 
 class CloudinaryMedia {
   static const String cloudName = 'dy8bu8suk';
-  static const String folder = 'agaram_media/images';
+  static const String folder = 'agaram_media';
 
   static const Map<String, String> _assetToCloudinaryMap = {
 `;
 
-for (const [key, url] of Object.entries(map)) {
-  dartContent += `    '${key}': '${url}',\n`;
+// Sort keys alphabetically for clean diffs
+const sortedKeys = Object.keys(map).sort();
+for (const key of sortedKeys) {
+  dartContent += `    ${JSON.stringify(key)}: ${JSON.stringify(map[key])},\n`;
 }
 
 dartContent += `  };
@@ -35,21 +37,33 @@ dartContent += `  };
       return clean;
     }
     
-    // Direct match (e.g. 'assets/images/amma.jpg' or 'amma.jpg')
+    // 1. Direct match (e.g. 'assets/images/amma.jpg', 'assets/Gif/car game.gif', etc.)
     if (_assetToCloudinaryMap.containsKey(clean)) {
       return _assetToCloudinaryMap[clean];
     }
     
-    // Check filename without path
+    // 2. Check filename without directory path
     final fileName = clean.split('/').last;
     if (_assetToCloudinaryMap.containsKey(fileName)) {
       return _assetToCloudinaryMap[fileName];
     }
 
-    // Check with assets/images/ prefix
-    final withPrefix = 'assets/images/' + fileName;
-    if (_assetToCloudinaryMap.containsKey(withPrefix)) {
-      return _assetToCloudinaryMap[withPrefix];
+    // 3. Check with 'assets/images/' prefix
+    final withImagesPrefix = 'assets/images/' + fileName;
+    if (_assetToCloudinaryMap.containsKey(withImagesPrefix)) {
+      return _assetToCloudinaryMap[withImagesPrefix];
+    }
+
+    // 4. Check with 'assets/Gif/' prefix
+    final withGifPrefix = 'assets/Gif/' + fileName;
+    if (_assetToCloudinaryMap.containsKey(withGifPrefix)) {
+      return _assetToCloudinaryMap[withGifPrefix];
+    }
+
+    // 5. Check with 'assets/images/games/' prefix
+    final withGamesPrefix = 'assets/images/games/' + fileName;
+    if (_assetToCloudinaryMap.containsKey(withGamesPrefix)) {
+      return _assetToCloudinaryMap[withGamesPrefix];
     }
 
     return clean;

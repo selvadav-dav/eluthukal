@@ -32,6 +32,28 @@ class LetterMediaImage extends StatelessWidget {
       return _buildPlaceholder();
     }
 
+    // 1. If it's a bundled local asset, load directly from assets to prevent web CORS and AbortError
+    if (rawPath.startsWith('assets/')) {
+      return Image.asset(
+        rawPath,
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) {
+          if (resolvedUrl.startsWith('http://') || resolvedUrl.startsWith('https://')) {
+            return Image.network(
+              resolvedUrl,
+              width: width,
+              height: height,
+              fit: fit,
+              errorBuilder: (ctx, err, stack) => _buildPlaceholder(),
+            );
+          }
+          return _buildPlaceholder();
+        },
+      );
+    }
+
     if (resolvedUrl.startsWith('http://') || resolvedUrl.startsWith('https://')) {
       return Image.network(
         resolvedUrl,
@@ -39,16 +61,6 @@ class LetterMediaImage extends StatelessWidget {
         height: height,
         fit: fit,
         errorBuilder: (context, error, stackTrace) {
-          // If network fails and we have a local asset path, try loading asset
-          if (rawPath.startsWith('assets/')) {
-            return Image.asset(
-              rawPath,
-              width: width,
-              height: height,
-              fit: fit,
-              errorBuilder: (ctx, err, stack) => _buildPlaceholder(),
-            );
-          }
           return _buildPlaceholder();
         },
         loadingBuilder: (context, child, loadingProgress) {

@@ -76,11 +76,25 @@ class _VideosScreenState extends State<VideosScreen> {
   }
 
   bool _isAythamVideo(VideoItem v) {
-    final cat = v.category.trim();
-    if (cat == 'ஆய்த எழுத்து' || cat == 'ஆய்தம்' || cat.toLowerCase() == 'aytham' || cat.toLowerCase() == 'ayutham') {
+    final cat = v.category.trim().toLowerCase();
+    if (cat.contains('ஆய்த') ||
+        cat.contains('ஆயுத') ||
+        cat.contains('aytham') ||
+        cat.contains('ayutham') ||
+        cat.contains('ayudha') ||
+        cat.contains('ayutha') ||
+        cat.contains('ஃ')) {
       return true;
     }
-    return v.title.trim() == 'ஃ' || v.title.trim().startsWith('ஃ ') || v.title.contains('ஆய்த');
+    final title = v.title.trim().toLowerCase();
+    return title == 'ஃ' ||
+        title.startsWith('ஃ') ||
+        title.contains('ஆய்த') ||
+        title.contains('ஆயுத') ||
+        title.contains('aytham') ||
+        title.contains('ayutham') ||
+        title.contains('ayudha') ||
+        title.contains('ayutha');
   }
 
   List<VideoItem> get _uyirVideos {
@@ -467,6 +481,35 @@ class _VideosScreenState extends State<VideosScreen> {
     );
   }
 
+  String _getLetterBadge(VideoItem video, {required bool isUyir, required bool isMei, required bool isAytham}) {
+    if (isAytham) return 'ஃ';
+    if (isUyir) {
+      for (final l in kUyirLetters) {
+        if (video.title.trim() == l || video.title.trim().startsWith('$l ')) {
+          return l;
+        }
+      }
+      for (final l in kUyirLetters) {
+        if (video.title.contains(l)) return l;
+      }
+    }
+    if (isMei) {
+      for (final l in kMeiLetters) {
+        if (video.title.trim() == l || video.title.trim().startsWith('$l ')) {
+          return l;
+        }
+      }
+      for (final l in kMeiLetters) {
+        if (video.title.contains(l)) return l;
+      }
+    }
+    final emojiClean = video.thumbnailEmoji.replaceAll(RegExp(r'[🎬✍️🅰️⭐\s]'), '').trim();
+    if (emojiClean.isNotEmpty) {
+      return emojiClean;
+    }
+    return video.title.trim().split(' ').first;
+  }
+
   Widget _buildVideoCard(VideoItem video, {bool isUyir = false, bool isMei = false, bool isAytham = false}) {
     final themeColor = isUyir
         ? AppColors.uyirColor
@@ -542,9 +585,9 @@ class _VideosScreenState extends State<VideosScreen> {
                   children: [
                     if (isUyir || isMei || isAytham)
                       Text(
-                        video.title.trim().split(' ').first,
+                        _getLetterBadge(video, isUyir: isUyir, isMei: isMei, isAytham: isAytham),
                         style: const TextStyle(
-                          fontSize: 28,
+                          fontSize: 34,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
                         ),

@@ -8,6 +8,7 @@ import '../../services/progress_service.dart';
 import '../../services/tamil_tts_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
+import '../../widgets/app_media_image.dart';
 import '../../widgets/bouncy_button.dart';
 import '../../widgets/celebration_dialog.dart';
 import '../../widgets/custom_audio_button.dart';
@@ -168,25 +169,13 @@ class _ReadingScreenState extends State<ReadingScreen> {
                         borderRadius: BorderRadius.circular(22),
                         border: Border.all(color: AppColors.storyColor.withValues(alpha: 0.2), width: 2),
                       ),
-                      child: word.imagePath != null && word.imagePath!.isNotEmpty
-                          ? (word.imagePath!.startsWith('http://') || word.imagePath!.startsWith('https://')
-                              ? Image.network(
-                                  word.imagePath!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => const Center(
-                                    child: Icon(Icons.image_rounded, size: 48, color: AppColors.storyColor),
-                                  ),
-                                )
-                              : Image.asset(
-                                  word.imagePath!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => const Center(
-                                    child: Icon(Icons.image_rounded, size: 48, color: AppColors.storyColor),
-                                  ),
-                                ))
-                          : const Center(
-                              child: Icon(Icons.image_rounded, size: 48, color: AppColors.storyColor),
-                            ),
+                      child: AppMediaImage(
+                        path: word.imagePath,
+                        fit: BoxFit.cover,
+                        fallback: const Center(
+                          child: Icon(Icons.image_rounded, size: 48, color: AppColors.storyColor),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -415,25 +404,13 @@ class _ReadingScreenState extends State<ReadingScreen> {
               color: AppColors.surfaceLight,
               borderRadius: BorderRadius.circular(26),
             ),
-            child: _page.imagePath != null && _page.imagePath!.isNotEmpty
-                ? (_page.imagePath!.startsWith('http://') || _page.imagePath!.startsWith('https://')
-                    ? Image.network(
-                        _page.imagePath!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Center(
-                          child: Icon(Icons.auto_stories_rounded, size: 48, color: AppColors.storyColor),
-                        ),
-                      )
-                    : Image.asset(
-                        _page.imagePath!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Center(
-                          child: Icon(Icons.auto_stories_rounded, size: 48, color: AppColors.storyColor),
-                        ),
-                      ))
-                : const Center(
-                    child: Icon(Icons.auto_stories_rounded, size: 48, color: AppColors.storyColor),
-                  ),
+            child: AppMediaImage(
+              path: _page.imagePath,
+              fit: BoxFit.cover,
+              fallback: const Center(
+                child: Icon(Icons.auto_stories_rounded, size: 48, color: AppColors.storyColor),
+              ),
+            ),
           ),
         ),
       ),

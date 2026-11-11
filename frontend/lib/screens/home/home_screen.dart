@@ -3,13 +3,13 @@ import '../../services/language_service.dart';
 import '../../services/progress_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
+import '../../widgets/app_media_image.dart';
 import '../../widgets/bouncy_button.dart';
 import '../../widgets/kid_scaffold_background.dart';
 import '../../widgets/mascot_widget.dart';
 import '../../widgets/star_counter.dart';
 import '../language/language_selection_screen.dart';
 import '../profile/profile_screen.dart';
-import '../settings/settings_screen.dart';
 import '../writing/writing_practice_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -172,38 +172,33 @@ class HomeScreen extends StatelessWidget {
     final langService = LanguageService.instance;
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         // Brand logo
-        Flexible(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFF9F1C), Color(0xFFFF6B6B)],
-              ),
-              borderRadius: BorderRadius.circular(22),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.35),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFFFF9F1C), Color(0xFFFF6B6B)],
             ),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                langService.brandTitle,
-                style: AppTextStyles.brandTitle.copyWith(
-                  fontSize: 22,
-                  color: Colors.white,
-                  letterSpacing: 1.0,
-                ),
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.35),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
+            ],
+          ),
+          child: Text(
+            langService.brandTitle,
+            style: AppTextStyles.brandTitle.copyWith(
+              fontSize: 22,
+              color: Colors.white,
+              letterSpacing: 1.0,
             ),
           ),
         ),
-        const SizedBox(width: 8),
 
         // Language Switcher Chip: [ 🇮🇳 தமிழ் ▾ ]
         BouncyButton(
@@ -248,11 +243,9 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 8),
 
         // Star Counter
         StarCounter(count: stars),
-        const SizedBox(width: 8),
 
         // Profile Button: "என் சுயவிவரம்"
         BouncyButton(
@@ -279,35 +272,6 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
             child: const Icon(Icons.person_rounded, color: Color(0xFFFF9F1C), size: 22),
-          ),
-        ),
-        const SizedBox(width: 8),
-
-        // Settings Button
-        BouncyButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SettingsScreen(progressService: progressService),
-              ),
-            );
-          },
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.borderLight, width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: const Icon(Icons.settings_rounded, color: AppColors.textDark, size: 22),
           ),
         ),
       ],
@@ -340,7 +304,7 @@ class HomeScreen extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 120, 20),
+            padding: const EdgeInsets.fromLTRB(18, 18, 175, 18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -389,11 +353,11 @@ class HomeScreen extends StatelessWidget {
           // AGARAM Mascot (welcome.png) placed prominently
           Positioned(
             right: 8,
-            bottom: -6,
+            bottom: 6,
             child: const MascotWidget(
               pose: MascotPose.welcome,
               size: MascotSize.medium,
-              customHeight: 150,
+              customHeight: 126,
               showGlow: true,
               animate: true,
             ),
@@ -455,11 +419,11 @@ class HomeScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Container(
-                      width: 72,
-                      height: 72,
+                      width: 78,
+                      height: 78,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(colors: gradient),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(22),
                         boxShadow: [
                           BoxShadow(
                             color: gradient[0].withValues(alpha: 0.35),
@@ -468,14 +432,13 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      padding: const EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(3),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Image.asset(
-                          imageAsset,
+                        borderRadius: BorderRadius.circular(19),
+                        child: AppMediaImage(
+                          path: imageAsset,
                           fit: BoxFit.contain,
-                          gaplessPlayback: true,
-                          errorBuilder: (context, error, stackTrace) => const Icon(
+                          fallback: const Icon(
                             Icons.star_rounded,
                             size: 36,
                             color: Colors.white,
