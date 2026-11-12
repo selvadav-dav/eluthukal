@@ -23,23 +23,23 @@ const UYIR_LETTERS = [
 ];
 
 const MEI_LETTERS = [
-  { letter: 'க்', word: 'சக்கரம்', meaning: 'Wheel' },
-  { letter: 'ங்', word: 'சங்கு', meaning: 'Conch' },
-  { letter: 'ச்', word: 'தச்சர்', meaning: 'Carpenter' },
+  { letter: 'க்', word: 'காக்கை', meaning: 'Crow' },
+  { letter: 'ங்', word: 'தங்கம்', meaning: 'Gold' },
+  { letter: 'ச்', word: 'பச்சை', meaning: 'Green' },
   { letter: 'ஞ்', word: 'ஊஞ்சல்', meaning: 'Swing' },
   { letter: 'ட்', word: 'பட்டம்', meaning: 'Kite' },
-  { letter: 'ண்', word: 'கண்', meaning: 'Eye' },
+  { letter: 'ண்', word: 'வண்டி', meaning: 'Cart' },
   { letter: 'த்', word: 'நத்தை', meaning: 'Snail' },
   { letter: 'ந்', word: 'பந்து', meaning: 'Ball' },
   { letter: 'ப்', word: 'கப்பல்', meaning: 'Ship' },
   { letter: 'ம்', word: 'மரம்', meaning: 'Tree' },
   { letter: 'ய்', word: 'பாய்', meaning: 'Mat' },
-  { letter: 'ர்', word: 'ஏர்', meaning: 'Plough' },
+  { letter: 'ர்', word: 'தேர்', meaning: 'Chariot' },
   { letter: 'ல்', word: 'சேவல்', meaning: 'Rooster' },
-  { letter: 'வ்', word: 'செவ்வந்தி', meaning: 'Chrysanthemum' },
+  { letter: 'வ்', word: 'செவ்வானம்', meaning: 'Sunset' },
   { letter: 'ழ்', word: 'யாழ்', meaning: 'Harp' },
   { letter: 'ள்', word: 'வாள்', meaning: 'Sword' },
-  { letter: 'ற்', word: 'புற்று', meaning: 'Ant-hill' },
+  { letter: 'ற்', word: 'வெற்றிலை', meaning: 'Betel leaf' },
   { letter: 'ன்', word: 'மீன்', meaning: 'Fish' },
 ];
 
@@ -59,25 +59,25 @@ const CLOUDINARY_VIDEOS = [
   'https://res.cloudinary.com/dy8bu8suk/video/upload/v1790854646/agaram_media/videos/gv3wggfnpbus8n2fol4c.mp4',
   'https://res.cloudinary.com/dy8bu8suk/video/upload/v1790855080/agaram_media/videos/btefhsc3k9n0kgfhmcrn.mp4',
 
-  // 18 Mei
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791006753/agaram_media/videos/fg18xjxo2q4p9wsyfvpo.mp4', // க்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791007508/agaram_media/videos/zjmzubpswzwhlkvl5ojn.mp4', // ங்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791007812/agaram_media/videos/fsagxkudps6vh6lybuno.mp4', // ச்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791007916/agaram_media/videos/ykprwmafp4al32alrsa6.mp4', // ஞ்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791008045/agaram_media/videos/sd0kk4jfqz572vowz63j.mp4', // ட்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791011858/agaram_media/videos/mrj9929eyumtpsvwvk49.mp4', // ண்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791012537/agaram_media/videos/xayiuz964o3qwkbtpjkr.mp4', // த்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791012754/agaram_media/videos/jb0av76qcjimjylof1oh.mp4', // ந்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791013206/agaram_media/videos/hgdp4p7sjj4zuemigges.mp4', // ப்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791178025/agaram_media/videos/rvu5tcop5a4inyy2myty.mp4', // ம்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791178322/agaram_media/videos/pzjgq9yxjcf3xcyaxbbh.mp4', // ய்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791178852/agaram_media/videos/k4tqtli6kuwysaqx7muw.mp4', // ர்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791179035/agaram_media/videos/p8fcozkulcpzcpvdcsgd.mp4', // ல்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791179306/agaram_media/videos/jkhfxzw7ksobhb7hawpv.mp4', // வ்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791179352/agaram_media/videos/iinovuxh3dnlsajorpsp.mp4', // ழ்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791179466/agaram_media/videos/ibjoez182v1nsagtyedb.mp4', // ள்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791179595/agaram_media/videos/umbutwkkjznope99qwnw.mp4', // ற்
-  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1791179910/agaram_media/videos/asrp5x7m9ynstmklzx40.mp4', // ன்
+  // 18 Mei (Updated Nov 10, 2026)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296004/agaram_media/videos/pqpts1qxtzsdcyukwdxz.mp4', // க் (காக்கை)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296030/agaram_media/videos/bopiqpsmufwaw2msbect.mp4', // ங் (தங்கம்)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296047/agaram_media/videos/pxiam1h6h5vcalsc41dg.mp4', // ச் (பச்சை)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296067/agaram_media/videos/u5wjop3dstrkytbpmcra.mp4', // ஞ் (ஊஞ்சல்)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296084/agaram_media/videos/f5ehl4mzblzx6dlxby6n.mp4', // ட் (பட்டம்)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296110/agaram_media/videos/s0sdihyms20tkdbemxfh.mp4', // ண் (வண்டி)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296126/agaram_media/videos/cytnbojzsyusmhepnc22.mp4', // த் (நத்தை)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296145/agaram_media/videos/c7bpoyobw4z6iu68meww.mp4', // ந் (பந்து)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296168/agaram_media/videos/atvobggfaee5eyjutnbj.mp4', // ப் (கப்பல்)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296184/agaram_media/videos/zc3vvfhpzipuaa9imdfs.mp4', // ம் (மரம்)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296205/agaram_media/videos/mjlpp8nvsdumyzgmijax.mp4', // ய் (பாய்)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296223/agaram_media/videos/k1hg62yufq8k0xgdtft7.mp4', // ர் (தேர்)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296242/agaram_media/videos/ydotvfwaszlrdncnytt9.mp4', // ல் (சேவல்)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296267/agaram_media/videos/kjtralqggt2sfdjrhikd.mp4', // வ் (செவ்வானம்)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296300/agaram_media/videos/ce9bczrowclxnupywuul.mp4', // ழ் (யாழ்)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296323/agaram_media/videos/raul5bd6ak5gdepl7len.mp4', // ள் (வாள்)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296347/agaram_media/videos/iglzk3luumpgfsq2bq35.mp4', // ற் (வெற்றிலை)
+  'https://res.cloudinary.com/dy8bu8suk/video/upload/v1794296366/agaram_media/videos/dgtpxplitixesbfjnnsv.mp4', // ன் (மீன்)
 ];
 
 async function seedVideos() {
