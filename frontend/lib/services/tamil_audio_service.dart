@@ -85,11 +85,16 @@ class TamilAudioService {
       'ஒ': 'assets/sounds/uyir/uyir_o.mp3',
       'ஓ': 'assets/sounds/uyir/uyir_oo_long.mp3',
       'ஔ': 'assets/sounds/uyir/uyir_au.mp3',
+      'ஒள': 'assets/sounds/uyir/uyir_au.mp3',
     };
     for (final entry in uyirSlugs.entries) {
       map[entry.key] = entry.value;
+      map['${entry.key}.mp3'] = entry.value;
     }
-    map['uyir_1'] = 'assets/sounds/uyir/uyir_a.mp3';
+    const uyirKeys = ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ', 'எ', 'ஏ', 'ஐ', 'ஒ', 'ஓ', 'ஔ'];
+    for (int i = 0; i < uyirKeys.length; i++) {
+      map['uyir_${i + 1}'] = uyirSlugs[uyirKeys[i]]!;
+    }
     map['uyir_a'] = 'assets/sounds/uyir/uyir_a.mp3';
 
     // 18 Mei Letters
@@ -204,8 +209,13 @@ class TamilAudioService {
       'பந்து': 'word_panthu',
       // 18 Mei Sample Words (Including Admin Panel customized items)
       'சக்கரம்': 'word_sakkaram',
+      'காக்கை': 'word_e0ae95e0aebee0ae95e0af8de0ae95e0af88',
       'சங்கு': 'word_sangu',
       'எலுமிச்சை': 'word_elumichai',
+      'ஈச்ச மரம்': 'word_eecha_maram',
+      'ஓலைச்சுவடி': 'word_olaichuvadi',
+      'கன்னம்': 'word_kannam',
+      'வண்டி': 'word_vandi',
       'தச்சர்': 'word_thacchar',
       'நத்தை': 'word_nathai',
       'கப்பல்': 'word_kappal',

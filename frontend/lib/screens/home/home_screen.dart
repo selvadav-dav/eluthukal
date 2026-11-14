@@ -172,33 +172,39 @@ class HomeScreen extends StatelessWidget {
     final langService = LanguageService.instance;
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         // Brand logo
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFFFF9F1C), Color(0xFFFF6B6B)],
-            ),
-            borderRadius: BorderRadius.circular(22),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.35),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+        Flexible(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFF9F1C), Color(0xFFFF6B6B)],
+                ),
+                borderRadius: BorderRadius.circular(22),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.35),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Text(
-            langService.brandTitle,
-            style: AppTextStyles.brandTitle.copyWith(
-              fontSize: 22,
-              color: Colors.white,
-              letterSpacing: 1.0,
+              child: Text(
+                langService.brandTitle,
+                style: AppTextStyles.brandTitle.copyWith(
+                  fontSize: 20,
+                  color: Colors.white,
+                  letterSpacing: 0.8,
+                ),
+              ),
             ),
           ),
         ),
+        const SizedBox(width: 8),
 
         // Language Switcher Chip: [ 🇮🇳 தமிழ் ▾ ]
         BouncyButton(
@@ -211,7 +217,7 @@ class HomeScreen extends StatelessWidget {
             );
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -227,25 +233,26 @@ class HomeScreen extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(langService.currentLanguage.flagEmoji, style: const TextStyle(fontSize: 14)),
-                const SizedBox(width: 4),
+                Text(langService.currentLanguage.flagEmoji, style: const TextStyle(fontSize: 13)),
+                const SizedBox(width: 3),
                 Text(
                   langService.currentLanguage.nativeName,
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 11.5,
                     fontWeight: FontWeight.w800,
                     color: Color(0xFF1D4ED8),
                   ),
                 ),
-                const SizedBox(width: 2),
-                const Icon(Icons.arrow_drop_down_rounded, size: 18, color: Color(0xFF1D4ED8)),
+                const Icon(Icons.arrow_drop_down_rounded, size: 16, color: Color(0xFF1D4ED8)),
               ],
             ),
           ),
         ),
+        const SizedBox(width: 8),
 
         // Star Counter
         StarCounter(count: stars),
+        const SizedBox(width: 8),
 
         // Profile Button: "என் சுயவிவரம்"
         BouncyButton(
@@ -258,7 +265,7 @@ class HomeScreen extends StatelessWidget {
             );
           },
           child: Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
@@ -271,7 +278,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Icon(Icons.person_rounded, color: Color(0xFFFF9F1C), size: 22),
+            child: const Icon(Icons.person_rounded, color: Color(0xFFFF9F1C), size: 20),
           ),
         ),
       ],
@@ -279,91 +286,101 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildMascotHeroCard(String childName) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFFFFF3CD),
-            Color(0xFFFFE5B4),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: const Color(0xFFFFD166), width: 2.5),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.2),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 18, 175, 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Speech Pill
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Text(
-                    '${LanguageService.instance.greeting} $childName!',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.primaryDark,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  LanguageService.instance.currentLanguageCode == 'te'
-                      ? 'తెలుగు సులభంగా నేర్చుకుందాం!'
-                      : (LanguageService.instance.currentLanguageCode == 'en' ? 'Let\'s learn together!' : 'தமிழை எளிதாகக் கற்கலாம் வா!'),
-                  style: AppTextStyles.cardTitle.copyWith(
-                    fontSize: 19,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.textDark,
-                    height: 1.25,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  LanguageService.instance.currentLanguageCode == 'te'
-                      ? '“అక్షరాలతో మొదలు, జ్ఞానంతో ముందుకు!”'
-                      : (LanguageService.instance.currentLanguageCode == 'en' ? '“Start with letters, soar with knowledge!”' : '“அகரத்தில் தொடங்கி, தமிழில் சிறக்க!”'),
-                  style: AppTextStyles.tagLine.copyWith(
-                    fontSize: 12.5,
-                    color: const Color(0xFF7A4400),
-                  ),
-                ),
-              ],
-            ),
-          ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isNarrow = constraints.maxWidth < 360;
+        final rightPad = isNarrow ? 120.0 : 145.0;
 
-          // AGARAM Mascot (welcome.png) placed prominently
-          Positioned(
-            right: 8,
-            bottom: 6,
-            child: const MascotWidget(
-              pose: MascotPose.welcome,
-              size: MascotSize.medium,
-              customHeight: 126,
-              showGlow: true,
-              animate: true,
+        return Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFFFFF3CD),
+                Color(0xFFFFE5B4),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(color: const Color(0xFFFFD166), width: 2.5),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.2),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-        ],
-      ),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(16, 16, rightPad, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Speech Pill
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          '${LanguageService.instance.greeting} $childName!',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.primaryDark,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      LanguageService.instance.currentLanguageCode == 'te'
+                          ? 'తెలుగు సులభంగా నేర్చుకుందాం!'
+                          : (LanguageService.instance.currentLanguageCode == 'en' ? 'Let\'s learn together!' : 'தமிழை எளிதாகக் கற்கலாம் வா!'),
+                      style: AppTextStyles.cardTitle.copyWith(
+                        fontSize: isNarrow ? 16 : 18,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.textDark,
+                        height: 1.25,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      LanguageService.instance.currentLanguageCode == 'te'
+                          ? '“అక్షరాలతో మొదలు, జ్ఞానంతో ముందుకు!”'
+                          : (LanguageService.instance.currentLanguageCode == 'en' ? '“Start with letters, soar with knowledge!”' : '“அகரத்தில் தொடங்கி, தமிழில் சிறக்க!”'),
+                      style: AppTextStyles.tagLine.copyWith(
+                        fontSize: isNarrow ? 11 : 12,
+                        color: const Color(0xFF7A4400),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // AGARAM Mascot (welcome.png) placed prominently
+              Positioned(
+                right: 6,
+                bottom: 4,
+                child: MascotWidget(
+                  pose: MascotPose.welcome,
+                  size: MascotSize.medium,
+                  customHeight: isNarrow ? 112 : 124,
+                  showGlow: true,
+                  animate: true,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

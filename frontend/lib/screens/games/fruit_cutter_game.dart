@@ -56,8 +56,8 @@ class _FruitCutterGameState extends State<FruitCutterGame>
   final List<LetterRevealPop> _letterPops = [];
   final List<BladePoint> _bladePoints = [];
 
-  // Spawning timer
-  double _timeUntilNextSpawn = 0.8;
+  // Spawning timer (gentle, relaxed pace for kids)
+  double _timeUntilNextSpawn = 1.6;
   int _fruitIdSeq = 0;
 
   // Size of game arena
@@ -101,7 +101,7 @@ class _FruitCutterGameState extends State<FruitCutterGame>
       _splatDecals.clear();
       _letterPops.clear();
       _bladePoints.clear();
-      _timeUntilNextSpawn = 0.8;
+      _timeUntilNextSpawn = 1.6;
     });
   }
 
@@ -122,12 +122,12 @@ class _FruitCutterGameState extends State<FruitCutterGame>
     final nowMs = DateTime.now().millisecondsSinceEpoch;
     _bladePoints.removeWhere((p) => nowMs - p.timestampMs > 180);
 
-    // 2. Spawn fruits (only if not game over)
+    // 2. Spawn fruits (only if not game over - calm, slower pace)
     if (!_isGameOver) {
       _timeUntilNextSpawn -= clampedDt;
       if (_timeUntilNextSpawn <= 0) {
         _spawnWave();
-        _timeUntilNextSpawn = 1.3 + _rng.nextDouble() * 1.0;
+        _timeUntilNextSpawn = 2.0 + _rng.nextDouble() * 1.2;
       }
     }
 
@@ -135,10 +135,10 @@ class _FruitCutterGameState extends State<FruitCutterGame>
     final List<ActiveFruit> toRemoveFruits = [];
     for (final fruit in _activeFruits) {
       if (!fruit.isSliced) {
-        // Whole fruit physics
+        // Whole fruit physics (slower, floaty arc)
         fruit.x += fruit.vx;
         fruit.y += fruit.vy;
-        fruit.vy += 0.38; // gravity
+        fruit.vy += 0.18; // gentle gravity
         fruit.rotation += fruit.angularVelocity;
 
         // If fell below screen after rising (MISSED FRUIT)
@@ -152,12 +152,12 @@ class _FruitCutterGameState extends State<FruitCutterGame>
 
         fruit.half1X += fruit.half1Vx;
         fruit.half1Y += fruit.half1Vy;
-        fruit.half1Vy += 0.42;
+        fruit.half1Vy += 0.22;
         fruit.half1Rotation += fruit.half1AngularVelocity;
 
         fruit.half2X += fruit.half2Vx;
         fruit.half2Y += fruit.half2Vy;
-        fruit.half2Vy += 0.42;
+        fruit.half2Vy += 0.22;
         fruit.half2Rotation += fruit.half2AngularVelocity;
 
         if (fruit.half1Y > _canvasSize.height + 100 && fruit.half2Y > _canvasSize.height + 100) {
@@ -234,8 +234,8 @@ class _FruitCutterGameState extends State<FruitCutterGame>
     if (pool.isEmpty) return;
 
     final fruitTypes = FruitType.values;
-    // Launch 1 or 2 fruits
-    final count = _rng.nextInt(2) + 1;
+    // Launch mostly 1 fruit, occasionally 2 for a gentle slow pace
+    final count = _rng.nextDouble() < 0.75 ? 1 : 2;
 
     for (int i = 0; i < count; i++) {
       final letter = pool[_rng.nextInt(pool.length)];
@@ -249,14 +249,14 @@ class _FruitCutterGameState extends State<FruitCutterGame>
       final startY = _canvasSize.height + 40 + (i * 25);
 
       // Arc towards center
-      final targetX = _canvasSize.width * 0.5 + (_rng.nextDouble() - 0.5) * (_canvasSize.width * 0.6);
-      final peakHeight = _canvasSize.height * (0.28 + _rng.nextDouble() * 0.25);
+      final targetX = _canvasSize.width * 0.5 + (_rng.nextDouble() - 0.5) * (_canvasSize.width * 0.5);
+      final peakHeight = _canvasSize.height * (0.30 + _rng.nextDouble() * 0.22);
       final double distanceUp = startY - peakHeight;
 
-      // Physics formula for apex height: vy = -sqrt(2 * g * h)
-      final double initialVy = -sqrt(2 * 0.38 * distanceUp);
-      final double timeToPeak = -initialVy / 0.38;
-      final double initialVx = (targetX - startX) / (timeToPeak * 1.1);
+      // Physics formula for apex height with gentle gravity (g = 0.18)
+      final double initialVy = -sqrt(2 * 0.18 * distanceUp);
+      final double timeToPeak = -initialVy / 0.18;
+      final double initialVx = (targetX - startX) / (timeToPeak * 1.05);
 
       _activeFruits.add(
         ActiveFruit(
@@ -268,7 +268,7 @@ class _FruitCutterGameState extends State<FruitCutterGame>
           vx: initialVx,
           vy: initialVy,
           radius: meta.defaultRadius,
-          angularVelocity: (_rng.nextDouble() - 0.5) * 0.08,
+          angularVelocity: (_rng.nextDouble() - 0.5) * 0.035,
         ),
       );
     }
@@ -535,7 +535,7 @@ class _FruitCutterGameState extends State<FruitCutterGame>
             alignment: Alignment.centerLeft,
             child: Text(
               isEn ? 'Fruit Slice' : 'பழம் வெட்டு!',
-              style: GoogleFonts.catamaran(
+              style: GoogleFonts.notoSansTamil(
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
                 color: Colors.white,
@@ -570,7 +570,7 @@ class _FruitCutterGameState extends State<FruitCutterGame>
               const SizedBox(width: 2),
               Text(
                 '$_score',
-                style: GoogleFonts.catamaran(
+                style: GoogleFonts.notoSansTamil(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
@@ -595,7 +595,7 @@ class _FruitCutterGameState extends State<FruitCutterGame>
               const SizedBox(width: 2),
               Text(
                 '${widget.progressService.stars}',
-                style: GoogleFonts.catamaran(
+                style: GoogleFonts.notoSansTamil(
                   fontSize: 12,
                   fontWeight: FontWeight.w900,
                   color: const Color(0xFF78350F),
@@ -661,7 +661,7 @@ class _FruitCutterGameState extends State<FruitCutterGame>
               const SizedBox(width: 3),
               Text(
                 '$_missedFruits/$_maxMisses',
-                style: GoogleFonts.catamaran(
+                style: GoogleFonts.notoSansTamil(
                   fontSize: 12,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
@@ -721,7 +721,7 @@ class _FruitCutterGameState extends State<FruitCutterGame>
         ),
         child: Text(
           label,
-          style: GoogleFonts.catamaran(
+          style: GoogleFonts.notoSansTamil(
             fontSize: 12,
             fontWeight: isSel ? FontWeight.w900 : FontWeight.w700,
             color: isSel ? const Color(0xFF1B5E20) : Colors.white70,
@@ -755,7 +755,7 @@ class _FruitCutterGameState extends State<FruitCutterGame>
           const SizedBox(width: 4),
           Text(
             '$_comboCount COMBO!',
-            style: GoogleFonts.catamaran(
+            style: GoogleFonts.notoSansTamil(
               fontSize: 14,
               fontWeight: FontWeight.w900,
               color: Colors.white,
@@ -820,7 +820,7 @@ class _FruitCutterGameState extends State<FruitCutterGame>
                 // Title
                 Text(
                   isEn ? 'Game Over!' : 'ஆட்டம் முடிந்தது!',
-                  style: GoogleFonts.catamaran(
+                  style: GoogleFonts.notoSansTamil(
                     fontSize: 26,
                     fontWeight: FontWeight.w900,
                     color: Colors.white,
@@ -831,7 +831,7 @@ class _FruitCutterGameState extends State<FruitCutterGame>
                   isEn
                       ? '10 fruits were missed'
                       : '10 பழங்கள் தவறவிடப்பட்டன!',
-                  style: GoogleFonts.catamaran(
+                  style: GoogleFonts.notoSansTamil(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFFFFAB91),
@@ -884,7 +884,7 @@ class _FruitCutterGameState extends State<FruitCutterGame>
                         const SizedBox(width: 8),
                         Text(
                           isEn ? 'Play Again' : 'மீண்டும் விளையாடு',
-                          style: GoogleFonts.catamaran(
+                          style: GoogleFonts.notoSansTamil(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
@@ -912,7 +912,7 @@ class _FruitCutterGameState extends State<FruitCutterGame>
                     child: Center(
                       child: Text(
                         isEn ? 'Exit' : 'வெளியேறு',
-                        style: GoogleFonts.catamaran(
+                        style: GoogleFonts.notoSansTamil(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
                           color: Colors.white70,
@@ -937,7 +937,7 @@ class _FruitCutterGameState extends State<FruitCutterGame>
         const SizedBox(height: 4),
         Text(
           val,
-          style: GoogleFonts.catamaran(
+          style: GoogleFonts.notoSansTamil(
             fontSize: 18,
             fontWeight: FontWeight.w900,
             color: const Color(0xFFFFD54F),
@@ -945,7 +945,7 @@ class _FruitCutterGameState extends State<FruitCutterGame>
         ),
         Text(
           title,
-          style: GoogleFonts.catamaran(
+          style: GoogleFonts.notoSansTamil(
             fontSize: 11,
             fontWeight: FontWeight.w700,
             color: Colors.white70,

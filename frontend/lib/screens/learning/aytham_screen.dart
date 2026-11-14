@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 
 import '../../data/aytham_data.dart';
+import '../../data/video_data.dart';
 import '../../services/audio_service.dart';
 import '../../services/language_service.dart';
 import '../../services/progress_service.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
+import '../../widgets/bouncy_button.dart';
 import '../../widgets/custom_audio_button.dart';
 import '../../widgets/kid_app_bar.dart';
 import '../../widgets/kid_scaffold_background.dart';
-import '../../widgets/mascot_widget.dart';
+import '../videos/video_player_screen.dart';
+import '../writing/writing_practice_screen.dart';
 
 class AythamScreen extends StatefulWidget {
   final ProgressService progressService;
@@ -57,6 +60,27 @@ class _AythamScreenState extends State<AythamScreen>
     );
   }
 
+  void _playVideoForAytham(BuildContext context) {
+    _audioService.stopAll();
+    final aythamVideo = tamilVideoLessonsList.firstWhere(
+      (v) =>
+          v.id == 'vid_1794304563578' ||
+          v.category.contains('ஆய்த') ||
+          v.title.contains('ஆயுத') ||
+          v.title.contains('ஆய்த'),
+      orElse: () => tamilVideoLessonsList.first,
+    );
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => VideoPlayerScreen(
+          video: aythamVideo,
+          progressService: widget.progressService,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -65,7 +89,7 @@ class _AythamScreenState extends State<AythamScreen>
         final isEn = LanguageService.instance.isEnglish;
         return Scaffold(
           appBar: KidAppBar(
-            title: isEn ? 'Aytham Letter (1)' : 'ஆய்த எழுத்து (1)',
+            title: '',
             starCount: widget.progressService.stars,
           ),
           body: KidScaffoldBackground(
@@ -81,64 +105,14 @@ class _AythamScreenState extends State<AythamScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Top Mascot companion
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const MascotWidget(
-                              pose: MascotPose.learn,
-                              size: MascotSize.small,
-                              customHeight: 110,
-                              showGlow: true,
-                            ),
-                            const SizedBox(width: 12),
-                            Flexible(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: AppColors.aythamColor.withValues(
-                                      alpha: 0.4,
-                                    ),
-                                    width: 2,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppColors.aythamColor.withValues(
-                                        alpha: 0.15,
-                                      ),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: Text(
-                                  isEn
-                                      ? 'Aytham Letter ஃ - Unique Three-Dot Letter!'
-                                      : 'ஆய்த எழுத்து ஃ - முப்புள்ளி!',
-                                  style: AppTextStyles.cardTitle.copyWith(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w800,
-                                    color: AppColors.textDark,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 8),
 
                         // Giant Card for ஃ
                         ScaleTransition(
                           scale: _scaleAnimation,
                           child: Container(
                             width: double.infinity,
-                            constraints: const BoxConstraints(maxWidth: 380),
+                            constraints: const BoxConstraints(maxWidth: 400),
                             padding: const EdgeInsets.symmetric(
                               vertical: 32,
                               horizontal: 24,
@@ -209,17 +183,158 @@ class _AythamScreenState extends State<AythamScreen>
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
+                                const SizedBox(height: 20),
+
+                                // Bottom Card Row: Left [🔊 எஃகு], Right [▶ காணொளி]
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: BouncyButton(
+                                        onPressed: () => _audioService.playLetterSound(
+                                          context,
+                                          letter: aythamLetterData.word,
+                                          showIndicator: true,
+                                        ),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.aythamColor
+                                                .withValues(alpha: 0.08),
+                                            borderRadius:
+                                                BorderRadius.circular(22),
+                                            border: Border.all(
+                                              color: AppColors.aythamColor
+                                                  .withValues(alpha: 0.35),
+                                              width: 2,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              const Icon(
+                                                Icons.volume_up_rounded,
+                                                color: AppColors.aythamColor,
+                                                size: 22,
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Flexible(
+                                                child: FittedBox(
+                                                  fit: BoxFit.scaleDown,
+                                                  child: Text(
+                                                    'எஃகு',
+                                                    style: AppTextStyles
+                                                        .wordLarge
+                                                        .copyWith(
+                                                      color:
+                                                          AppColors.aythamColor,
+                                                      fontSize: 22,
+                                                      fontWeight:
+                                                          FontWeight.w900,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: BouncyButton(
+                                        onPressed: () =>
+                                            _playVideoForAytham(context),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            gradient: const LinearGradient(
+                                              colors: [
+                                                Color(0xFFFF3366),
+                                                Color(0xFFFF5E7E),
+                                              ],
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(22),
+                                            border: Border.all(
+                                              color: Colors.white
+                                                  .withValues(alpha: 0.7),
+                                              width: 1.5,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: const Color(0xFFFF3366)
+                                                    .withValues(alpha: 0.36),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 3),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                width: 28,
+                                                height: 28,
+                                                decoration: const BoxDecoration(
+                                                  color: Colors.white,
+                                                  shape: BoxShape.circle,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black12,
+                                                      blurRadius: 3,
+                                                      offset: Offset(0, 1),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: const Icon(
+                                                  Icons.play_arrow_rounded,
+                                                  color: Color(0xFFFF3366),
+                                                  size: 22,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Flexible(
+                                                child: FittedBox(
+                                                  fit: BoxFit.scaleDown,
+                                                  child: Text(
+                                                    isEn ? 'Video' : 'காணொளி',
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w900,
+                                                      color: Colors.white,
+                                                      letterSpacing: 0.3,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
                         ),
                         const SizedBox(height: 24),
 
-                        // Audio buttons
+                        // Action Buttons: [கேட்போம்] and [எழுதிப் பழகுவோம்]
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Flexible(
+                            Expanded(
                               child: CustomAudioButton(
                                 label: isEn ? 'Listen' : 'கேட்போம்',
                                 color: AppColors.aythamColor,
@@ -227,12 +342,63 @@ class _AythamScreenState extends State<AythamScreen>
                               ),
                             ),
                             const SizedBox(width: 12),
-                            Flexible(
-                              child: CustomAudioButton(
-                                label: isEn ? 'Replay' : 'மீண்டும்',
-                                color: AppColors.aythamColor,
-                                isSecondary: true,
-                                onTap: _playAudio,
+                            Expanded(
+                              child: BouncyButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => WritingPracticeScreen(
+                                        progressService: widget.progressService,
+                                        initialLetter: 'ஃ',
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFFFF006E),
+                                        Color(0xFFFF70A6),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(22),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFFFF006E)
+                                            .withValues(alpha: 0.35),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          Icons.edit_rounded,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          isEn ? 'Practice Writing' : 'எழுதிப் பழகுவோம்',
+                                          style: AppTextStyles.buttonText.copyWith(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ],

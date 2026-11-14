@@ -1230,7 +1230,11 @@ class LetterBasketGameState extends State<LetterBasketGame>
                   Expanded(
                     child: Column(
                       children: [
-                        const Text('மதிப்பெண்', style: TextStyle(fontSize: 12, color: Color(0xFF795548))),
+                        const FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text('மதிப்பெண்', maxLines: 1, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF795548))),
+                        ),
+                        const SizedBox(height: 2),
                         Text('$_score', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFFE65100))),
                       ],
                     ),
@@ -1239,7 +1243,11 @@ class LetterBasketGameState extends State<LetterBasketGame>
                   Expanded(
                     child: Column(
                       children: [
-                        const Text('பிடித்தவை', style: TextStyle(fontSize: 12, color: Color(0xFF795548))),
+                        const FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text('பிடித்தவை', maxLines: 1, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF795548))),
+                        ),
+                        const SizedBox(height: 2),
                         Text('$_correctCatches', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF2E7D32))),
                       ],
                     ),
@@ -1248,7 +1256,11 @@ class LetterBasketGameState extends State<LetterBasketGame>
                   Expanded(
                     child: Column(
                       children: [
-                        const Text('நட்சத்திரங்கள்', style: TextStyle(fontSize: 12, color: Color(0xFF795548))),
+                        const FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text('நட்சத்திரம்', maxLines: 1, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF795548))),
+                        ),
+                        const SizedBox(height: 2),
                         Text('+$starsEarned', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFFF57F17))),
                       ],
                     ),
@@ -1273,12 +1285,19 @@ class LetterBasketGameState extends State<LetterBasketGame>
                         border: Border.all(color: const Color(0xFFCFD8DC)),
                       ),
                       child: const Center(
-                        child: Text(
-                          'விளையாட்டுகளுக்கு செல்',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF455A64),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            child: Text(
+                              'விளையாட்டுகள்',
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF455A64),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -1305,12 +1324,19 @@ class LetterBasketGameState extends State<LetterBasketGame>
                         ],
                       ),
                       child: const Center(
-                        child: Text(
-                          'மீண்டும் விளையாடு 🚀',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            child: Text(
+                              'மீண்டும் விளையாடு',
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ),

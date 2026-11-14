@@ -807,9 +807,7 @@ class _WritingPracticeScreenState extends State<WritingPracticeScreen> {
               label: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
-                  _activeMode == WritingCanvasMode.practice
-                      ? (isEn ? 'Check' : 'சரிபார் (Check)')
-                      : (isEn ? 'Check / Finish' : 'சரிபார் / முடித்தேன்'),
+                  isEn ? 'Check' : 'சரிபார்',
                   style: const TextStyle(
                     fontFamily: 'Catamaran',
                     fontSize: 15,

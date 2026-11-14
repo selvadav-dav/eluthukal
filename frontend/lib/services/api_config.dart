@@ -17,6 +17,7 @@ class ApiConfig {
     }
     return [
       'https://eluthukkal-api.macvelsoftware.com/api/v1',
+      if (!kIsWeb && Platform.isAndroid) 'http://192.168.1.40:5000/api/v1',
       if (!kIsWeb && Platform.isAndroid) 'http://192.168.1.49:5000/api/v1',
       if (!kIsWeb && Platform.isAndroid) 'http://10.0.2.2:5000/api/v1',
       'http://localhost:5000/api/v1',

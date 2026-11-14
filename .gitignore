@@ -95,3 +95,9 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Android APK and app bundles (exceeds GitHub 100MB limit)
+*.apk
+*.aab
+app-release.apk
+

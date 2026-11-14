@@ -1,6 +1,6 @@
 {
-  "assets/images/aadu.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1791177407/agaram_media/images/frontend_aadu.jpg",
-  "aadu.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1791177407/agaram_media/images/frontend_aadu.jpg",
+  "assets/images/aadu.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794553309/agaram_media/images/aadu_goat.jpg",
+  "aadu.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794553309/agaram_media/images/aadu_goat.jpg",
   "assets/images/amma.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1791177408/agaram_media/images/frontend_amma.jpg",
   "amma.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1791177408/agaram_media/images/frontend_amma.jpg",
   "assets/images/app_logo.png": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1791177409/agaram_media/images/frontend_app_logo.jpg",
@@ -85,8 +85,8 @@
   "swing (2).jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1791177444/agaram_media/images/frontend_swing__2_.jpg",
   "assets/images/tree.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1791177447/agaram_media/images/frontend_tree.jpg",
   "tree.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1791177447/agaram_media/images/frontend_tree.jpg",
-  "assets/images/ural.png": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1791177448/agaram_media/images/frontend_ural.png",
-  "ural.png": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1791177448/agaram_media/images/frontend_ural.png",
+  "assets/images/ural.png": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794556290/agaram_media/images/ural_stone.jpg",
+  "ural.png": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794556290/agaram_media/images/ural_stone.jpg",
   "assets/images/video.png": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1791177448/agaram_media/images/frontend_video.png",
   "video.png": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1791177448/agaram_media/images/frontend_video.png",
   "assets/images/welcome.png": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1791177449/agaram_media/images/frontend_welcome.png",
@@ -393,5 +393,17 @@
   "assets/Gif/uyir eluthu koodai.gif": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794378485/agaram_media/gifs/gif_uyir_eluthu_kudai_game.gif",
   "Gif/uyir eluthu koodai.gif": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794378485/agaram_media/gifs/gif_uyir_eluthu_kudai_game.gif",
   "uyir eluthu koodai.gif": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794378485/agaram_media/gifs/gif_uyir_eluthu_kudai_game.gif",
-  "basket_uyir.gif": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794378485/agaram_media/gifs/gif_uyir_eluthu_kudai_game.gif"
+  "basket_uyir.gif": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794378485/agaram_media/gifs/gif_uyir_eluthu_kudai_game.gif",
+  "eecha_maram.webp": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794553310/agaram_media/images/eecha_maram.webp",
+  "assets/images/eecha_maram.webp": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794553310/agaram_media/images/eecha_maram.webp",
+  "olaichuvadi.webp": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794553311/agaram_media/images/olaichuvadi.webp",
+  "assets/images/olaichuvadi.webp": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794553311/agaram_media/images/olaichuvadi.webp",
+  "kannam.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794553312/agaram_media/images/kannam.jpg",
+  "assets/images/kannam.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794553312/agaram_media/images/kannam.jpg",
+  "kaakkai.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794553342/agaram_media/images/kaakkai.jpg",
+  "assets/images/kaakkai.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794553342/agaram_media/images/kaakkai.jpg",
+  "vandi.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794553341/agaram_media/images/vandi.jpg",
+  "assets/images/vandi.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794553341/agaram_media/images/vandi.jpg",
+  "ural.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794556290/agaram_media/images/ural_stone.jpg",
+  "assets/images/ural.jpg": "https://res.cloudinary.com/dy8bu8suk/image/upload/v1794556290/agaram_media/images/ural_stone.jpg"
 }

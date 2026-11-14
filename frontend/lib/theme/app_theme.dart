@@ -4,7 +4,7 @@ import 'app_colors.dart';
 
 class AppTheme {
   static ThemeData get theme {
-    final baseTextTheme = GoogleFonts.catamaranTextTheme();
+    final baseTextTheme = GoogleFonts.notoSansTamilTextTheme();
 
     return ThemeData(
       useMaterial3: true,
@@ -16,27 +16,27 @@ class AppTheme {
         surface: AppColors.cardWhite,
       ),
       textTheme: baseTextTheme.copyWith(
-        displayLarge: GoogleFonts.catamaran(
+        displayLarge: GoogleFonts.notoSansTamil(
           fontSize: 32,
           fontWeight: FontWeight.w900,
           color: AppColors.textDark,
         ),
-        headlineMedium: GoogleFonts.catamaran(
+        headlineMedium: GoogleFonts.notoSansTamil(
           fontSize: 22,
           fontWeight: FontWeight.w800,
           color: AppColors.textDark,
         ),
-        titleLarge: GoogleFonts.catamaran(
+        titleLarge: GoogleFonts.notoSansTamil(
           fontSize: 18,
           fontWeight: FontWeight.w700,
           color: AppColors.textDark,
         ),
-        bodyLarge: GoogleFonts.catamaran(
+        bodyLarge: GoogleFonts.notoSansTamil(
           fontSize: 16,
           fontWeight: FontWeight.w600,
           color: AppColors.textDark,
         ),
-        bodyMedium: GoogleFonts.catamaran(
+        bodyMedium: GoogleFonts.notoSansTamil(
           fontSize: 14,
           color: AppColors.textDark,
         ),
@@ -65,7 +65,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          textStyle: GoogleFonts.catamaran(
+          textStyle: GoogleFonts.notoSansTamil(
             fontSize: 18,
             fontWeight: FontWeight.w800,
           ),
