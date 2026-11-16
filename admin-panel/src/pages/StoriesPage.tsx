@@ -6,6 +6,16 @@ import { FileUpload } from '../components/common/FileUpload';
 import { useLanguage } from '../context/LanguageContext';
 import { Plus, Edit2, Trash2, Layers, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { resolveMediaUrl } from '../api/client';
+import { StoryPageEditor } from '../components/stories/StoryPageEditor';
+
+const blankPage = (pageNumber: number): Partial<StoryPage> => ({
+  pageNumber,
+  text: '',
+  emojiIllustration: '🐰',
+  characterName: '',
+  imagePath: '',
+  interactiveWords: [],
+});
 
 export const StoriesPage: React.FC = () => {
   const { t } = useLanguage();
@@ -18,12 +28,8 @@ export const StoriesPage: React.FC = () => {
   // Pages Manager Modal
   const [selectedStoryForPages, setSelectedStoryForPages] = useState<ReadingStory | null>(null);
   const [isPageModalOpen, setIsPageModalOpen] = useState(false);
-  const [newPage, setNewPage] = useState<Partial<StoryPage>>({
-    pageNumber: 1,
-    text: '',
-    emojiIllustration: '🐰',
-    characterName: '',
-  });
+  const [newPage, setNewPage] = useState<Partial<StoryPage>>(blankPage(1));
+  const [editingPage, setEditingPage] = useState<StoryPage | null>(null);
 
   useEffect(() => {
     fetchStories();
@@ -104,12 +110,8 @@ export const StoriesPage: React.FC = () => {
       const res = await storiesApi.getById(story.id);
       if (res.success && res.data) {
         setSelectedStoryForPages(res.data);
-        setNewPage({
-          pageNumber: (res.data.pages?.length || 0) + 1,
-          text: '',
-          emojiIllustration: '🐰',
-          characterName: '',
-        });
+        setNewPage(blankPage((res.data.pages?.length || 0) + 1));
+        setEditingPage(null);
         setIsPageModalOpen(true);
       }
     } catch (err: any) {
@@ -117,28 +119,40 @@ export const StoriesPage: React.FC = () => {
     }
   };
 
-  const handleAddPage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedStoryForPages || !newPage.text) {
-      alert('Page story text is required');
-      return;
+  const reloadPages = async (storyId: string) => {
+    const res = await storiesApi.getById(storyId);
+    if (res.success && res.data) {
+      setSelectedStoryForPages(res.data);
+      setNewPage(blankPage((res.data.pages?.length || 0) + 1));
     }
+    fetchStories();
+  };
 
+  const handleAddPage = async (page: Partial<StoryPage>) => {
+    if (!selectedStoryForPages) return;
     try {
-      await storiesApi.addPage(selectedStoryForPages.id, newPage);
-      const res = await storiesApi.getById(selectedStoryForPages.id);
-      if (res.success && res.data) {
-        setSelectedStoryForPages(res.data);
-        setNewPage({
-          pageNumber: (res.data.pages?.length || 0) + 1,
-          text: '',
-          emojiIllustration: '🐰',
-          characterName: '',
-        });
-      }
-      fetchStories();
+      await storiesApi.addPage(selectedStoryForPages.id, page);
+      await reloadPages(selectedStoryForPages.id);
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to add page');
+    }
+  };
+
+  const handleUpdatePage = async (page: Partial<StoryPage>) => {
+    if (!selectedStoryForPages || !page.id) return;
+    try {
+      await storiesApi.updatePage(selectedStoryForPages.id, page.id, {
+        pageNumber: page.pageNumber,
+        text: page.text,
+        characterName: page.characterName,
+        emojiIllustration: page.emojiIllustration,
+        imagePath: page.imagePath,
+        interactiveWords: page.interactiveWords,
+      });
+      setEditingPage(null);
+      await reloadPages(selectedStoryForPages.id);
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to update page');
     }
   };
 
@@ -147,11 +161,7 @@ export const StoriesPage: React.FC = () => {
     if (!window.confirm(t('common.confirmDelete'))) return;
     try {
       await storiesApi.deletePage(selectedStoryForPages.id, pageId);
-      const res = await storiesApi.getById(selectedStoryForPages.id);
-      if (res.success && res.data) {
-        setSelectedStoryForPages(res.data);
-      }
-      fetchStories();
+      await reloadPages(selectedStoryForPages.id);
     } catch (err: any) {
       alert(err.message || 'Failed to delete page');
     }
@@ -395,7 +405,23 @@ export const StoriesPage: React.FC = () => {
 
           {selectedStoryForPages?.pages && selectedStoryForPages.pages.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
-              {selectedStoryForPages.pages.map((p) => (
+              {selectedStoryForPages.pages.map((p) =>
+                editingPage?.id === p.id ? (
+                  <div
+                    key={p.id}
+                    style={{ padding: '14px', borderRadius: 'var(--radius-md)', border: '2px solid var(--primary)', background: 'var(--bg-card, #fff)' }}
+                  >
+                    <h5 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '10px' }}>
+                      {t('common.edit')} #{p.pageNumber}
+                    </h5>
+                    <StoryPageEditor
+                      initialPage={editingPage}
+                      submitLabel={t('common.save')}
+                      onSubmit={handleUpdatePage}
+                      onCancel={() => setEditingPage(null)}
+                    />
+                  </div>
+                ) : (
                 <div
                   key={p.id}
                   style={{
@@ -409,21 +435,66 @@ export const StoriesPage: React.FC = () => {
                   }}
                 >
                   <span style={{ fontWeight: 800, color: 'var(--primary)', minWidth: '24px' }}>#{p.pageNumber}</span>
-                  <span style={{ fontSize: '20px' }}>{p.emojiIllustration}</span>
+                  {p.imagePath ? (
+                    <img
+                      src={resolveMediaUrl(p.imagePath)}
+                      alt=""
+                      style={{ width: '64px', height: '48px', borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }}
+                    />
+                  ) : (
+                    <span style={{ fontSize: '20px' }}>{p.emojiIllustration}</span>
+                  )}
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 600, fontSize: '14px' }}>{p.characterName || 'பாத்திரம்'}</div>
                     <div style={{ fontSize: '14px', color: 'var(--text-main)', marginTop: '2px', lineHeight: 1.6 }}>{p.text}</div>
+                    {p.interactiveWords && p.interactiveWords.length > 0 && (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px' }}>
+                        {p.interactiveWords.map((w, i) => (
+                          <span
+                            key={i}
+                            className="badge"
+                            title={w.imagePath ? 'Has image' : 'No image yet'}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                          >
+                            {w.imagePath ? (
+                              <img
+                                src={resolveMediaUrl(w.imagePath)}
+                                alt=""
+                                style={{ width: '18px', height: '18px', borderRadius: '3px', objectFit: 'cover' }}
+                              />
+                            ) : (
+                              <span>{w.emoji || '•'}</span>
+                            )}
+                            {w.word}
+                            {!w.imagePath && (
+                              <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>(no image)</span>
+                            )}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <button
-                    onClick={() => handleDeletePage(p.id)}
-                    className="btn btn-danger btn-sm"
-                    style={{ padding: '4px 8px' }}
-                    title={t('common.delete')}
-                  >
-                    <Trash2 size={12} />
-                  </button>
+                  <div className="action-btn-group">
+                    <button
+                      onClick={() => setEditingPage(p)}
+                      className="btn btn-secondary btn-sm"
+                      style={{ padding: '4px 8px' }}
+                      title={t('common.edit')}
+                    >
+                      <Edit2 size={12} />
+                    </button>
+                    <button
+                      onClick={() => handleDeletePage(p.id)}
+                      className="btn btn-danger btn-sm"
+                      style={{ padding: '4px 8px' }}
+                      title={t('common.delete')}
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
                 </div>
-              ))}
+                )
+              )}
             </div>
           ) : (
             <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '20px' }}>
@@ -434,57 +505,11 @@ export const StoriesPage: React.FC = () => {
           {/* Add Page Form */}
           <div style={{ borderTop: '2px dashed var(--border-color)', paddingTop: '16px' }}>
             <h4 style={{ fontSize: '15px', fontWeight: 700, marginBottom: '12px' }}>+ {t('stories.addPage')}</h4>
-            <form onSubmit={handleAddPage}>
-              <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 120px', gap: '10px' }}>
-                <div className="form-group">
-                  <label className="form-label">{t('stories.pageNumber')}</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={newPage.pageNumber || 1}
-                    onChange={(e) => setNewPage({ ...newPage, pageNumber: parseInt(e.target.value, 10) })}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">{t('stories.character')}</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="e.g. முயல்"
-                    value={newPage.characterName || ''}
-                    onChange={(e) => setNewPage({ ...newPage, characterName: e.target.value })}
-                  />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">{t('stories.emoji')}</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="🐇"
-                    value={newPage.emojiIllustration || '🐰'}
-                    onChange={(e) => setNewPage({ ...newPage, emojiIllustration: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">{t('stories.pageText')}</label>
-                <textarea
-                  className="form-control"
-                  rows={3}
-                  placeholder="இந்தப் பக்கத்திற்கான தமிழ் கதை வரிகளை உள்ளிடுக..."
-                  value={newPage.text || ''}
-                  onChange={(e) => setNewPage({ ...newPage, text: e.target.value })}
-                  required
-                />
-              </div>
-
-              <button type="submit" className="btn btn-primary btn-sm">
-                <Plus size={14} />
-                <span>{t('stories.addPage')}</span>
-              </button>
-            </form>
+            <StoryPageEditor
+              initialPage={newPage}
+              submitLabel={t('stories.addPage')}
+              onSubmit={handleAddPage}
+            />
           </div>
         </div>
       </Modal>
