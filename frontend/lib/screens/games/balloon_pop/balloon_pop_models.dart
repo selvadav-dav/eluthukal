@@ -157,11 +157,10 @@ class FloatingBalloon {
   bool hitTest(Offset point) {
     if (isPopping) return false;
     final dx = (point.dx - x);
-    // Balloon center of gravity is slightly above geometric center
-    final dy = (point.dy - (y - radius * 0.1));
-    // Elliptical hit test matching teardrop envelope
-    final rx = radius * 1.05;
-    final ry = radius * 1.35;
+    final dy = (point.dy - y);
+    // Generous touch envelope matching balloon center
+    final rx = radius * 1.35;
+    final ry = radius * 1.55;
     return ((dx * dx) / (rx * rx) + (dy * dy) / (ry * ry)) <= 1.0;
   }
 }

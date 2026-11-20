@@ -270,12 +270,23 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
     if (_isPaused || _isGameOver) return;
     final pos = details.localPosition;
 
-    // Find tapped balloon (topmost first)
+    // Find tapped balloon (topmost first, with generous radius check)
     FloatingBalloon? tapped;
+    double closestDistSq = double.infinity;
+
     for (int i = _balloons.length - 1; i >= 0; i--) {
-      if (_balloons[i].hitTest(pos)) {
-        tapped = _balloons[i];
-        break;
+      final b = _balloons[i];
+      if (b.isPopping) continue;
+      final dx = pos.dx - b.x;
+      final dy = pos.dy - b.y;
+      final distSq = dx * dx + dy * dy;
+      final maxHitRadius = b.radius * 1.5;
+
+      if (distSq <= maxHitRadius * maxHitRadius || b.hitTest(pos)) {
+        if (distSq < closestDistSq) {
+          closestDistSq = distSq;
+          tapped = b;
+        }
       }
     }
 
@@ -294,6 +305,10 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
     b.isPopping = true;
     _correctPops++;
     _streak++;
+
+    // Satisfying balloon burst audio + haptics
+    _audioService.playPopSound();
+    HapticFeedback.heavyImpact();
 
     // Calculate score: base 10 + streak bonus
     final int points = 10 + (_streak > 1 ? min(15, _streak * 2).toInt() : 0);
@@ -318,8 +333,7 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
       ),
     );
 
-    // Audio & Haptics
-    HapticFeedback.mediumImpact();
+    // Pronounce letter
     _audioService.playTamilAudio(_currentTargetLetter);
 
     // Check level completion
@@ -349,11 +363,12 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
   }
 
   void _handleWrongTap(FloatingBalloon b) {
-    b.wrongWobbleTimer = 0.6;
+    b.wrongWobbleTimer = 0.8;
     _wrongAttempts++;
     _streak = 0; // Reset streak
 
     HapticFeedback.lightImpact();
+    _audioService.playRetryFeedback(context);
 
     // Show encouraging feedback
     final feedback = BalloonPopData.tryAgainFeedbacks[
@@ -622,35 +637,46 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
               _buildSkyBackground(),
 
               // 2. Active Realistic Floating Balloons Layer
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTapDown: _onTapDown,
-                child: CustomPaint(
-                  size: _arenaSize,
-                  painter: _BalloonsLayerPainter(balloons: _balloons),
+              Positioned.fill(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTapDown: _onTapDown,
+                  child: CustomPaint(
+                    size: _arenaSize,
+                    painter: _BalloonsLayerPainter(balloons: _balloons),
+                  ),
                 ),
               ),
 
               // 3. Popping Explosion Particles & Floating Words Layer
-              IgnorePointer(
-                child: CustomPaint(
-                  size: _arenaSize,
-                  painter: BalloonPopParticlePainter(
-                    shards: _shards,
-                    sparkles: _sparkles,
-                    feedbacks: _feedbacks,
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: CustomPaint(
+                    size: _arenaSize,
+                    painter: BalloonPopParticlePainter(
+                      shards: _shards,
+                      sparkles: _sparkles,
+                      feedbacks: _feedbacks,
+                    ),
                   ),
                 ),
               ),
 
               // 4. Top Header & Target Letter HUD
-              SafeArea(
-                child: Column(
-                  children: [
-                    _buildTopHud(),
-                    const SizedBox(height: 8),
-                    _buildTargetBanner(),
-                  ],
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: SafeArea(
+                  bottom: false,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildTopHud(),
+                      const SizedBox(height: 8),
+                      _buildTargetBanner(),
+                    ],
+                  ),
                 ),
               ),
 
@@ -659,8 +685,11 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
                 bottom: 0,
                 left: 0,
                 right: 0,
-                child: SafeArea(
-                  child: _buildBottomFooter(progressFraction, totalTargets),
+                child: IgnorePointer(
+                  child: SafeArea(
+                    top: false,
+                    child: _buildBottomFooter(progressFraction, totalTargets),
+                  ),
                 ),
               ),
             ],
@@ -1075,7 +1104,8 @@ class _BalloonsLayerPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     for (final b in balloons) {
       canvas.save();
-      canvas.translate(b.x, b.y);
+      // Center the balloon precisely at (b.x, b.y) to match hit testing exactly
+      canvas.translate(b.x - b.radius, b.y - b.radius * 1.25);
 
       // Render individual realistic latex balloon
       final painter = RealisticBalloonPainter(
