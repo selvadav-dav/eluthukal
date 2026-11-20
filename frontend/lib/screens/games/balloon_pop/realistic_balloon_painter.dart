@@ -12,14 +12,19 @@ class RealisticBalloonPainter extends CustomPainter {
   final double radius;
   final double wobble; // Gentle sway / wobble angle in radians
   final double popProgress; // 0.0 = intact, >0 = bursting
+  final double opacity;
 
   RealisticBalloonPainter({
     required this.letter,
-    required this.color,
-    required this.radius,
+    BalloonColor? color,
+    BalloonColor? palette,
+    double? radius,
+    double? scale,
     this.wobble = 0.0,
     this.popProgress = 0.0,
-  });
+    this.opacity = 1.0,
+  })  : color = color ?? palette ?? BalloonColor.red,
+        radius = radius ?? ((scale ?? 1.0) * 26.0);
 
   @override
   void paint(Canvas canvas, Size size) {

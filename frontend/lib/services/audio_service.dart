@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'tamil_audio_service.dart';
 import 'tamil_tts_service.dart';
 
@@ -81,6 +82,11 @@ class AudioService {
   /// Plays star award sound
   Future<void> playStarReward(BuildContext context) async {
     await TamilAudioService.instance.playStarReward(context);
+  }
+
+  /// Plays realistic balloon pop sound
+  void playPopSound() {
+    SystemSound.play(SystemSoundType.click);
   }
 
   /// Plays gentle retry effect.

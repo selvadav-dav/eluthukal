@@ -296,7 +296,7 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
     _streak++;
 
     // Calculate score: base 10 + streak bonus
-    final points = 10 + (_streak > 1 ? min(15, _streak * 2) : 0);
+    final int points = 10 + (_streak > 1 ? min(15, _streak * 2).toInt() : 0);
     _score += points;
 
     // Spawn popping explosion particles

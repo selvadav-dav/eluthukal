@@ -12,6 +12,18 @@ enum BalloonColor {
   pink,
 }
 
+typedef BalloonPalette = BalloonColor;
+
+class BalloonPalettes {
+  static const BalloonColor red = BalloonColor.red;
+  static const BalloonColor blue = BalloonColor.blue;
+  static const BalloonColor yellow = BalloonColor.yellow;
+  static const BalloonColor green = BalloonColor.green;
+  static const BalloonColor purple = BalloonColor.purple;
+  static const BalloonColor orange = BalloonColor.orange;
+  static const BalloonColor pink = BalloonColor.pink;
+}
+
 /// Color theme properties for realistic 3D latex shading
 class BalloonColorTheme {
   final Color highlightColor;   // Specular / light reflection tint

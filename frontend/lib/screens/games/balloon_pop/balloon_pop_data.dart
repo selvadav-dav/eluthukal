@@ -202,6 +202,21 @@ class BalloonLevelInfo {
     required this.targetCount,
   });
 
+  String get subtitleTa => difficultyTa;
+
+  String get lockRequirementTa {
+    switch (levelNumber) {
+      case 2:
+        return 'முதலில் எளிய நிலையை முடிக்கவும்.';
+      case 3:
+        return 'முதலில் நடுத்தர நிலையை முடிக்கவும்.';
+      case 4:
+        return 'முதலில் கடின நிலையை முடிக்கவும்.';
+      default:
+        return 'தொடங்கலாம்!';
+    }
+  }
+
   static const List<BalloonLevelInfo> levels = [
     BalloonLevelInfo(
       levelNumber: 1,
@@ -245,3 +260,6 @@ class BalloonLevelInfo {
     ),
   ];
 }
+
+List<BalloonLevelInfo> get balloonLevels => BalloonLevelInfo.levels;
+
