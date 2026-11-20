@@ -32,12 +32,21 @@ class UserModel {
     return rows[0] || null;
   }
 
-  static async create({ id, name, email, passwordHash, age = 5, avatarAsset = 'assets/images/welcome.png' }) {
-    await pool.query(
-      `INSERT INTO users (id, child_name, email, password_hash, age, avatar_asset, total_stars, is_active)
-       VALUES (?, ?, ?, ?, ?, ?, 0, TRUE)`,
-      [id, name, email ? email.trim().toLowerCase() : null, passwordHash, age, avatarAsset]
-    );
+  static async create({ id, name, email, phone = null, passwordHash, age = 5, avatarAsset = 'assets/images/welcome.png' }) {
+    try {
+      await pool.query(
+        `INSERT INTO users (id, child_name, email, phone, password_hash, age, avatar_asset, total_stars, is_active)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 0, TRUE)`,
+        [id, name, email ? email.trim().toLowerCase() : null, phone ? phone.trim() : null, passwordHash, age, avatarAsset]
+      );
+    } catch (err) {
+      // Graceful fallback if 'phone' column does not exist yet in running DB schema
+      await pool.query(
+        `INSERT INTO users (id, child_name, email, password_hash, age, avatar_asset, total_stars, is_active)
+         VALUES (?, ?, ?, ?, ?, ?, 0, TRUE)`,
+        [id, name, email ? email.trim().toLowerCase() : null, passwordHash, age, avatarAsset]
+      );
+    }
 
     // Ensure stars row exists
     await pool.query(

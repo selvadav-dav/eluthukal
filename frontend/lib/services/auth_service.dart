@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/auth_user_model.dart';
@@ -14,6 +15,9 @@ class AuthService extends ChangeNotifier {
   AuthUserModel? _currentUser;
   String? _token;
   bool _isLoading = false;
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+  );
 
   AuthUserModel? get currentUser => _currentUser;
   String? get token => _token;
@@ -49,6 +53,7 @@ class AuthService extends ChangeNotifier {
     required String name,
     required String email,
     required String password,
+    String? phone,
   }) async {
     _isLoading = true;
     notifyListeners();
@@ -56,17 +61,22 @@ class AuthService extends ChangeNotifier {
     final candidates = ApiConfig.candidateBaseUrls;
     http.Response? response;
 
+    final Map<String, dynamic> bodyPayload = {
+      'name': name.trim(),
+      'email': email.trim().toLowerCase(),
+      'password': password,
+    };
+    if (phone != null && phone.trim().isNotEmpty) {
+      bodyPayload['phone'] = phone.trim();
+    }
+
     for (final base in candidates) {
       try {
         final url = Uri.parse('$base/users/register');
         final res = await http.post(
           url,
           headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({
-            'name': name.trim(),
-            'email': email.trim().toLowerCase(),
-            'password': password,
-          }),
+          body: jsonEncode(bodyPayload),
         ).timeout(const Duration(seconds: 12));
 
         ApiConfig.setWorkingBaseUrl(base);
@@ -196,8 +206,95 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  /// Google Sign-In (Opens native Google account selector popup)
+  Future<AuthResult> signInWithGoogle() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        // User cancelled popup
+        _isLoading = false;
+        notifyListeners();
+        return AuthResult.failure('Google உள்நுழைவு ரத்து செய்யப்பட்டது.');
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final String? idToken = googleAuth.idToken;
+
+      final Map<String, dynamic> payload = {
+        if (idToken != null && idToken.isNotEmpty) 'idToken': idToken,
+        'email': googleUser.email,
+        'name': googleUser.displayName ?? '',
+        'photoUrl': googleUser.photoUrl ?? 'assets/images/welcome.png',
+        'googleId': googleUser.id,
+      };
+
+      final candidates = ApiConfig.candidateBaseUrls;
+      http.Response? response;
+
+      for (final base in candidates) {
+        try {
+          final url = Uri.parse('$base/users/google-login');
+          final res = await http.post(
+            url,
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(payload),
+          ).timeout(const Duration(seconds: 12));
+
+          ApiConfig.setWorkingBaseUrl(base);
+          response = res;
+          break;
+        } on SocketException catch (_) {
+          continue;
+        } on TimeoutException catch (_) {
+          continue;
+        } catch (_) {
+          continue;
+        }
+      }
+
+      if (response == null) {
+        _isLoading = false;
+        notifyListeners();
+        return AuthResult.failure(
+          'சேவையகத்துடன் இணைக்க முடியவில்லை. இணைய இணைப்பை சரிபார்க்கவும்.',
+        );
+      }
+
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = responseData['data'] as Map<String, dynamic>;
+        final token = data['token']?.toString() ?? '';
+        final userMap = data['user'] as Map<String, dynamic>;
+        final user = AuthUserModel.fromJson(userMap, token: token);
+
+        await _persistSession(token, user);
+        _isLoading = false;
+        notifyListeners();
+
+        return AuthResult.success(user, 'Google மூலம் வெற்றிகரமாக உள்நுழைந்துவிட்டது!');
+      } else {
+        _isLoading = false;
+        notifyListeners();
+        final msg = responseData['message']?.toString() ?? 'Google உள்நுழைவு தோல்வியடைந்தது';
+        return AuthResult.failure(_translateError(msg));
+      }
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      debugPrint('Google Sign-In Error: $e');
+      return AuthResult.failure('Google உள்நுழைவில் பிழை ஏற்பட்டது: $e');
+    }
+  }
+
   /// Logout and clear storage
   Future<void> logout() async {
+    try {
+      await _googleSignIn.signOut();
+    } catch (_) {}
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_keyToken);

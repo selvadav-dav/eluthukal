@@ -9,12 +9,13 @@ const { verifyToken } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// User Registration with Name, Email, Password
+// User Registration with Name, Email, Phone, Password
 router.post(
   '/register',
   [
     body('email').trim().isEmail().withMessage('சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும் (Valid email required)'),
     body('password').isLength({ min: 6 }).withMessage('கடவுச்சொல் குறைந்தது 6 எழுத்துகள் இருக்க வேண்டும் (Password must be at least 6 characters)'),
+    body('phone').optional().trim(),
     validateRequest,
   ],
   UserAuthController.register
@@ -30,6 +31,9 @@ router.post(
   ],
   UserAuthController.login
 );
+
+// Google Sign-In & Registration
+router.post('/google-login', UserAuthController.googleLogin);
 
 // Get Currently Authenticated User
 router.get('/me', verifyToken, UserAuthController.me);

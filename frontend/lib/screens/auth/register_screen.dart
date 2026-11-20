@@ -18,6 +18,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
@@ -30,6 +31,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -48,6 +50,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
@@ -66,6 +69,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       name: name,
       email: email,
       password: password,
+      phone: phone,
     );
 
     if (!mounted) return;
@@ -286,7 +290,53 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           const SizedBox(height: 18),
 
-                          // 3. கடவுச்சொல் (Password)
+                          // 3. கைபேசி எண் (Phone Number)
+                          _buildFieldLabel('கைபேசி எண்', Icons.phone_android_rounded),
+                          const SizedBox(height: 6),
+                          TextFormField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.phone,
+                            style: GoogleFonts.catamaran(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textDark,
+                            ),
+                            decoration: _buildInputDecoration(
+                              hintText: '98765 43210',
+                              prefixIcon: Icons.phone_rounded,
+                            ).copyWith(
+                              prefix: Container(
+                                padding: const EdgeInsets.only(right: 8),
+                                margin: const EdgeInsets.only(right: 8),
+                                decoration: const BoxDecoration(
+                                  border: Border(
+                                    right: BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+                                  ),
+                                ),
+                                child: Text(
+                                  '+91',
+                                  style: GoogleFonts.catamaran(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.textDark,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'கைபேசி எண் தேவை';
+                              }
+                              final digits = value.replaceAll(RegExp(r'\D'), '');
+                              if (digits.length != 10) {
+                                return 'சரியான 10 இலக்க கைபேசி எண்ணை உள்ளிடவும்';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 18),
+
+                          // 4. கடவுச்சொல் (Password)
                           _buildFieldLabel('கடவுச்சொல்', Icons.lock_rounded),
                           const SizedBox(height: 6),
                           TextFormField(

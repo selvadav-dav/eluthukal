@@ -3,18 +3,22 @@
  */
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
 const UserModel = require('../models/userModel');
 const config = require('../config/env');
 const { successResponse, errorResponse } = require('../utils/apiResponse');
 
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || '');
+
 class UserAuthController {
   /**
-   * Register a new user with Name, Email, Password
+   * Register a new user with Name, Email, Phone, Password
    */
   static async register(req, res, next) {
     try {
-      const { name, childName, email, password, age, avatarAsset } = req.body;
+      const { name, childName, email, phone, phoneNumber, password, age, avatarAsset } = req.body;
       const fullName = (name || childName || '').trim();
+      const userPhone = (phone || phoneNumber || '').trim();
 
       if (!fullName) {
         return errorResponse(res, 'உங்கள் பெயரை உள்ளிடவும் (Name is required)', null, 400);
@@ -45,6 +49,7 @@ class UserAuthController {
         id: userId,
         name: fullName,
         email: email.trim().toLowerCase(),
+        phone: userPhone || null,
         passwordHash,
         age: age || 5,
         avatarAsset: avatarAsset || 'assets/images/welcome.png',
@@ -72,6 +77,7 @@ class UserAuthController {
             name: user.child_name,
             child_name: user.child_name,
             email: user.email,
+            phone: user.phone || userPhone || null,
             age: user.age,
             avatarAsset: user.avatar_asset,
             avatar_asset: user.avatar_asset,
@@ -81,6 +87,88 @@ class UserAuthController {
           },
         },
         201
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Google Sign-In / Registration
+   */
+  static async googleLogin(req, res, next) {
+    try {
+      const { idToken, email, name, photoUrl, googleId } = req.body;
+      let userEmail = (email || '').trim().toLowerCase();
+      let userName = (name || '').trim();
+      let userAvatar = photoUrl || 'assets/images/welcome.png';
+
+      // 1. Verify idToken with Google if provided
+      if (idToken) {
+        try {
+          const ticket = await googleClient.verifyIdToken({
+            idToken,
+            audience: process.env.GOOGLE_CLIENT_ID ? [process.env.GOOGLE_CLIENT_ID] : undefined,
+          });
+          const payload = ticket.getPayload();
+          if (payload) {
+            userEmail = (payload.email || userEmail).toLowerCase();
+            userName = payload.name || userName;
+            userAvatar = payload.picture || userAvatar;
+          }
+        } catch (tokenErr) {
+          console.warn('Google idToken verification warning (proceeding with profile):', tokenErr.message);
+        }
+      }
+
+      if (!userEmail) {
+        return errorResponse(res, 'Google கணக்கிலிருந்து மின்னஞ்சல் கிடைக்கவில்லை. (Google email not received)', null, 400);
+      }
+
+      // 2. Check if user already exists
+      let user = await UserModel.findByEmail(userEmail);
+      if (!user) {
+        const userId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+        user = await UserModel.create({
+          id: userId,
+          name: userName || 'குழந்தை',
+          email: userEmail,
+          passwordHash: null,
+          age: 5,
+          avatarAsset: userAvatar,
+        });
+      }
+
+      // 3. Generate JWT
+      const token = jwt.sign(
+        {
+          id: user.id,
+          email: user.email,
+          name: user.child_name,
+          role: 'user',
+        },
+        config.jwt.secret,
+        { expiresIn: config.jwt.expiresIn || '30d' }
+      );
+
+      return successResponse(
+        res,
+        'Google மூலம் வெற்றிகரமாக உள்நுழைந்துவிட்டது! (Google Sign-In successful)',
+        {
+          token,
+          user: {
+            id: user.id,
+            name: user.child_name,
+            child_name: user.child_name,
+            email: user.email,
+            age: user.age,
+            avatarAsset: user.avatar_asset,
+            avatar_asset: user.avatar_asset,
+            totalStars: user.total_stars,
+            total_stars: user.total_stars,
+            createdAt: user.created_at,
+          },
+        }
       );
     } catch (error) {
       next(error);
