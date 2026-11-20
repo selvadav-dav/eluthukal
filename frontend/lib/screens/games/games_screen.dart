@@ -14,6 +14,7 @@ import 'fruit_cutter_game.dart';
 import 'letter_basket_game.dart';
 import 'letter_candy_game.dart';
 import 'letter_fishing_game.dart';
+import 'balloon_pop/balloon_pop_level_screen.dart';
 
 class GamesScreen extends StatefulWidget {
   final ProgressService progressService;
@@ -447,6 +448,26 @@ class _GamesScreenState extends State<GamesScreen> {
                   builder: (context) => LetterBasketGame(
                     progressService: widget.progressService,
                     mode: BasketGameMode.mei,
+                  ),
+                ),
+              );
+            },
+          ),
+
+          // Game 8: பலூன் உடைத்தல் (Tamil Balloon Pop)
+          _GameTileModel(
+            id: 'balloon_pop',
+            titleTa: 'பலூன் உடைத்தல்',
+            titleEn: 'Balloon Pop',
+            icon: Icons.bubble_chart_rounded,
+            imagePath: 'assets/Gif/games.gif',
+            gradientColors: const [Color(0xFFFF4081), Color(0xFF7C4DFF)],
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BalloonPopLevelScreen(
+                    progressService: widget.progressService,
                   ),
                 ),
               );
