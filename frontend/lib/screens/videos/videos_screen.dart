@@ -171,7 +171,7 @@ class _VideosScreenState extends State<VideosScreen> {
                           if (_selectedFilter == 'all' || _selectedFilter == 'uyir') ...[
                             _buildSectionHeader(
                               icon: Icons.auto_awesome_rounded,
-                              title: isEn ? 'Vowels Videos (Uyir)' : 'உயிர் எழுத்துகள் காணொளிகள்',
+                              title: isEn ? 'Vowels (Uyir)' : 'உயிர் எழுத்துகள்',
                               countText: '${uyirList.length}/12',
                               subtitle: isEn ? 'Letters lessons from அ to ஔ' : 'அ முதல் ஔ வரையிலான எழுத்துப் பாடங்கள்',
                               badgeColor: AppColors.uyirColor,
@@ -188,7 +188,7 @@ class _VideosScreenState extends State<VideosScreen> {
                           if (_selectedFilter == 'all' || _selectedFilter == 'mei') ...[
                             _buildSectionHeader(
                               icon: Icons.edit_note_rounded,
-                              title: isEn ? 'Consonants Videos (Mei)' : 'மெய் எழுத்துகள் காணொளிகள்',
+                              title: isEn ? 'Consonants (Mei)' : 'மெய் எழுத்துகள்',
                               countText: '${meiList.length}/18',
                               subtitle: isEn ? 'Letters lessons from க் to ன்' : 'க் முதல் ன் வரையிலான எழுத்துப் பாடங்கள்',
                               badgeColor: AppColors.meiColor,
@@ -205,7 +205,7 @@ class _VideosScreenState extends State<VideosScreen> {
                           if (_selectedFilter == 'all' || _selectedFilter == 'aytham') ...[
                             _buildSectionHeader(
                               icon: Icons.stars_rounded,
-                              title: isEn ? 'Aytham Letter Video (ஃ)' : 'ஆய்த எழுத்து காணொளி',
+                              title: isEn ? 'Aytham Letter (ஃ)' : 'ஆய்த எழுத்து (ஃ)',
                               countText: '${aythamList.length}/1',
                               subtitle: isEn ? 'Three-dotted unique Tamil letter (ஃ)' : 'முப்புள்ளி கொண்ட தனித்தமிழ் எழுத்து (ஃ)',
                               badgeColor: const Color(0xFF8338EC),
@@ -273,15 +273,20 @@ class _VideosScreenState extends State<VideosScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  isEn ? 'Watch & Learn Together!' : 'பார்த்து கற்றுக்கொள்வோம்!',
-                  style: AppTextStyles.cardTitle.copyWith(
-                    fontSize: 18,
-                    color: const Color(0xFF004D40),
-                    fontWeight: FontWeight.w900,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    isEn ? 'Watch & Learn Together!' : 'பார்த்துக்\nகற்றுக்கொள்வோம்!',
+                    style: AppTextStyles.cardTitle.copyWith(
+                      fontSize: 18,
+                      height: 1.22,
+                      color: const Color(0xFF004D40),
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
                   isEn
                       ? 'Vowels, Consonants & Aytham videos'
@@ -435,15 +440,17 @@ class _VideosScreenState extends State<VideosScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.textDark,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.textDark,
+                          ),
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -523,7 +530,7 @@ class _VideosScreenState extends State<VideosScreen> {
         (isMei && kMeiLetters.contains(video.title.trim())) ||
         (isAytham && video.title.trim() == 'ஃ');
 
-    final displayTitle = isLetterTitle ? '${video.title} - எழுத்து காணொளி' : video.title;
+    final displayTitle = isLetterTitle ? '${video.title} - காணொளி' : video.title;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -653,10 +660,11 @@ class _VideosScreenState extends State<VideosScreen> {
                     Text(
                       displayTitle,
                       style: AppTextStyles.cardTitle.copyWith(
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.w800,
+                        height: 1.25,
                       ),
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],

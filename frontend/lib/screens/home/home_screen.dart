@@ -102,7 +102,7 @@ class HomeScreen extends StatelessWidget {
                           title: langService.videosHeading,
                           subtitle: isEn
                               ? 'Watch and learn!'
-                              : 'பார்த்து கற்றுக்கொள்வோம்!',
+                              : 'பார்த்துக் கற்றுக்கொள்வோம்!',
                           tag: isEn
                               ? 'Vowels • Consonants • Aytham'
                               : 'உயிர் • மெய் • ஆய்த எழுத்துகள்',
