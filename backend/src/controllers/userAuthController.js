@@ -3,12 +3,17 @@
  */
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { OAuth2Client } = require('google-auth-library');
+let OAuth2Client;
+try {
+  ({ OAuth2Client } = require('google-auth-library'));
+} catch (e) {
+  OAuth2Client = null;
+}
 const UserModel = require('../models/userModel');
 const config = require('../config/env');
 const { successResponse, errorResponse } = require('../utils/apiResponse');
 
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || '');
+const googleClient = OAuth2Client ? new OAuth2Client(process.env.GOOGLE_CLIENT_ID || '') : null;
 
 class UserAuthController {
   /**
@@ -106,15 +111,17 @@ class UserAuthController {
       // 1. Verify idToken with Google if provided
       if (idToken) {
         try {
-          const ticket = await googleClient.verifyIdToken({
-            idToken,
-            audience: process.env.GOOGLE_CLIENT_ID ? [process.env.GOOGLE_CLIENT_ID] : undefined,
-          });
-          const payload = ticket.getPayload();
-          if (payload) {
-            userEmail = (payload.email || userEmail).toLowerCase();
-            userName = payload.name || userName;
-            userAvatar = payload.picture || userAvatar;
+          if (googleClient) {
+            const ticket = await googleClient.verifyIdToken({
+              idToken,
+              audience: process.env.GOOGLE_CLIENT_ID ? [process.env.GOOGLE_CLIENT_ID] : undefined,
+            });
+            const payload = ticket.getPayload();
+            if (payload) {
+              userEmail = (payload.email || userEmail).toLowerCase();
+              userName = payload.name || userName;
+              userAvatar = payload.picture || userAvatar;
+            }
           }
         } catch (tokenErr) {
           console.warn('Google idToken verification warning (proceeding with profile):', tokenErr.message);

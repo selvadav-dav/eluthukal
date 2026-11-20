@@ -396,11 +396,11 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => _buildVictoryDialog(stars),
+      builder: (ctx) => _buildVictoryDialog(ctx, stars),
     );
   }
 
-  Widget _buildVictoryDialog(int stars) {
+  Widget _buildVictoryDialog(BuildContext ctx, int stars) {
     String message = 'அருமை! இந்த நிலையை வெற்றிகரமாக முடித்துவிட்டாய்!';
     if (_levelNumber == 1) {
       message = 'அருமை! உயிரெழுத்துகளை வெற்றிகரமாக முடித்துவிட்டாய்! 🌟\nவாழ்த்துகள்! இப்போது மெய்யெழுத்து நிலையை விளையாடலாம்!';
