@@ -59,7 +59,7 @@ class _BalloonPopLevelScreenState extends State<BalloonPopLevelScreen>
 
   int get _totalStarsEarned {
     int count = 0;
-    for (int i = 1; i <= 4; i++) {
+    for (int i = 1; i <= 3; i++) {
       count += _balloonProgress.getLevelStars(i);
     }
     return count;
@@ -246,9 +246,9 @@ class _BalloonPopLevelScreenState extends State<BalloonPopLevelScreen>
                   ),
                 ),
                 Text(
-                  'நிலையைத் தேர்ந்தெடுங்கள் • 4 நிலைகள்',
+                  'நிலையைத் தேர்ந்தெடுங்கள்',
                   style: GoogleFonts.catamaran(
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: Colors.white.withValues(alpha: 0.92),
                   ),
@@ -283,7 +283,7 @@ class _BalloonPopLevelScreenState extends State<BalloonPopLevelScreen>
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '$_totalStarsEarned/12',
+                  '$_totalStarsEarned/9',
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
@@ -326,17 +326,11 @@ class _BalloonPopLevelScreenState extends State<BalloonPopLevelScreen>
         previewPalette = BalloonPalettes.purple;
         break;
       case 3:
+      default:
         unlockedColors = [const Color(0xFF00B0FF), const Color(0xFF00BFA5)];
         accentColor = const Color(0xFF00B0FF);
         sampleLetter = 'க';
         previewPalette = BalloonPalettes.blue;
-        break;
-      case 4:
-      default:
-        unlockedColors = [const Color(0xFFFF9100), const Color(0xFFFF3D00)];
-        accentColor = const Color(0xFFFF9100);
-        sampleLetter = 'ம';
-        previewPalette = BalloonPalettes.orange;
         break;
     }
 
@@ -506,20 +500,20 @@ class _BalloonPopLevelScreenState extends State<BalloonPopLevelScreen>
                     ),
                     const SizedBox(height: 12),
 
-                    // Middle row: Realistic Balloon Preview + Title & Description
+                    // Middle row: Realistic Balloon Preview + Large Clear Tamil Title
                     Row(
                       children: [
                         // Realistic 3D Balloon graphic preview
                         SizedBox(
-                          width: 60,
-                          height: 72,
+                          width: 64,
+                          height: 76,
                           child: isUnlocked
                               ? CustomPaint(
                                   painter: RealisticBalloonPainter(
                                     letter: sampleLetter,
                                     palette: previewPalette,
                                     wobble: 0.0,
-                                    scale: 1.0,
+                                    scale: 1.1,
                                     opacity: 1.0,
                                   ),
                                 )
@@ -530,55 +524,35 @@ class _BalloonPopLevelScreenState extends State<BalloonPopLevelScreen>
                                       letter: sampleLetter,
                                       palette: BalloonPalettes.purple,
                                       wobble: 0.0,
-                                      scale: 0.9,
+                                      scale: 0.95,
                                       opacity: 0.5,
                                     ),
                                   ),
                                 ),
                         ),
-                        const SizedBox(width: 14),
+                        const SizedBox(width: 16),
 
-                        // Title, Subtitle & Item Count
+                        // Title: Large, bold and clear Tamil text
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                level.nameTa,
-                                style: GoogleFonts.catamaran(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w900,
-                                  color: isUnlocked
-                                      ? Colors.white
-                                      : const Color(0xFF455A64),
-                                  letterSpacing: -0.2,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                '${level.nameEn} • ${level.subtitleTa}',
-                                style: GoogleFonts.catamaran(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                  color: isUnlocked
-                                      ? Colors.white.withValues(alpha: 0.92)
-                                      : const Color(0xFF78909C),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                level.descriptionTa,
-                                style: GoogleFonts.catamaran(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: isUnlocked
-                                      ? Colors.white.withValues(alpha: 0.8)
-                                      : const Color(0xFF90A4AE),
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                          child: Text(
+                            level.nameTa,
+                            style: GoogleFonts.catamaran(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w900,
+                              color: isUnlocked
+                                  ? Colors.white
+                                  : const Color(0xFF455A64),
+                              letterSpacing: -0.2,
+                              shadows: isUnlocked
+                                  ? [
+                                      Shadow(
+                                        color: Colors.black.withValues(alpha: 0.25),
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
                           ),
                         ),
                       ],

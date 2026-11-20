@@ -101,16 +101,11 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
     } else if (_levelNumber == 2) {
       _targetLetters = List<String>.from(BalloonPopData.meiLetters);
       _currentTargetLetter = _targetLetters[0];
-    } else if (_levelNumber == 3) {
-      // 24 progressive Uyirmei letters for this session
+    } else {
+      // Level 3: 24 progressive Uyirmei letters for this session
       final pool = List<String>.from(BalloonPopData.allUyirmeiLetters)..shuffle(_rng);
       _targetLetters = pool.take(24).toList();
       _currentTargetLetter = _targetLetters[0];
-    } else {
-      // Level 4: Word Discovery
-      _wordChallenges = List<WordChallenge>.from(BalloonPopData.wordChallenges);
-      _currentWordChallenge = _wordChallenges[0];
-      _currentTargetLetter = _currentWordChallenge!.targetLetter;
     }
   }
 
@@ -337,21 +332,14 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
     _audioService.playTamilAudio(_currentTargetLetter);
 
     // Check level completion
-    final totalTargets = _levelNumber == 4
-        ? _wordChallenges.length
-        : _targetLetters.length;
+    final totalTargets = _targetLetters.length;
 
     if (_correctPops >= totalTargets) {
       _onLevelVictory();
     } else {
       // Advance to next target letter
       _targetIndex++;
-      if (_levelNumber == 4) {
-        _currentWordChallenge = _wordChallenges[_targetIndex];
-        _currentTargetLetter = _currentWordChallenge!.targetLetter;
-      } else {
-        _currentTargetLetter = _targetLetters[_targetIndex];
-      }
+      _currentTargetLetter = _targetLetters[_targetIndex];
 
       // Pronounce new target letter
       Future.delayed(const Duration(milliseconds: 700), () {
@@ -421,10 +409,8 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
       message = 'அருமை! உயிரெழுத்துகளை வெற்றிகரமாக முடித்துவிட்டாய்! 🌟\nவாழ்த்துகள்! இப்போது மெய்யெழுத்து நிலையை விளையாடலாம்!';
     } else if (_levelNumber == 2) {
       message = 'சபாஷ்! மெய்யெழுத்துகளை வெற்றிகரமாக முடித்துவிட்டாய்! 🎉\nவாழ்த்துகள்! இப்போது உயிர்மெய் நிலையை விளையாடலாம்!';
-    } else if (_levelNumber == 3) {
-      message = 'அற்புதம்! உயிர்மெய் எழுத்துகளை வெற்றிகரமாக முடித்துவிட்டாய்! 🔥\nவாழ்த்துகள்! இப்போது சொல் கண்டுபிடி நிலையை விளையாடலாம்!';
-    } else if (_levelNumber == 4) {
-      message = 'மாபெரும் வெற்றி! சொல் கண்டுபிடி நிலையை வென்று சாதித்துவிட்டாய்! 🏆👑';
+    } else {
+      message = 'மாபெரும் வெற்றி! அனைத்து நிலைகளையும் வெற்றிகரமாக முடித்துவிட்டாய்! 🏆👑';
     }
 
     return Dialog(
@@ -563,7 +549,7 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
                   child: BouncyButton(
                     onPressed: () {
                       Navigator.pop(ctx);
-                      if (_levelNumber < 4) {
+                      if (_levelNumber < 3) {
                         // Advance to next unlocked level
                         Navigator.pushReplacement(
                           context,
@@ -620,11 +606,6 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
   // --------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
-    final totalTargets = _levelNumber == 4
-        ? _wordChallenges.length
-        : _targetLetters.length;
-    final progressFraction = (_correctPops / totalTargets).clamp(0.0, 1.0);
-
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -676,19 +657,6 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
                       const SizedBox(height: 8),
                       _buildTargetBanner(),
                     ],
-                  ),
-                ),
-              ),
-
-              // 5. Bottom Instructions & Progress Footer
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: IgnorePointer(
-                  child: SafeArea(
-                    top: false,
-                    child: _buildBottomFooter(progressFraction, totalTargets),
                   ),
                 ),
               ),
@@ -784,10 +752,10 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
           BouncyButton(
             onPressed: () => Navigator.pop(context),
             child: Container(
-              width: 42,
-              height: 42,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.90),
+                color: Colors.white.withValues(alpha: 0.92),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
@@ -798,51 +766,15 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
                 ],
               ),
               child: const Icon(Icons.arrow_back_ios_new_rounded,
-                  color: Color(0xFF0277BD), size: 18),
+                  color: Color(0xFF0277BD), size: 20),
             ),
           ),
-          const SizedBox(width: 10),
 
-          // Level Title badge
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.92),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Icon(_levelInfo.icon, size: 20, color: _levelInfo.gradientColors.first),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'நிலை $_levelNumber: ${_levelInfo.nameTa}',
-                      style: GoogleFonts.catamaran(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF01579B),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
+          const Spacer(),
 
           // Score Badge
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
               color: const Color(0xFFFFD54F),
               borderRadius: BorderRadius.circular(20),
@@ -857,12 +789,12 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.star_rounded, size: 18, color: Color(0xFFE65100)),
-                const SizedBox(width: 4),
+                const Icon(Icons.star_rounded, size: 20, color: Color(0xFFE65100)),
+                const SizedBox(width: 5),
                 Text(
                   '$_score',
                   style: GoogleFonts.catamaran(
-                    fontSize: 15,
+                    fontSize: 16,
                     fontWeight: FontWeight.w900,
                     color: const Color(0xFFBF360C),
                   ),
@@ -870,7 +802,7 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
 
           // Audio speaker / mute toggle
           BouncyButton(
@@ -880,10 +812,10 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
               });
             },
             child: Container(
-              width: 42,
-              height: 42,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.90),
+                color: Colors.white.withValues(alpha: 0.92),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
@@ -898,7 +830,7 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
                     ? Icons.volume_up_rounded
                     : Icons.volume_off_rounded,
                 color: const Color(0xFF0277BD),
-                size: 20,
+                size: 22,
               ),
             ),
           ),
@@ -911,14 +843,14 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(24),
           border: Border.all(color: const Color(0xFF81D4FA), width: 2),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF0288D1).withValues(alpha: 0.18),
+              color: const Color(0xFF0288D1).withValues(alpha: 0.16),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -928,8 +860,8 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
           children: [
             // Target Letter Spotlight Avatar
             Container(
-              width: 52,
-              height: 52,
+              width: 56,
+              height: 56,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: _levelInfo.gradientColors,
@@ -939,7 +871,7 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: _levelInfo.gradientColors.first.withValues(alpha: 0.4),
+                    color: _levelInfo.gradientColors.first.withValues(alpha: 0.35),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
@@ -949,7 +881,7 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
               child: Text(
                 _currentTargetLetter,
                 style: GoogleFonts.catamaran(
-                  fontSize: 26,
+                  fontSize: 28,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
                 ),
@@ -961,54 +893,24 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (_levelNumber == 4 && _currentWordChallenge != null) ...[
-                    Row(
-                      children: [
-                        Text(
-                          _currentWordChallenge!.emoji,
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          _currentWordChallenge!.word,
-                          style: GoogleFonts.catamaran(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            color: const Color(0xFF01579B),
-                          ),
-                        ),
-                      ],
+                  Text(
+                    'இலக்கு எழுத்து:',
+                    style: GoogleFonts.catamaran(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF78909C),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      _currentWordChallenge!.hintTa,
-                      style: GoogleFonts.catamaran(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF0288D1),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    "'$_currentTargetLetter' பலூனை உடைக்கவும்! 🎈",
+                    style: GoogleFonts.catamaran(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: const Color(0xFF01579B),
                     ),
-                  ] else ...[
-                    Text(
-                      'இலக்கு எழுத்து:',
-                      style: GoogleFonts.catamaran(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF546E7A),
-                      ),
-                    ),
-                    Text(
-                      'இந்த பலூனை உடைக்கவும்! 🎈',
-                      style: GoogleFonts.catamaran(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF01579B),
-                      ),
-                    ),
-                  ],
+                  ),
                 ],
               ),
             ),
@@ -1017,7 +919,7 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
             BouncyButton(
               onPressed: _speakCurrentTarget,
               child: Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: const Color(0xFFE1F5FE),
                   shape: BoxShape.circle,
@@ -1026,69 +928,12 @@ class _BalloonPopGameplayScreenState extends State<BalloonPopGameplayScreen>
                 child: const Icon(
                   Icons.campaign_rounded,
                   color: Color(0xFF0288D1),
-                  size: 22,
+                  size: 24,
                 ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildBottomFooter(double progressFraction, int totalTargets) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.94),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFB3E5FC), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'முன்னேற்றம் (Progress):',
-                style: GoogleFonts.catamaran(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF546E7A),
-                ),
-              ),
-              Text(
-                '$_correctPops / $totalTargets',
-                style: GoogleFonts.catamaran(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w900,
-                  color: const Color(0xFF01579B),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: progressFraction,
-              minHeight: 8,
-              backgroundColor: const Color(0xFFE1F5FE),
-              valueColor: AlwaysStoppedAnimation<Color>(
-                _levelInfo.gradientColors.first,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

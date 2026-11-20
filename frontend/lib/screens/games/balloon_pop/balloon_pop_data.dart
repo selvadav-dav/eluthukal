@@ -210,8 +210,6 @@ class BalloonLevelInfo {
         return 'முதலில் எளிய நிலையை முடிக்கவும்.';
       case 3:
         return 'முதலில் நடுத்தர நிலையை முடிக்கவும்.';
-      case 4:
-        return 'முதலில் கடின நிலையை முடிக்கவும்.';
       default:
         return 'தொடங்கலாம்!';
     }
@@ -247,16 +245,6 @@ class BalloonLevelInfo {
       icon: Icons.local_fire_department_rounded,
       gradientColors: [Color(0xFFFF9800), Color(0xFFFF5722)],
       targetCount: 24, // 24 letters per round
-    ),
-    BalloonLevelInfo(
-      levelNumber: 4,
-      nameTa: 'சொல் கண்டுபிடி',
-      nameEn: 'Word Discovery (Expert)',
-      difficultyTa: 'நிபுணர் நிலை (Expert)',
-      descriptionTa: 'தமிழ் சொற்களில் கேட்கப்படும் சரியான எழுத்தை உடைக்கவும்!',
-      icon: Icons.emoji_events_rounded,
-      gradientColors: [Color(0xFF9C27B0), Color(0xFF673AB7)],
-      targetCount: 15,
     ),
   ];
 }

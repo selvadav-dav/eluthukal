@@ -30,12 +30,11 @@ class LevelProgress {
 class BalloonPopProgressService extends ChangeNotifier {
   static const String _storageKey = 'agaram_balloon_pop_progress_v1';
 
-  int _unlockedLevel = 1; // 1 to 4
+  int _unlockedLevel = 1; // 1 to 3
   final Map<int, LevelProgress> _levels = {
     1: const LevelProgress(),
     2: const LevelProgress(),
     3: const LevelProgress(),
-    4: const LevelProgress(),
   };
 
   int get unlockedLevel => _unlockedLevel;
@@ -65,11 +64,11 @@ class BalloonPopProgressService extends ChangeNotifier {
         final Map<String, dynamic> data = jsonDecode(raw);
         _unlockedLevel = (data['unlockedLevel'] as int?) ?? 1;
         if (_unlockedLevel < 1) _unlockedLevel = 1;
-        if (_unlockedLevel > 4) _unlockedLevel = 4;
+        if (_unlockedLevel > 3) _unlockedLevel = 3;
 
         final levelsMap = data['levels'] as Map<String, dynamic>?;
         if (levelsMap != null) {
-          for (int i = 1; i <= 4; i++) {
+          for (int i = 1; i <= 3; i++) {
             if (levelsMap.containsKey(i.toString())) {
               _levels[i] = LevelProgress.fromJson(
                 levelsMap[i.toString()] as Map<String, dynamic>,
@@ -115,7 +114,7 @@ class BalloonPopProgressService extends ChangeNotifier {
     );
 
     // Sequentially unlock next level if this was the latest unlocked level
-    if (levelNumber == _unlockedLevel && _unlockedLevel < 4) {
+    if (levelNumber == _unlockedLevel && _unlockedLevel < 3) {
       _unlockedLevel = levelNumber + 1;
     }
 
