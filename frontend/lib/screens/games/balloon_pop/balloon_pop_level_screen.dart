@@ -229,28 +229,38 @@ class _BalloonPopLevelScreenState extends State<BalloonPopLevelScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'பலூன் உடைத்தல்',
-                  style: GoogleFonts.catamaran(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    letterSpacing: -0.2,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withValues(alpha: 0.25),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'பலூன் உடைத்தல்',
+                    style: GoogleFonts.catamaran(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: -0.2,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withValues(alpha: 0.25),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    maxLines: 1,
                   ),
                 ),
-                Text(
-                  'நிலையைத் தேர்ந்தெடுங்கள்',
-                  style: GoogleFonts.catamaran(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white.withValues(alpha: 0.92),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'நிலையைத் தேர்ந்தெடுங்கள்',
+                    style: GoogleFonts.catamaran(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white.withValues(alpha: 0.92),
+                    ),
+                    maxLines: 1,
                   ),
                 ),
               ],
@@ -455,7 +465,7 @@ class _BalloonPopLevelScreenState extends State<BalloonPopLevelScreen>
 
                         const Spacer(),
 
-                        // If locked: lock icon. If unlocked: 3 stars display
+                        // If locked: lock icon
                         if (!isUnlocked)
                           Container(
                             padding: const EdgeInsets.all(6),
@@ -475,32 +485,12 @@ class _BalloonPopLevelScreenState extends State<BalloonPopLevelScreen>
                               color: Colors.white,
                               size: 18,
                             ),
-                          )
-                        else
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: List.generate(3, (starIdx) {
-                              final bool earned = starIdx < stars;
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 2),
-                                child: Icon(
-                                  earned
-                                      ? Icons.star_rounded
-                                      : Icons.star_outline_rounded,
-                                  color: earned
-                                      ? const Color(0xFFFFD700)
-                                      : Colors.white.withValues(alpha: 0.4),
-                                  size: 24,
-                                ),
-                              );
-                            }),
                           ),
                       ],
                     ),
                     const SizedBox(height: 12),
 
-                    // Middle row: Realistic Balloon Preview + Large Clear Tamil Title
+                    // Middle row: Realistic Balloon Preview + Large Clear Tamil Title (Single Unbroken Line)
                     Row(
                       children: [
                         // Realistic 3D Balloon graphic preview
@@ -532,26 +522,31 @@ class _BalloonPopLevelScreenState extends State<BalloonPopLevelScreen>
                         ),
                         const SizedBox(width: 16),
 
-                        // Title: Large, bold and clear Tamil text
+                        // Title: Large, bold and clear Tamil text on a single line
                         Expanded(
-                          child: Text(
-                            level.nameTa,
-                            style: GoogleFonts.catamaran(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w900,
-                              color: isUnlocked
-                                  ? Colors.white
-                                  : const Color(0xFF455A64),
-                              letterSpacing: -0.2,
-                              shadows: isUnlocked
-                                  ? [
-                                      Shadow(
-                                        color: Colors.black.withValues(alpha: 0.25),
-                                        blurRadius: 6,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ]
-                                  : null,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              level.nameTa,
+                              style: GoogleFonts.catamaran(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w900,
+                                color: isUnlocked
+                                    ? Colors.white
+                                    : const Color(0xFF455A64),
+                                shadows: isUnlocked
+                                    ? [
+                                        Shadow(
+                                          color: Colors.black.withValues(alpha: 0.25),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ]
+                                    : null,
+                              ),
+                              maxLines: 1,
+                              softWrap: false,
                             ),
                           ),
                         ),
