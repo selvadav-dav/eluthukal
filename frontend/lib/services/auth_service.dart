@@ -212,6 +212,11 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Force Google account chooser so user can select or switch account
+      try {
+        await _googleSignIn.signOut();
+      } catch (_) {}
+
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
         // User cancelled popup
