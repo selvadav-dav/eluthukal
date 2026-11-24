@@ -460,7 +460,7 @@ class _GamesScreenState extends State<GamesScreen> {
             titleTa: 'பலூன் உடைத்தல்',
             titleEn: 'Balloon Pop',
             icon: Icons.bubble_chart_rounded,
-            imagePath: 'assets/Gif/games.gif',
+            imagePath: 'assets/Gif/balloon game.gif',
             gradientColors: const [Color(0xFFFF4081), Color(0xFF7C4DFF)],
             onTap: () {
               Navigator.push(
