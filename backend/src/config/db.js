@@ -19,7 +19,7 @@ if (isPostgres) {
     database: config.db.name,
     max: config.db.connectionLimit,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 5000,
+    connectionTimeoutMillis: 5001,
   });
 
   // Query translator from MySQL to PostgreSQL

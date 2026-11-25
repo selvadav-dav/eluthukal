@@ -7,20 +7,29 @@ class ApiConfig {
   static String? customServerUrl;
   static String? _discoveredBaseUrl;
 
+  /// Defaults to the local backend on this PC (port 5001).
+  /// To use the live server instead:
+  ///   flutter run --dart-define=API_BASE_URL=https://eluthukkal-api.macvelsoftware.com/api/v1
+  static const String _envBaseUrl = String.fromEnvironment('API_BASE_URL');
+
+  static String get _localBaseUrl => (!kIsWeb && Platform.isAndroid)
+      ? 'http://10.0.2.2:5001/api/v1'
+      : 'http://localhost:5001/api/v1';
+
   /// Candidate backend URLs for seamless connectivity across physical devices, emulators, and web
   static List<String> get candidateBaseUrls {
     if (customServerUrl != null && customServerUrl!.trim().isNotEmpty) {
       return [customServerUrl!.trim()];
     }
+    if (_envBaseUrl.isNotEmpty) return [_envBaseUrl];
     if (_discoveredBaseUrl != null && _discoveredBaseUrl!.isNotEmpty) {
       return [_discoveredBaseUrl!];
     }
     return [
-      'https://eluthukkal-api.macvelsoftware.com/api/v1',
-      if (!kIsWeb && Platform.isAndroid) 'http://192.168.1.40:5000/api/v1',
-      if (!kIsWeb && Platform.isAndroid) 'http://192.168.1.49:5000/api/v1',
-      if (!kIsWeb && Platform.isAndroid) 'http://10.0.2.2:5000/api/v1',
-      'http://localhost:5000/api/v1',
+      if (!kIsWeb && Platform.isAndroid) 'http://10.0.2.2:5001/api/v1',
+      if (!kIsWeb && Platform.isAndroid) 'http://192.168.1.40:5001/api/v1',
+      if (!kIsWeb && Platform.isAndroid) 'http://192.168.1.49:5001/api/v1',
+      'http://localhost:5001/api/v1',
     ];
   }
 
@@ -28,10 +37,11 @@ class ApiConfig {
     if (customServerUrl != null && customServerUrl!.trim().isNotEmpty) {
       return customServerUrl!.trim();
     }
+    if (_envBaseUrl.isNotEmpty) return _envBaseUrl;
     if (_discoveredBaseUrl != null && _discoveredBaseUrl!.isNotEmpty) {
       return _discoveredBaseUrl!;
     }
-    return 'https://eluthukkal-api.macvelsoftware.com/api/v1';
+    return _localBaseUrl;
   }
 
   static void setWorkingBaseUrl(String url) {

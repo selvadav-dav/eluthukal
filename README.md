@@ -91,12 +91,12 @@ Ensure you have the following installed on your machine:
 3. Configure environment variables:
    * Copy `.env.example` to `.env` and configure your database credentials:
    ```env
-   PORT=5000
+   PORT=5001
    DB_HOST=localhost
    DB_PORT=3306
    DB_USER=root
    DB_PASSWORD=your_mysql_password
-   DB_NAME=agaram_db
+   DB_NAME=eluthukal
    JWT_SECRET=your_jwt_secret_key
    ```
 
@@ -109,8 +109,8 @@ Ensure you have the following installed on your machine:
    ```bash
    npm run dev
    ```
-   *API will run at:* `http://localhost:5000`  
-   *Health Check:* `http://localhost:5000/api/health`
+   *API will run at:* `http://localhost:5001`  
+   *Health Check:* `http://localhost:5001/api/health`
 
 ---
 

@@ -217,7 +217,7 @@ class CandyColorPalette {
     'கி': Color(0xFF76FF03), // Lime Chartreuse
     'கீ': Color(0xFFBA68C8), // Orchid Lavender
     'கு': Color(0xFF2979FF), // Cobalt Blue
-    'கூ': Color(0xFFD50000), // Crimson Ruby
+    'கூ': Color(0xFFD50010), // Crimson Ruby
     'கெ': Color(0xFFF50057), // Hot Pink
     'கே': Color(0xFFFFB300), // Amber Gold
     'கை': Color(0xFF00BFA5), // Mint Jade
@@ -233,7 +233,7 @@ class CandyColorPalette {
     // -------------------------------------------------------------
     'அ': CandyLetterStyle(
       primaryColor: Color(0xFFFF1744),
-      gradientColors: [Color(0xFFFF5252), Color(0xFFFF1744), Color(0xFFD50000)],
+      gradientColors: [Color(0xFFFF5252), Color(0xFFFF1744), Color(0xFFD50010)],
       borderColor: Color(0xFFFF8A80),
       shadowColor: Color(0xFF8A0000),
     ),
@@ -456,8 +456,8 @@ class CandyColorPalette {
       shadowColor: Color(0xFF002171),
     ),
     'கூ': CandyLetterStyle(
-      primaryColor: Color(0xFFD50000),
-      gradientColors: [Color(0xFFFF5252), Color(0xFFD50000), Color(0xFF8A0000)],
+      primaryColor: Color(0xFFD50010),
+      gradientColors: [Color(0xFFFF5252), Color(0xFFD50010), Color(0xFF8A0000)],
       borderColor: Color(0xFFFF8A80),
       shadowColor: Color(0xFF560000),
     ),
@@ -503,7 +503,7 @@ class CandyColorPalette {
   static const List<CandyLetterStyle> dynamicPalette = [
     CandyLetterStyle(
       primaryColor: Color(0xFFFF1744),
-      gradientColors: [Color(0xFFFF5252), Color(0xFFFF1744), Color(0xFFD50000)],
+      gradientColors: [Color(0xFFFF5252), Color(0xFFFF1744), Color(0xFFD50010)],
       borderColor: Color(0xFFFF8A80),
       shadowColor: Color(0xFF8A0000),
     ),
@@ -592,8 +592,8 @@ class CandyColorPalette {
       shadowColor: Color(0xFF002171),
     ),
     CandyLetterStyle(
-      primaryColor: Color(0xFFD50000),
-      gradientColors: [Color(0xFFFF5252), Color(0xFFD50000), Color(0xFF8A0000)],
+      primaryColor: Color(0xFFD50010),
+      gradientColors: [Color(0xFFFF5252), Color(0xFFD50010), Color(0xFF8A0000)],
       borderColor: Color(0xFFFF8A80),
       shadowColor: Color(0xFF560000),
     ),

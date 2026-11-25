@@ -127,7 +127,7 @@ npm install
    DB_PORT=3306
    DB_USER=root
    DB_PASSWORD=your_mysql_password
-   DB_NAME=agaram_db
+   DB_NAME=eluthukal
    ```
 
 ---
@@ -136,14 +136,14 @@ npm install
 
 | Variable | Default | Description |
 | :--- | :--- | :--- |
-| `PORT` | `5000` | Server listening port |
+| `PORT` | `5001` | Server listening port |
 | `NODE_ENV` | `development` | Environment mode (`development`, `production`) |
 | `API_PREFIX` | `/api/v1` | Base route prefix |
 | `DB_HOST` | `localhost` | MySQL hostname or IP |
 | `DB_PORT` | `3306` | MySQL port |
 | `DB_USER` | `root` | MySQL database user |
 | `DB_PASSWORD` | `root` | MySQL database password |
-| `DB_NAME` | `agaram_db` | MySQL database name |
+| `DB_NAME` | `eluthukal` | MySQL database name |
 | `JWT_SECRET` | `agaram_super_secret...` | Secret key for signing JWT tokens |
 | `JWT_EXPIRES_IN`| `7d` | Token validity duration |
 | `UPLOAD_PATH` | `uploads` | Folder for storing file uploads |
@@ -164,7 +164,7 @@ npm run db:init
 
 This will:
 - Connect to MySQL
-- Automatically create the `agaram_db` database
+- Automatically create the `eluthukal` database
 - Create all 15 tables with foreign keys and indexes
 - Seed default lessons, Uyir letters, Mei letters, reading stories, videos, quizzes, games, and the super admin account!
 
@@ -193,7 +193,7 @@ npm start
 ```
 
 ### Verify Server Health
-Visit: [http://localhost:5000/api/health](http://localhost:5000/api/health)
+Visit: [http://localhost:5001/api/health](http://localhost:5001/api/health)
 ```json
 {
   "success": true,
@@ -317,7 +317,7 @@ All data API routes are prefixed with `/api/v1/`.
   - `uploads/images/`
   - `uploads/audio/`
   - `uploads/videos/`
-- Express serves these statically at: `http://localhost:5000/uploads/...`
+- Express serves these statically at: `http://localhost:5001/uploads/...`
 - File size limit: **50MB** (configurable in `.env`).
 
 ---
@@ -325,9 +325,9 @@ All data API routes are prefixed with `/api/v1/`.
 ## 📱 Flutter Frontend Connection Guide
 
 ### 1. Base URL Resolution
-- **Android Emulator**: Use `http://10.0.2.2:5000/api/v1`
-- **iOS Simulator**: Use `http://localhost:5000/api/v1`
-- **Physical Device**: Use your local WiFi IP: `http://192.168.x.x:5000/api/v1`
+- **Android Emulator**: Use `http://10.0.2.2:5001/api/v1`
+- **iOS Simulator**: Use `http://localhost:5001/api/v1`
+- **Physical Device**: Use your local WiFi IP: `http://192.168.x.x:5001/api/v1`
 
 ### 2. Sample Flutter Integration Service
 ```dart
@@ -335,7 +335,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AgaramApiService {
-  static const String baseUrl = 'http://10.0.2.2:5000/api/v1';
+  static const String baseUrl = 'http://10.0.2.2:5001/api/v1';
 
   // Fetch Uyir Letters from MySQL Backend
   static async Future<List<dynamic>> fetchUyirLetters() async {
@@ -368,29 +368,29 @@ class AgaramApiService {
 
 ### 1. Health Check
 ```bash
-curl -X GET http://localhost:5000/api/health
+curl -X GET http://localhost:5001/api/health
 ```
 
 ### 2. Fetch Uyir Letters
 ```bash
-curl -X GET http://localhost:5000/api/v1/letters?type=uyir
+curl -X GET http://localhost:5001/api/v1/letters?type=uyir
 ```
 
 ### 3. Admin Login
 ```bash
-curl -X POST http://localhost:5000/api/v1/auth/admin/login \
+curl -X POST http://localhost:5001/api/v1/auth/admin/login \
   -H "Content-Type: application/json" \
   -d '{"username": "superadmin", "password": "Admin@123"}'
 ```
 
 ### 4. Fetch Reading Stories
 ```bash
-curl -X GET http://localhost:5000/api/v1/stories
+curl -X GET http://localhost:5001/api/v1/stories
 ```
 
 ### 5. Submit Quiz Answers
 ```bash
-curl -X POST http://localhost:5000/api/v1/quizzes/quiz_uyir/submit \
+curl -X POST http://localhost:5001/api/v1/quizzes/quiz_uyir/submit \
   -H "Content-Type: application/json" \
   -d '{
     "userId": "default_child",

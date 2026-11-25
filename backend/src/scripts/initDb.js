@@ -1,6 +1,6 @@
 /**
  * AGARAM Database Initialization Script
- * Connects to MySQL, creates agaram_db, and executes schema & seeds safely.
+ * Connects to MySQL, creates eluthukal, and executes schema & seeds safely.
  */
 const fs = require('fs');
 const path = require('path');
@@ -16,7 +16,7 @@ const DB_CONFIG = {
   multipleStatements: true,
 };
 
-const DB_NAME = process.env.DB_NAME || 'agaram_db';
+const DB_NAME = process.env.DB_NAME || 'eluthukal';
 
 async function initDatabase() {
   console.log('====================================================');

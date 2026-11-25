@@ -16,7 +16,7 @@ const DB_CONFIG = {
   port: parseInt(process.env.DB_PORT, 10) || 3306,
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'root',
-  database: process.env.DB_NAME || 'agaram_db',
+  database: process.env.DB_NAME || 'eluthukal',
 };
 
 async function uploadFile(filePath, customPublicId) {

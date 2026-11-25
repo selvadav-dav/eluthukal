@@ -142,7 +142,7 @@ async function run() {
       port: parseInt(process.env.DB_PORT, 10) || 3306,
       user: process.env.DB_USER || 'root',
       password: process.env.DB_PASSWORD || 'root',
-      database: process.env.DB_NAME || 'agaram_db',
+      database: process.env.DB_NAME || 'eluthukal',
       connectTimeout: 4000,
     };
     const conn = await mysql.createConnection(DB_CONFIG);

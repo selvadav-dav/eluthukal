@@ -3,11 +3,11 @@
 -- Relational MySQL Schema with Foreign Keys, Indexes & Seed Data
 -- =====================================================================
 
-CREATE DATABASE IF NOT EXISTS agaram_db 
+CREATE DATABASE IF NOT EXISTS eluthukal 
 CHARACTER SET utf8mb4 
 COLLATE utf8mb4_unicode_ci;
 
-USE agaram_db;
+USE eluthukal;
 
 -- Disable foreign key checks during schema re-creation
 SET FOREIGN_KEY_CHECKS = 0;

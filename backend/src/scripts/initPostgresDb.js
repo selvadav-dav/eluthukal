@@ -1,6 +1,6 @@
 /**
  * AGARAM PostgreSQL Database Initialization Script
- * Connects to PostgreSQL, creates agaram_db if not exists, and executes schema.postgres.sql.
+ * Connects to PostgreSQL, creates eluthukal if not exists, and executes schema.postgres.sql.
  */
 const fs = require('fs');
 const path = require('path');
@@ -11,7 +11,7 @@ const DB_HOST = process.env.DB_HOST || 'localhost';
 const DB_PORT = parseInt(process.env.DB_PORT, 10) || 5432;
 const DB_USER = process.env.DB_USER || process.env.DB_USERNAME || 'postgres';
 const DB_PASSWORD = process.env.DB_PASSWORD || process.env.DB_PSSWORD || 'root';
-const DB_NAME = process.env.DB_NAME || process.env.DB_DATABASE || 'agaram_db';
+const DB_NAME = process.env.DB_NAME || process.env.DB_DATABASE || 'eluthukal';
 
 async function initPostgresDatabase() {
   console.log('====================================================');
@@ -19,7 +19,7 @@ async function initPostgresDatabase() {
   console.log(`📡 Connecting to host: ${DB_HOST}:${DB_PORT} as user: ${DB_USER}`);
   console.log('====================================================');
 
-  // 1. Connect to postgres to ensure agaram_db exists
+  // 1. Connect to postgres to ensure eluthukal exists
   let createdDb = false;
   try {
     const adminClient = new Client({
@@ -49,7 +49,7 @@ async function initPostgresDatabase() {
     console.warn(`⚠️ Note: Could not auto-create database via 'postgres' db: ${err.message}. Will attempt direct connection to '${DB_NAME}'.`);
   }
 
-  // 2. Connect to target agaram_db
+  // 2. Connect to target eluthukal
   const dbClient = new Client({
     host: DB_HOST,
     port: DB_PORT,
