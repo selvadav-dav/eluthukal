@@ -79,7 +79,7 @@ async function initPostgresDatabase() {
     const hash = await bcrypt.hash(superAdminPassword, salt);
     await dbClient.query(
       `INSERT INTO admins (username, email, password_hash, role, full_name, is_active)
-       VALUES ('superadmin', 'admin@agaram.app', $1, 'super_admin', 'AGARAM Super Admin', TRUE)
+       VALUES ('superadmin', 'admin@agaram.app', $1, 'super_admin', 'ELUTHUKAL Super Admin', TRUE)
        ON CONFLICT (username) DO UPDATE SET password_hash = EXCLUDED.password_hash;`,
       [hash]
     );

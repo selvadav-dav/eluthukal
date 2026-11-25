@@ -72,7 +72,7 @@ async function initDatabase() {
 
     await connection.query(
       `INSERT INTO admins (username, email, password_hash, role, full_name, is_active)
-       VALUES (?, ?, ?, 'super_admin', 'AGARAM Super Admin', TRUE)
+       VALUES (?, ?, ?, 'super_admin', 'ELUTHUKAL Super Admin', TRUE)
        ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash);`,
       ['superadmin', 'admin@agaram.app', hash]
     );

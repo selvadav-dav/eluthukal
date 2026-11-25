@@ -181,7 +181,7 @@ export const UsersPage: React.FC = () => {
 
       {/* Filter / Search Bar */}
       <div className="filter-bar">
-        <div className="search-box">
+        <div className="search-input">
           <Search size={16} />
           <input
             type="text"

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../models/car_racing_game_model.dart';
 import '../../models/letter_basket_game_model.dart';
 import '../../models/letter_fishing_game_model.dart';
@@ -29,7 +30,10 @@ class _GamesScreenState extends State<GamesScreen> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([widget.progressService, LanguageService.instance]),
+      listenable: Listenable.merge([
+        widget.progressService,
+        LanguageService.instance,
+      ]),
       builder: (context, _) {
         final isEn = LanguageService.instance.isEnglish;
 
@@ -59,9 +63,7 @@ class _GamesScreenState extends State<GamesScreen> {
                       Expanded(
                         child: ListView(
                           padding: const EdgeInsets.fromLTRB(16, 2, 16, 95),
-                          children: [
-                            _buildGamesContent(context, isEn),
-                          ],
+                          children: [_buildGamesContent(context, isEn)],
                         ),
                       ),
                     ],
@@ -81,7 +83,11 @@ class _GamesScreenState extends State<GamesScreen> {
       children: [
         if (Navigator.canPop(context)) ...[
           IconButton(
-            icon: const Icon(Icons.arrow_back_ios_rounded, size: 20, color: Color(0xFF1E1B2E)),
+            icon: const Icon(
+              Icons.arrow_back_ios_rounded,
+              size: 20,
+              color: Color(0xFF1E1B2E),
+            ),
             onPressed: () => Navigator.pop(context),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -143,12 +149,18 @@ class _GamesScreenState extends State<GamesScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFFEDE7F6),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: const Color(0xFFD1C4E9).withValues(alpha: 0.6)),
+            border: Border.all(
+              color: const Color(0xFFD1C4E9).withValues(alpha: 0.6),
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.sports_esports_rounded, size: 16, color: Color(0xFF5E35B1)),
+              const Icon(
+                Icons.sports_esports_rounded,
+                size: 16,
+                color: Color(0xFF5E35B1),
+              ),
               const SizedBox(width: 5),
               Text(
                 '${widget.progressService.progress.gamesPlayed}',
@@ -174,7 +186,11 @@ class _GamesScreenState extends State<GamesScreen> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.star_rounded, size: 17, color: Color(0xFFD97706)),
+              const Icon(
+                Icons.star_rounded,
+                size: 17,
+                color: Color(0xFFD97706),
+              ),
               const SizedBox(width: 3),
               Text(
                 '${widget.progressService.stars}',
@@ -301,229 +317,219 @@ class _GamesScreenState extends State<GamesScreen> {
 
   // Games content displaying our core games with attractive game-specific illustration backgrounds
   Widget _buildGamesContent(BuildContext context, bool isEn) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final double totalWidth = constraints.maxWidth;
-        const double spacing = 12.0;
+    const double spacing = 12.0;
 
-        // All 7 core games with game-specific animated GIF artwork
-        final ourGridGames = [
-          // Game 1: தமிழ் எழுத்து மிட்டாய் (Tamil Letter Candy)
-          _GameTileModel(
-            id: 'candy_crush',
-            titleTa: 'எழுத்து மிட்டாய்',
-            titleEn: 'Letter Candy',
-            icon: Icons.grid_view_rounded,
-            imagePath: 'assets/Gif/candy crush game.gif',
-            gradientColors: const [Color(0xFF9C27B0), Color(0xFF6A1B9A)],
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TamilLetterCandyGame(
-                    progressService: widget.progressService,
-                  ),
-                ),
-              );
-            },
-          ),
+    // All core games with game-specific animated GIF artwork
+    final ourGridGames = [
+      // Game 1: தமிழ் எழுத்து மிட்டாய் (Tamil Letter Candy)
+      _GameTileModel(
+        id: 'candy_crush',
+        titleTa: 'எழுத்து மிட்டாய்',
+        titleEn: 'Letter Candy',
+        icon: Icons.grid_view_rounded,
+        imagePath: 'assets/Gif/candy crush game.gif',
+        gradientColors: const [Color(0xFF9C27B0), Color(0xFF6A1B9A)],
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  TamilLetterCandyGame(progressService: widget.progressService),
+            ),
+          );
+        },
+      ),
 
-          // Game 2: அகரம் ஓட்டம் (Agaram Run)
-          _GameTileModel(
-            id: 'agaram_run',
-            titleTa: 'அகரம் ஓட்டம்',
-            titleEn: 'Agaram Run',
-            icon: Icons.directions_run_rounded,
-            imagePath: 'assets/Gif/agaram run game.gif',
-            gradientColors: const [Color(0xFF43A047), Color(0xFF1B5E20)],
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AgaramRunGame(
-                    progressService: widget.progressService,
-                  ),
-                ),
-              );
-            },
-          ),
+      // Game 2: அகரம் ஓட்டம் (Agaram Run)
+      _GameTileModel(
+        id: 'agaram_run',
+        titleTa: 'அகரம் ஓட்டம்',
+        titleEn: 'Agaram Run',
+        icon: Icons.directions_run_rounded,
+        imagePath: 'assets/Gif/agaram run game.gif',
+        gradientColors: const [Color(0xFF43A047), Color(0xFF1B5E20)],
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  AgaramRunGame(progressService: widget.progressService),
+            ),
+          );
+        },
+      ),
 
-          // Game 3: பழம் வெட்டு (Fruit Cutter Game)
-          _GameTileModel(
-            id: 'fruit_cutter',
-            titleTa: 'பழம் வெட்டு',
-            titleEn: 'Fruit Cutter',
-            icon: Icons.restaurant_rounded,
-            imagePath: 'assets/Gif/fruit cutter game.gif',
-            gradientColors: const [Color(0xFFFF5722), Color(0xFFE91E63)],
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FruitCutterGame(
-                    progressService: widget.progressService,
-                  ),
-                ),
-              );
-            },
-          ),
+      // Game 3: பழம் வெட்டு (Fruit Cutter Game)
+      _GameTileModel(
+        id: 'fruit_cutter',
+        titleTa: 'பழம் வெட்டு',
+        titleEn: 'Fruit Cutter',
+        icon: Icons.restaurant_rounded,
+        imagePath: 'assets/Gif/fruit cutter game.gif',
+        gradientColors: const [Color(0xFFFF5722), Color(0xFFE91E63)],
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  FruitCutterGame(progressService: widget.progressService),
+            ),
+          );
+        },
+      ),
 
-          // Game 4: உயிர் எழுத்து கார் பந்தயம் (Car Racing Game)
-          _GameTileModel(
-            id: 'car_racing',
-            titleTa: 'கார் பந்தயம்',
-            titleEn: 'Car Racing',
-            icon: Icons.directions_car_rounded,
-            imagePath: 'assets/Gif/car game.gif',
-            gradientColors: const [Color(0xFFFF5252), Color(0xFFC62828)],
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CarRacingGame(
-                    progressService: widget.progressService,
-                    mode: RacingGameMode.uyir,
-                  ),
-                ),
-              );
-            },
-          ),
-
-          // Game 5: எழுத்து மீன்பிடி (Letter Fishing Game)
-          _GameTileModel(
-            id: 'letter_fishing',
-            titleTa: 'எழுத்து மீன்பிடி',
-            titleEn: 'Letter Fishing',
-            icon: Icons.water_rounded,
-            imagePath: 'assets/Gif/fish game.gif',
-            hasDot: true,
-            dotColor: const Color(0xFFFFD54F),
-            gradientColors: const [Color(0xFF29B6F6), Color(0xFF0288D1)],
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LetterFishingGame(
-                    progressService: widget.progressService,
-                    mode: FishingGameMode.uyir,
-                  ),
-                ),
-              );
-            },
-          ),
-
-          // Game 6: எழுத்துக் கூடை - உயிர் எழுத்துகள் (Letter Basket Uyir)
-          _GameTileModel(
-            id: 'basket_uyir',
-            titleTa: 'கூடை (உயிர்)',
-            titleEn: 'Basket (Uyir)',
-            icon: Icons.shopping_basket_rounded,
-            imagePath: 'assets/Gif/uyir eluthu kudai game.gif',
-            gradientColors: const [Color(0xFFFFA726), Color(0xFFE65100)],
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LetterBasketGame(
-                    progressService: widget.progressService,
-                    mode: BasketGameMode.uyir,
-                  ),
-                ),
-              );
-            },
-          ),
-
-          // Game 7: எழுத்துக் கூடை - மெய் எழுத்துகள் (Letter Basket Mei)
-          _GameTileModel(
-            id: 'basket_mei',
-            titleTa: 'கூடை (மெய்)',
-            titleEn: 'Basket (Mei)',
-            icon: Icons.shopping_basket_rounded,
-            imagePath: 'assets/Gif/Mei eluthu kudai game.gif',
-            gradientColors: const [Color(0xFF26A69A), Color(0xFF00695C)],
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LetterBasketGame(
-                    progressService: widget.progressService,
-                    mode: BasketGameMode.mei,
-                  ),
-                ),
-              );
-            },
-          ),
-
-          // Game 8: பலூன் உடைத்தல் (Tamil Balloon Pop)
-          _GameTileModel(
-            id: 'balloon_pop',
-            titleTa: 'பலூன் உடைத்தல்',
-            titleEn: 'Balloon Pop',
-            icon: Icons.bubble_chart_rounded,
-            imagePath: 'assets/Gif/balloon game.gif',
-            gradientColors: const [Color(0xFFFF4081), Color(0xFF7C4DFF)],
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BalloonPopLevelScreen(
-                    progressService: widget.progressService,
-                  ),
-                ),
-              );
-            },
-          ),
-        ];
-
-        const int numCols = 2;
-        final double colWidth = (totalWidth - spacing) / 2;
-        const double cardHeight = 158.0;
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Rows of core 2x2 grid games - all tiles exact same size
-            for (int i = 0; i < ourGridGames.length; i += numCols) ...[
-              if (i > 0) const SizedBox(height: spacing),
-              Builder(
-                builder: (context) {
-                  final chunk = ourGridGames.sublist(
-                    i,
-                    (i + numCols > ourGridGames.length) ? ourGridGames.length : i + numCols,
-                  );
-
-                  return Row(
-                    children: [
-                      for (int j = 0; j < numCols; j++) ...[
-                        if (j > 0) const SizedBox(width: spacing),
-                        if (j < chunk.length)
-                          SizedBox(
-                            width: colWidth,
-                            height: cardHeight,
-                            child: _buildStandardTile(context, chunk[j], isEn),
-                          )
-                        else
-                          SizedBox(width: colWidth, height: cardHeight),
-                      ],
-                    ],
-                  );
-                },
+      // Game 4: உயிர் எழுத்து கார் பந்தயம் (Car Racing Game)
+      _GameTileModel(
+        id: 'car_racing',
+        titleTa: 'கார் பந்தயம்',
+        titleEn: 'Car Racing',
+        icon: Icons.directions_car_rounded,
+        imagePath: 'assets/Gif/car game.gif',
+        gradientColors: const [Color(0xFFFF5252), Color(0xFFC62828)],
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CarRacingGame(
+                progressService: widget.progressService,
+                mode: RacingGameMode.uyir,
               ),
-            ],
-          ],
-        );
-      },
+            ),
+          );
+        },
+      ),
+
+      // Game 5: எழுத்து மீன்பிடி (Letter Fishing Game)
+      _GameTileModel(
+        id: 'letter_fishing',
+        titleTa: 'எழுத்து மீன்பிடி',
+        titleEn: 'Letter Fishing',
+        icon: Icons.water_rounded,
+        imagePath: 'assets/Gif/fish game.gif',
+        hasDot: true,
+        dotColor: const Color(0xFFFFD54F),
+        gradientColors: const [Color(0xFF29B6F6), Color(0xFF0288D1)],
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LetterFishingGame(
+                progressService: widget.progressService,
+                mode: FishingGameMode.uyir,
+              ),
+            ),
+          );
+        },
+      ),
+
+      // Game 6: எழுத்துக் கூடை - உயிர் எழுத்துகள் (Letter Basket Uyir)
+      _GameTileModel(
+        id: 'basket_uyir',
+        titleTa: 'கூடை (உயிர்)',
+        titleEn: 'Basket (Uyir)',
+        icon: Icons.shopping_basket_rounded,
+        imagePath: 'assets/Gif/uyir eluthu kudai game.gif',
+        gradientColors: const [Color(0xFFFFA726), Color(0xFFE65100)],
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LetterBasketGame(
+                progressService: widget.progressService,
+                mode: BasketGameMode.uyir,
+              ),
+            ),
+          );
+        },
+      ),
+
+      // Game 7: எழுத்துக் கூடை - மெய் எழுத்துகள் (Letter Basket Mei)
+      _GameTileModel(
+        id: 'basket_mei',
+        titleTa: 'கூடை (மெய்)',
+        titleEn: 'Basket (Mei)',
+        icon: Icons.shopping_basket_rounded,
+        imagePath: 'assets/Gif/Mei eluthu kudai game.gif',
+        gradientColors: const [Color(0xFF26A69A), Color(0xFF00695C)],
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LetterBasketGame(
+                progressService: widget.progressService,
+                mode: BasketGameMode.mei,
+              ),
+            ),
+          );
+        },
+      ),
+
+      // Game 8: பலூன் உடைத்தல் (Tamil Balloon Pop)
+      _GameTileModel(
+        id: 'balloon_pop',
+        titleTa: 'பலூன் உடைத்தல்',
+        titleEn: 'Balloon Pop',
+        icon: Icons.bubble_chart_rounded,
+        imagePath: 'assets/Gif/balloon game.gif',
+        gradientColors: const [Color(0xFFFF4081), Color(0xFF7C4DFF)],
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BalloonPopLevelScreen(
+                progressService: widget.progressService,
+              ),
+            ),
+          );
+        },
+      ),
+    ];
+
+    const int numCols = 2;
+    const double cardHeight = 158.0;
+
+    // Each row uses Expanded children so tiles always fit the available
+    // width (no fixed pixel widths -> no overflow / stale layout on resize).
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (int i = 0; i < ourGridGames.length; i += numCols) ...[
+          if (i > 0) const SizedBox(height: spacing),
+          SizedBox(
+            height: cardHeight,
+            child: Row(
+              children: [
+                for (int j = 0; j < numCols; j++) ...[
+                  if (j > 0) const SizedBox(width: spacing),
+                  Expanded(
+                    child: (i + j < ourGridGames.length)
+                        ? _buildStandardTile(context, ourGridGames[i + j], isEn)
+                        : const SizedBox.shrink(),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ],
     );
   }
 
   // Standard colorful game card tile with Game-Specific Illustration & Cute Name Badge
-  Widget _buildStandardTile(BuildContext context, _GameTileModel item, bool isEn) {
+  Widget _buildStandardTile(
+    BuildContext context,
+    _GameTileModel item,
+    bool isEn,
+  ) {
     return BouncyButton(
       onPressed: item.onTap,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: item.gradientColors.first.withValues(alpha: 0.6), width: 1.5),
+          border: Border.all(
+            color: item.gradientColors.first.withValues(alpha: 0.6),
+            width: 1.5,
+          ),
           boxShadow: [
             BoxShadow(
               color: item.gradientColors.first.withValues(alpha: 0.32),
@@ -564,15 +570,15 @@ class _GamesScreenState extends State<GamesScreen> {
                       Container(
                         padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1E1B2E).withValues(alpha: 0.75),
+                          color: const Color(0xFF1E1B2E)
+                              .withValues(alpha: 0.75),
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white.withValues(alpha: 0.35), width: 1),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.35),
+                            width: 1,
+                          ),
                         ),
-                        child: Icon(
-                          item.icon,
-                          color: Colors.white,
-                          size: 20,
-                        ),
+                        child: Icon(item.icon, color: Colors.white, size: 20),
                       ),
                       if (item.hasDot)
                         Container(
@@ -600,7 +606,10 @@ class _GamesScreenState extends State<GamesScreen> {
                 left: 8,
                 right: 8,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1E1B2E).withValues(alpha: 0.82),
                     borderRadius: BorderRadius.circular(12),

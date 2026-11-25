@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../services/progress_service.dart';
 import '../theme/app_colors.dart';
 import '../widgets/bouncy_button.dart';
+import '../widgets/unlock_content_dialog.dart';
 import 'games/games_screen.dart';
 import 'home/home_screen.dart';
 import 'learning/learning_screen.dart';
@@ -35,6 +36,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     super.initState();
     _selectedIndex = widget.initialIndex;
     _tabHistory = [widget.initialIndex];
+
+    // Ask for scratch code / payment if the user hasn't unlocked content yet.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ensureContentAccess(context);
+    });
   }
 
   void _onTabSelected(int index) {

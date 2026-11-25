@@ -943,3 +943,34 @@ textarea.form-control {
     display: none;
   }
 }
+
+/* Filter / search toolbar (Users page etc.) */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.filter-bar .search-input {
+  flex: 0 1 340px;
+  min-width: 220px;
+  background: white;
+}
+
+.filter-bar .search-input svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.filter-bar .form-control {
+  height: 38px;
+}
+
+.filter-bar .btn {
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

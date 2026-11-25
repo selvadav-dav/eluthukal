@@ -4,6 +4,7 @@
 const express = require('express');
 const { body, param } = require('express-validator');
 const UserAuthController = require('../controllers/userAuthController');
+const AccessController = require('../controllers/accessController');
 const { validateRequest } = require('../middleware/validateMiddleware');
 const { verifyToken } = require('../middleware/authMiddleware');
 
@@ -37,6 +38,10 @@ router.post('/google-login', UserAuthController.googleLogin);
 
 // Get Currently Authenticated User
 router.get('/me', verifyToken, UserAuthController.me);
+
+// Content access (scratch code / payment) - unlocked once per user
+router.get('/access', verifyToken, AccessController.status);
+router.post('/access/unlock', verifyToken, AccessController.unlock);
 
 // Legacy Guest Init Route
 router.post('/init', UserAuthController.registerOrInit);

@@ -8,7 +8,7 @@ export type Language = 'ta' | 'en';
 export const translations = {
   ta: {
     // App & Branding
-    app_title: 'AGARAM',
+    app_title: 'ELUTHUKAL',
     app_subtitle: 'அகரம் நிர்வாகப் பலகை',
     app_version_info: 'AGARAM v1.0.0 • அகரம் நிர்வாகத் தளம்',
     switch_language: 'English-க்கு மாறுக',
@@ -538,7 +538,7 @@ export const translations = {
 
   en: {
     // App & Branding
-    app_title: 'AGARAM',
+    app_title: 'ELUTHUKAL',
     app_subtitle: 'Educational Admin Panel',
     app_version_info: 'AGARAM v1.0.0 • Tamil Learning Platform',
     switch_language: 'தமிழுக்கு மாறுக',

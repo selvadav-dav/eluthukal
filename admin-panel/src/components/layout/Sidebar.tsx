@@ -16,7 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 
 export const Sidebar: React.FC = () => {
-  const { logout, admin } = useAuth();
+  const { logout } = useAuth();
   const { t } = useLanguage();
 
   return (
@@ -97,22 +97,6 @@ export const Sidebar: React.FC = () => {
           </button>
         </div>
       </nav>
-
-      {/* Footer Info */}
-      <div className="sidebar-footer">
-        <div style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '3px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, fontSize: '13px', color: 'var(--text-main)' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', flexShrink: 0 }}></span>
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={admin?.fullName || admin?.username || 'Admin'}>
-              {admin?.fullName || admin?.full_name || admin?.username || 'Admin'}
-            </span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: 'var(--text-muted)' }}>
-            <span>{admin?.role === 'super_admin' ? t('role_super_admin') : t('role_content_admin')}</span>
-            <span className="sidebar-footer-version">v1.0.0</span>
-          </div>
-        </div>
-      </div>
     </aside>
   );
 };
